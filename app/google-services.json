@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "298834358218",
+    "project_id": "peer-pulse-31356",
+    "storage_bucket": "peer-pulse-31356.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:298834358218:android:6f7459fafab2e2f461e933",
+        "android_client_info": {
+          "package_name": "com.example.peer_pulse"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAyaprQgUHtk33LP-hgh5bPk8lcDwu_t10"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
