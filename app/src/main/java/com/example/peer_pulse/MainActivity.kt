@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.peer_pulse.navigation.NavigationHost
+import com.example.peer_pulse.presentation.AuthViewModel
 import com.example.peer_pulse.ui.theme.PeerPulseTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -23,8 +25,10 @@ class MainActivity : ComponentActivity() {
             PeerPulseTheme {
                 Surface(modifier = Modifier.fillMaxSize() , color = MaterialTheme.colorScheme.background) {
                     val navController = rememberNavController()
+                    val authViewModel : AuthViewModel = hiltViewModel()
                     NavigationHost(
-                        navHostController = navController
+                        navHostController = navController,
+                        authViewModel = authViewModel
                     )
                 }
             }

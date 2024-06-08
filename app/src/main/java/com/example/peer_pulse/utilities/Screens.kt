@@ -3,6 +3,7 @@ package com.example.peer_pulse.utilities
 import okhttp3.Route
 
 sealed class Screens(val route: String){
-    data object SplashScreen: Screens("SplashScreen")
-    // Add Screen routes here
+    data object SplashScreen1: Screens("SplashScreen1")
+    data object SignUpEmailScreen: Screens("SignUpEmailScreen")
+    data object SignUpPasswordScreen: Screens("SignUpPasswordScreen")
 }

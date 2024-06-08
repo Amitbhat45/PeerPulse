@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Peer-Pulse</string>
+    <string name="emailRegex">^[0-9][a-z]{2}[0-9]{2}[a-z]{2}[0-9]{3}\\.[a-z]{2}@[a-z]+\\.edu\\.in$</string>
 </resources>
