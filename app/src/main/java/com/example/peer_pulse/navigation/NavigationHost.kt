@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.peer_pulse.presentation.AuthViewModel
+import com.example.peer_pulse.presentation.LandingScreen
 import com.example.peer_pulse.presentation.signup.SignUpEmailScreen
 import com.example.peer_pulse.presentation.signup.SignUpPasswordScreen
 import com.example.peer_pulse.presentation.splashScreens.SplashScreen1
@@ -17,7 +18,7 @@ fun NavigationHost(
 ) {
     NavHost(
         navController = navHostController,
-        startDestination = Screens.SignUpEmailScreen.route
+        startDestination = Screens.SplashScreen1.route
     ) {
         composable(route = Screens.SignUpEmailScreen.route){
             SignUpEmailScreen(navController = navHostController, authViewModel = authViewModel)
@@ -27,6 +28,9 @@ fun NavigationHost(
         }
         composable(route = Screens.SplashScreen1.route){
             SplashScreen1(navController = navHostController, authViewModel = authViewModel)
+        }
+        composable(route = Screens.LandingScreen.route){
+            LandingScreen(navController = navHostController)
         }
     }
 }
