@@ -69,7 +69,7 @@ fun SignUpEmailScreen(
             AuthTopBar(
                 title = "Sign Up",
                 onBackClick = {
-
+                    navController.popBackStack()
                 },
                 backClick = true
             )
