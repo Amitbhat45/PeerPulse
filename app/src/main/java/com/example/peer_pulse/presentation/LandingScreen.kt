@@ -82,7 +82,7 @@ fun LandingScreen(
             }
             Button(
                 onClick = {
-
+                    navController.navigate(Screens.LoginScreen.route)
                 },
                 modifier = Modifier
                     .fillMaxWidth()

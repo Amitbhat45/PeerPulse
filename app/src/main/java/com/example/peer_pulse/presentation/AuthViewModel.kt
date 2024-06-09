@@ -1,14 +1,20 @@
 package com.example.peer_pulse.presentation
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.peer_pulse.data.AuthRepositoryImpl
+import com.example.peer_pulse.data.log_in.SignInResult
+import com.example.peer_pulse.data.log_in.SignInState
 import com.example.peer_pulse.domain.repository.AuthRepository
 import com.example.peer_pulse.utilities.ResponseState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.checkerframework.checker.regex.qual.Regex
 import retrofit2.Response
@@ -28,6 +34,8 @@ class AuthViewModel @Inject constructor(
     private val _signUp = mutableStateOf<ResponseState<Boolean?>>(ResponseState.Success(null))
     val signUp : State<ResponseState<Boolean?>> = _signUp
 
+    private val _signInState = MutableStateFlow(SignInState())
+    val signInState = _signInState.asStateFlow()
 
     fun signUp(){
         viewModelScope.launch {
@@ -52,4 +60,22 @@ class AuthViewModel @Inject constructor(
         )
         return passwordPattern.matcher(password).matches()
     }
+
+
+
+    private val _state = MutableStateFlow(SignInState())
+    val state = _state.asStateFlow()
+
+    fun onSignInResult(result: SignInResult) {
+        _state.update { it.copy(
+            isSignInSuccessful = result.data != null,
+            signInError = result.errorMessage
+        ) }
+    }
+
+    fun resetState() {
+        _state.update { SignInState() }
+    }
+
+
 }
