@@ -56,21 +56,35 @@ fun NavigationHost(
 
             val state by authViewModel.state.collectAsState()
             val coroutineScope = rememberCoroutineScope()
-            LaunchedEffect(key1 = Unit) {
+          /*  LaunchedEffect(key1 = Unit) {
                 if (googleAuthUiClient.getSignedInUser() != null) {
                     navHostController.navigate(Screens.MainScreen.route)
                 }
-            }
+            }*/
             LaunchedEffect(key1 = state.isSignInSuccessful) {
                 if (state.isSignInSuccessful) {
-                    Toast.makeText(
-                        applicationContext,
-                        "Sign in successful",
-                        Toast.LENGTH_LONG
-                    ).show()
-
-                    navHostController.navigate(Screens.MainScreen.route)
-                    authViewModel.resetState()
+                    val userEmail = googleAuthUiClient.getSignedInUser()?.email
+                    if (userEmail != null) {
+                        val isEmailFound = authViewModel.check(userEmail) // Call check only with email
+                        if (isEmailFound) {
+                            Toast.makeText(
+                                applicationContext,
+                                "Sign in successful",
+                                Toast.LENGTH_LONG
+                            ).show()
+                            navHostController.navigate(Screens.MainScreen.route)
+                            authViewModel.resetState()
+                        } else {
+                            Toast.makeText(
+                                applicationContext,
+                                "You need to Sign Up first",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    } else {
+                        // Handle case where userEmail is null (e.g., sign-in failed)
+                        Log.e("SignInError", "Unable to get signed-in user email")
+                    }
                 }
             }
             val launcher = rememberLauncherForActivityResult(

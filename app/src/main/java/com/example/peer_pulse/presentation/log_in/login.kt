@@ -1,6 +1,8 @@
 package com.example.peer_pulse.presentation.log_in
 
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -33,6 +35,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -44,13 +47,17 @@ import com.example.peer_pulse.data.log_in.SignInState
 import com.example.peer_pulse.presentation.AuthViewModel
 import com.example.peer_pulse.presentation.signup.AuthTopBar
 import com.example.peer_pulse.utilities.Screens
+import com.example.peer_pulse.utilities.ToastMessage
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 
 @Composable
 fun LoginScreen(state: SignInState,
           onSignInClick: () -> Unit,
-          navController: NavController,
-                authViewModel: AuthViewModel
+          navController: NavController, authViewModel: AuthViewModel
 ) {
+   val auth = Firebase.auth
+    val context= LocalContext.current
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
     var valid by remember {
@@ -86,7 +93,7 @@ fun LoginScreen(state: SignInState,
                     value = email.value,
                     onValueChange = { changedEmail ->
                         email.value = changedEmail
-                        valid = authViewModel.emailValidator(changedEmail)
+                       // valid = authViewModel.emailValidator(changedEmail)
                     },
                     label = {
                         Text(
@@ -99,20 +106,20 @@ fun LoginScreen(state: SignInState,
                         )
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    isError = valid == false,
+                    //isError = valid == false,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
                 )
-                Text(
+                /*Text(
                     text = if (valid == true) "The email is valid!!" else if (valid == false) "Please enter a valid college email address" else "",
                     color = if (valid == true) Color.Blue else Color.Red,
                     modifier = Modifier.padding(4.dp)
-                )
+                )*/
                 //Spacer(modifier = Modifier.height(5.dp))
                 OutlinedTextField(
                     value = password.value,
                     onValueChange = { changedPassword ->
                         password.value = changedPassword
-                        validpassword = authViewModel.emailValidator(changedPassword)
+                        //validpassword = authViewModel.emailValidator(changedPassword)
                     },
                     label = {
                         Text(
@@ -125,7 +132,7 @@ fun LoginScreen(state: SignInState,
                         )
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    isError = validpassword == false,
+                   // isError = validpassword == false,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
                 )
                 Spacer(modifier = Modifier.height(25.dp))
@@ -168,13 +175,14 @@ fun LoginScreen(state: SignInState,
                 ){
                     Button(
                         onClick = {
-             navController.navigate(Screens.MainScreen.route)
+                            authViewModel.login(email.toString(), password.toString())
+                        //navController.navigate(Screens.MainScreen.route)
                         },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 10.dp),
                         shape = RoundedCornerShape(4.dp),
-                        enabled = valid == true
+                        enabled =  true
                     ) {
                         Text(
                             text = "Log In",

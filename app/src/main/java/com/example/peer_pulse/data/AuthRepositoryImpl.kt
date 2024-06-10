@@ -1,8 +1,10 @@
 package com.example.peer_pulse.data
 
 import android.util.Log
+import android.widget.Toast
 import com.example.peer_pulse.domain.repository.AuthRepository
 import com.example.peer_pulse.utilities.ResponseState
+import com.example.peer_pulse.utilities.Screens
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.delay
@@ -43,4 +45,6 @@ class AuthRepositoryImpl @Inject constructor(
         Log.d("AuthRepositoryImpl", "Error : ${it.message}")
         emit(ResponseState.Error(it.message ?: "An unexpected error occurred"))
     }
+
+
 }
