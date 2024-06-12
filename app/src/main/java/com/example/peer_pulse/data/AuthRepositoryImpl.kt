@@ -36,13 +36,13 @@ class AuthRepositoryImpl @Inject constructor(
                     "email" to email
                 )
                 firestore.collection("users").document(userId).set(userMap).await()
+                firestore.collection("emails").document(email).set(email).await()
                 emit(ResponseState.Success(true))
 
         } else {
             emit(ResponseState.Error("User not created"))
         }
     }.catch {
-        Log.d("AuthRepositoryImpl", "Error : ${it.message}")
         emit(ResponseState.Error(it.message ?: "An unexpected error occurred"))
     }
 

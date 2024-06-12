@@ -40,7 +40,8 @@ class AuthViewModel @Inject constructor(
 
     private val _signUp = mutableStateOf<ResponseState<Boolean?>>(ResponseState.Success(null))
     val signUp : State<ResponseState<Boolean?>> = _signUp
-
+    private val _state = MutableStateFlow(SignInState())
+    val state = _state.asStateFlow()
 
 
 
@@ -102,12 +103,12 @@ fun login(email: String, password: String) {
 
 
 
-    private val _state = MutableStateFlow(SignInState())
-    val state = _state.asStateFlow()
+
     suspend fun check(targetEmail: String): Boolean {
         val db=FirebaseFirestore.getInstance()
         val docRef = db.collection("users").document(targetEmail)
         val documentSnapshot = try {
+            Log.d("AuthViewModel", "$docRef")
             docRef.get().await()
         } catch (e: FirebaseFirestoreException) {
             return false
