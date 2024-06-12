@@ -20,6 +20,11 @@ class AuthRepositoryImpl @Inject constructor(
     private val firestore: FirebaseFirestore
 ) : AuthRepository {
     private var operationSuccessful = false
+    override fun isUserAuthenticated(): Boolean {
+        return auth.currentUser != null
+    }
+
+
     override suspend fun signUp(email: String, password: String): Flow<ResponseState<Boolean>> = flow {
         emit(ResponseState.Loading)
         val authResult = auth.createUserWithEmailAndPassword(email, password).await()
@@ -45,6 +50,5 @@ class AuthRepositoryImpl @Inject constructor(
     }.catch {
         emit(ResponseState.Error(it.message ?: "An unexpected error occurred"))
     }
-
 
 }

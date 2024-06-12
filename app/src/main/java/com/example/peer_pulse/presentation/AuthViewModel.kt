@@ -32,9 +32,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val auth : FirebaseAuth,
 ) : ViewModel(){
 
+    init {
+        auth.addAuthStateListener {
+            userId = it.currentUser?.uid
+        }
+    }
+    var userId = auth.currentUser?.uid
     var email : String = ""
     var password : String = ""
 
@@ -44,7 +51,7 @@ class AuthViewModel @Inject constructor(
     val state = _state.asStateFlow()
 
 
-
+    val isUserAuthenticated get() = authRepository.isUserAuthenticated()
 
 
     fun signUp(){

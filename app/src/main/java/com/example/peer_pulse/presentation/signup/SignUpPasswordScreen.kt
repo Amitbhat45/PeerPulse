@@ -47,7 +47,7 @@ fun SignUpPasswordScreen(
             AuthTopBar(
                 title = "Sign Up",
                 onBackClick = {
-                    navController.popBackStack()
+                    navController.navigateUp()
                 },
                 backClick = true
             )

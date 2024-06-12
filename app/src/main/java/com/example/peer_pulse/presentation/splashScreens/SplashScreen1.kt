@@ -28,6 +28,8 @@ fun SplashScreen1(
     navController: NavController,
     authViewModel: AuthViewModel
 ) {
+    val authValue = authViewModel.isUserAuthenticated
+
     val scale = remember {
         Animatable(0f)
     }
@@ -42,22 +44,17 @@ fun SplashScreen1(
             )
         )
         delay(1000)
-//        if (authValue) {
-//            navController.navigate(Screens.HomeScreen.route){
-//                popUpTo(Screens.SplashScreen1.route){
-//                    inclusive = true
-//                }
-//            }
-//        } else {
-//            navController.navigate(Screens.Screen1.route){
-//                popUpTo(Screens.SplashScreen1.route){
-//                    inclusive = true
-//                }
-//            }
-//        }
-        navController.navigate(Screens.LandingScreen.route){
-            popUpTo(Screens.SplashScreen1.route){
-                inclusive = true
+        if (authValue) {
+            navController.navigate(Screens.MainScreen.route){
+                popUpTo(Screens.SplashScreen1.route){
+                    inclusive = true
+                }
+            }
+        } else {
+            navController.navigate(Screens.LandingScreen.route){
+                popUpTo(Screens.SplashScreen1.route){
+                    inclusive = true
+                }
             }
         }
     }

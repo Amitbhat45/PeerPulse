@@ -19,7 +19,7 @@ import com.example.peer_pulse.data.log_in.GoogleAuthUiClient
 import com.example.peer_pulse.presentation.AuthViewModel
 import com.example.peer_pulse.presentation.LandingScreen
 import com.example.peer_pulse.presentation.main.MainScreen
-import com.example.peer_pulse.presentation.log_in.LoginScreen
+import com.example.peer_pulse.presentation.login.LoginScreen
 import com.example.peer_pulse.presentation.signup.SignUpEmailScreen
 import com.example.peer_pulse.presentation.signup.SignUpPasswordScreen
 import com.example.peer_pulse.presentation.splashScreens.SplashScreen1

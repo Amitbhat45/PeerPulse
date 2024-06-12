@@ -1,18 +1,11 @@
-package com.example.peer_pulse.presentation.log_in
+package com.example.peer_pulse.presentation.login
 
-import android.content.Context
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,7 +16,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -46,8 +38,6 @@ import com.example.peer_pulse.R
 import com.example.peer_pulse.data.log_in.SignInState
 import com.example.peer_pulse.presentation.AuthViewModel
 import com.example.peer_pulse.presentation.signup.AuthTopBar
-import com.example.peer_pulse.utilities.Screens
-import com.example.peer_pulse.utilities.ToastMessage
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 
