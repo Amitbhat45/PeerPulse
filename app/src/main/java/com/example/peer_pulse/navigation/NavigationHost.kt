@@ -27,7 +27,9 @@ import com.example.peer_pulse.presentation.signup.SignUpEmailScreen
 import com.example.peer_pulse.presentation.signup.SignUpPasswordScreen
 import com.example.peer_pulse.presentation.splashScreens.SplashScreen1
 import com.example.peer_pulse.utilities.Screens
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun NavigationHost(
@@ -60,33 +62,34 @@ fun NavigationHost(
                 if (googleAuthUiClient.getSignedInUser() != null) {
                     navHostController.navigate(Screens.MainScreen.route)
                 }
-            }*/
-            LaunchedEffect(key1 = state.isSignInSuccessful) {
-                if (state.isSignInSuccessful) {
-                    val userEmail = googleAuthUiClient.getSignedInUser()?.email
-                    if (userEmail != null) {
-                        val isEmailFound = authViewModel.check(userEmail) // Call check only with email
-                        if (isEmailFound) {
-                            Toast.makeText(
-                                applicationContext,
-                                "Sign in successful",
-                                Toast.LENGTH_LONG
-                            ).show()
-                            navHostController.navigate(Screens.MainScreen.route)
-                            authViewModel.resetState()
-                        } else {
-                            Toast.makeText(
-                                applicationContext,
-                                "You need to Sign Up first",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
-                    } else {
-                        // Handle case where userEmail is null (e.g., sign-in failed)
-                        Log.e("SignInError", "Unable to get signed-in user email")
+            }*/LaunchedEffect(key1 = state.isSignInSuccessful) {
+            if (state.isSignInSuccessful) {
+                val userEmail = googleAuthUiClient.getSignedInUser()?.email
+                if (userEmail != null) {
+                    val isEmailFound = withContext(Dispatchers.IO) {
+                        authViewModel.check(userEmail)
                     }
+                    if (isEmailFound) {
+                        Toast.makeText(
+                            applicationContext,
+                            "Sign in successful",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        navHostController.navigate(Screens.MainScreen.route)
+                        authViewModel.resetState()
+                    } else {
+                        Toast.makeText(
+                            applicationContext,
+                            "You need to Sign Up first",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        authViewModel.resetState()
+                    }
+                } else {
+                    Log.e("SignInError", "Unable to get signed-in user email")
                 }
             }
+        }
             val launcher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.StartIntentSenderForResult(),
                 onResult = { result ->
