@@ -104,7 +104,7 @@ fun login(email: String, password: String) {
 
 
 
-    suspend fun check(targetEmail: String): Boolean {
+    /*suspend fun check(targetEmail: String): Boolean {
         val db=FirebaseFirestore.getInstance()
         val docRef = db.collection("users").document(targetEmail)
         val documentSnapshot = try {
@@ -114,9 +114,14 @@ fun login(email: String, password: String) {
             return false
         }
         return documentSnapshot.exists()
+    }*/
+
+
+    suspend fun check(targetEmail: String): Boolean {
+        val db = FirebaseFirestore.getInstance()
+        val query = db.collection("users").whereEqualTo("email", targetEmail).get().await()
+       return query.isEmpty
     }
-
-
     fun onSignInResult(result: SignInResult) {
         _state.update { it.copy(
             isSignInSuccessful = result.data != null,

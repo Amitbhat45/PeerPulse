@@ -66,7 +66,7 @@ fun NavigationHost(
                     val isEmailFound = withContext(Dispatchers.IO) {
                         authViewModel.check(userEmail)
                     }
-                    if (isEmailFound) {
+                    if (!isEmailFound) {
                         Toast.makeText(
                             applicationContext,
                             "Sign in successful",
