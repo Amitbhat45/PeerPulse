@@ -119,7 +119,6 @@ fun LoginScreen(state: SignInState,
                     value = password.value,
                     onValueChange = { changedPassword ->
                         password.value = changedPassword
-                        //validpassword = authViewModel.emailValidator(changedPassword)
                     },
                     label = {
                         Text(
@@ -132,8 +131,7 @@ fun LoginScreen(state: SignInState,
                         )
                     },
                     modifier = Modifier.fillMaxWidth(),
-                   // isError = validpassword == false,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
                 )
                 Spacer(modifier = Modifier.height(25.dp))
                 Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center){
@@ -175,7 +173,7 @@ fun LoginScreen(state: SignInState,
                 ){
                     Button(
                         onClick = {
-                            authViewModel.login(email.toString(), password.toString())
+                            authViewModel.login(email.value, password.value)
                         //navController.navigate(Screens.MainScreen.route)
                         },
                         modifier = Modifier

@@ -12,16 +12,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.peer_pulse.data.log_in.GoogleAuthUiClient
 import com.example.peer_pulse.presentation.AuthViewModel
 import com.example.peer_pulse.presentation.LandingScreen
-import com.example.peer_pulse.presentation.MainScreen
+import com.example.peer_pulse.presentation.main.MainScreen
 import com.example.peer_pulse.presentation.log_in.LoginScreen
 import com.example.peer_pulse.presentation.signup.SignUpEmailScreen
 import com.example.peer_pulse.presentation.signup.SignUpPasswordScreen
@@ -54,11 +51,11 @@ fun NavigationHost(
         composable(route = Screens.LandingScreen.route){
             LandingScreen(navController = navHostController)
         }
-        composable(route=Screens.LoginScreen.route){
+        composable(route=Screens.LoginScreen.route) {
 
             val state by authViewModel.state.collectAsState()
             val coroutineScope = rememberCoroutineScope()
-          /*  LaunchedEffect(key1 = Unit) {
+            /*  LaunchedEffect(key1 = Unit) {
                 if (googleAuthUiClient.getSignedInUser() != null) {
                     navHostController.navigate(Screens.MainScreen.route)
                 }
@@ -90,6 +87,7 @@ fun NavigationHost(
                 }
             }
         }
+
             val launcher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.StartIntentSenderForResult(),
                 onResult = { result ->

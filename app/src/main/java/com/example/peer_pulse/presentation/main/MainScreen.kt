@@ -1,4 +1,4 @@
-package com.example.peer_pulse.presentation
+package com.example.peer_pulse.presentation.main
 
 import androidx.compose.runtime.Composable
 
