@@ -120,6 +120,7 @@ fun login(email: String, password: String) {
         _state.update { it.copy(
             isSignInSuccessful = result.data != null,
             signInError = result.errorMessage
+
         ) }
     }
 
