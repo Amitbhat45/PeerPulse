@@ -38,6 +38,7 @@ import com.example.peer_pulse.R
 import com.example.peer_pulse.data.login.SignInState
 import com.example.peer_pulse.presentation.AuthViewModel
 import com.example.peer_pulse.presentation.signup.AuthTopBar
+import com.example.peer_pulse.utilities.Screens
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 
@@ -83,7 +84,6 @@ fun LoginScreen(state: SignInState,
                     value = email.value,
                     onValueChange = { changedEmail ->
                         email.value = changedEmail
-                       // valid = authViewModel.emailValidator(changedEmail)
                     },
                     label = {
                         Text(
@@ -96,7 +96,6 @@ fun LoginScreen(state: SignInState,
                         )
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    //isError = valid == false,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
                 )
                 /*Text(
@@ -164,8 +163,9 @@ fun LoginScreen(state: SignInState,
                     Button(
                         onClick = {
                             authViewModel.login(email.value, password.value)
-                            authViewModel.college = authViewModel.whichCollege(email.value)
-                        //navController.navigate(Screens.MainScreen.route)
+                            navController.navigate(Screens.MainScreen.route){
+                                launchSingleTop = true
+                            }
                         },
                         modifier = Modifier
                             .fillMaxWidth()
