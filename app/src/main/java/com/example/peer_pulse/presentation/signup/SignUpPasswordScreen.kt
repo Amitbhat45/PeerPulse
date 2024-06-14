@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,12 +28,14 @@ import com.example.peer_pulse.presentation.AuthViewModel
 import com.example.peer_pulse.utilities.ResponseState
 import com.example.peer_pulse.utilities.Screens
 import com.example.peer_pulse.utilities.ToastMessage
+import kotlinx.coroutines.launch
 
 @Composable
 fun SignUpPasswordScreen(
     navController: NavController,
     authViewModel: AuthViewModel
 ) {
+    val coroutineScope = rememberCoroutineScope()
     val password = remember { mutableStateOf("") }
     var passwordValid by remember {
         mutableStateOf<Boolean?>(null)
@@ -152,9 +155,13 @@ fun SignUpPasswordScreen(
             ) {
                 Button(
                     onClick = {
-                        authViewModel.password = password.value
-                        verifyMessage = true
-                        authViewModel.signUp()
+                        coroutineScope.launch {
+                            authViewModel.password = password.value
+                            authViewModel.college = authViewModel.whichCollege(authViewModel.email)
+                            verifyMessage = true
+                            authViewModel.registerCollege()
+                            authViewModel.signUp()
+                        }
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -166,7 +173,7 @@ fun SignUpPasswordScreen(
                         text = "Join Peer-pulse",
                         fontWeight = FontWeight.Bold
                     )
-                    when(val response = authViewModel.signUp.value)
+                    when(val response = authViewModel.registerCollege.value)
                     {
                         is ResponseState.Error ->
                             ToastMessage(message =response.message)
@@ -174,13 +181,35 @@ fun SignUpPasswordScreen(
                         is ResponseState.Success -> {
                             if(response.data == true)
                             {
-                                navController.navigate(""){
-                                    launchSingleTop = true
+                                when(val response = authViewModel.signUp.value)
+                                {
+                                    is ResponseState.Error -> {
+                                        ToastMessage(message = response.message)
+                                    }
+                                    ResponseState.Loading -> {
+                                        CircularProgressIndicator()
+                                    }
+                                    is ResponseState.Success -> {
+                                        if(response.data == true)
+                                        {
+                                            navController.navigate(Screens.MainScreen.route){
+                                                launchSingleTop = true
+                                            }
+                                        }
+                                        else if(response.data == false)
+                                        {
+                                            ToastMessage(message = "Sign Up Failed")
+                                        }
+                                        else
+                                        {
+
+                                        }
+                                    }
                                 }
                             }
                             else if(response.data == false)
                             {
-                                    ToastMessage(message = "Sign Up Failed")
+                                    ToastMessage(message = "Invalid College Name. Please enter a valid college email id with valid college")
                             }
                             else
                             {

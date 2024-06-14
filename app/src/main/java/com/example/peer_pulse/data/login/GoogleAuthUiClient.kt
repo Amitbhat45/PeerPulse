@@ -1,4 +1,4 @@
-package com.example.peer_pulse.data.log_in
+package com.example.peer_pulse.data.login
 
 import android.content.Context
 import android.content.Intent
@@ -8,7 +8,6 @@ import com.example.peer_pulse.R
 
 
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
-import com.google.android.gms.auth.api.identity.BeginSignInRequest.GoogleIdTokenRequestOptions
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth

@@ -41,7 +41,6 @@ class AuthRepositoryImpl @Inject constructor(
                     "email" to email
                 )
                 firestore.collection("users").document(userId).set(userMap).await()
-                firestore.collection("emails").document(email).set(email).await()
                 emit(ResponseState.Success(true))
 
         } else {

@@ -1,7 +1,9 @@
 package com.example.peer_pulse.di
 
+import com.example.peer_pulse.data.CollegeRepositoryImpl
 import com.example.peer_pulse.data.AuthRepositoryImpl
 import com.example.peer_pulse.domain.repository.AuthRepository
+import com.example.peer_pulse.domain.repository.collegeRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
@@ -34,6 +36,14 @@ object AppModule {
         firestore: FirebaseFirestore
     ) : AuthRepository {
         return AuthRepositoryImpl(auth, firestore)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCollegeRepository(
+        firestore: FirebaseFirestore
+    ) : collegeRepository {
+        return CollegeRepositoryImpl(firestore)
     }
 
 
