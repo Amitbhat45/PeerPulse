@@ -2,20 +2,18 @@ package com.example.peer_pulse.presentation
 
 import android.content.ContentValues.TAG
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.peer_pulse.data.AuthRepositoryImpl
-import com.example.peer_pulse.data.log_in.SignInResult
-import com.example.peer_pulse.data.log_in.SignInState
+import com.example.peer_pulse.domain.model.colleges
+import com.example.peer_pulse.data.login.SignInResult
+import com.example.peer_pulse.data.login.SignInState
 import com.example.peer_pulse.domain.repository.AuthRepository
+import com.example.peer_pulse.domain.repository.collegeRepository
 import com.example.peer_pulse.utilities.ResponseState
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.FirebaseFirestoreException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,9 +21,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import org.checkerframework.checker.regex.qual.Regex
-import retrofit2.Response
-import java.util.concurrent.Flow
 import java.util.regex.Pattern
 import javax.inject.Inject
 
@@ -34,21 +29,30 @@ import javax.inject.Inject
 class AuthViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val auth : FirebaseAuth,
+    private val firestore: FirebaseFirestore,
+    private val collegeRepository: collegeRepository
 ) : ViewModel(){
 
     init {
         auth.addAuthStateListener {
             userId = it.currentUser?.uid
+            email = it.currentUser?.email ?: ""
+            college = whichCollege(email)
         }
     }
     var userId = auth.currentUser?.uid
     var email : String = ""
     var password : String = ""
+    var college : String = ""
 
     private val _signUp = mutableStateOf<ResponseState<Boolean?>>(ResponseState.Success(null))
     val signUp : State<ResponseState<Boolean?>> = _signUp
+
     private val _state = MutableStateFlow(SignInState())
     val state = _state.asStateFlow()
+
+    private val _registerCollege = mutableStateOf<ResponseState<Boolean?>>(ResponseState.Success(null))
+    val registerCollege : State<ResponseState<Boolean?>> = _registerCollege
 
 
     val isUserAuthenticated get() = authRepository.isUserAuthenticated()
@@ -76,7 +80,7 @@ class AuthViewModel @Inject constructor(
         }
 }*/
 fun login(email: String, password: String) {
-    FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
+    auth.signInWithEmailAndPassword(email, password)
         .addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 Log.d(TAG, "Login successful")
@@ -125,8 +129,7 @@ fun login(email: String, password: String) {
 
 
     suspend fun check(targetEmail: String): Boolean {
-        val db = FirebaseFirestore.getInstance()
-        val query = db.collection("users").whereEqualTo("email", targetEmail).get().await()
+        val query = firestore.collection("users").whereEqualTo("email", targetEmail).get().await()
        return query.isEmpty
     }
     fun onSignInResult(result: SignInResult) {
@@ -141,5 +144,31 @@ fun login(email: String, password: String) {
         _state.update { SignInState() }
     }
 
+    fun whichCollege(email: String) : String{
+        val collegeCode1 = email.substring(0,3)
+        val collegeCode2 = collegeCode1.uppercase()
+        var answer : String = "Not Found"
+        colleges.forEach {
+            if(it.code == collegeCode2){
+                answer = it.name
+            }
+        }
+        return answer
+    }
+    suspend fun registerCollege(){
+        if(college != "Not Found"){
+            val query = firestore.collection("colleges").whereEqualTo("name", college).get().await()
+            if(query.isEmpty){
+                viewModelScope.launch {
+                    collegeRepository.registerCollege(college).collect{
+                        _registerCollege.value = it
+                    }
+                }
+            }
+        }
+        else{
+            _registerCollege.value = ResponseState.Success(false)
+        }
+    }
 
 }

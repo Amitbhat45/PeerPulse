@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.peer_pulse.R
-import com.example.peer_pulse.data.log_in.SignInState
+import com.example.peer_pulse.data.login.SignInState
 import com.example.peer_pulse.presentation.AuthViewModel
 import com.example.peer_pulse.presentation.signup.AuthTopBar
 import com.google.firebase.Firebase
@@ -164,6 +164,7 @@ fun LoginScreen(state: SignInState,
                     Button(
                         onClick = {
                             authViewModel.login(email.value, password.value)
+                            authViewModel.college = authViewModel.whichCollege(email.value)
                         //navController.navigate(Screens.MainScreen.route)
                         },
                         modifier = Modifier

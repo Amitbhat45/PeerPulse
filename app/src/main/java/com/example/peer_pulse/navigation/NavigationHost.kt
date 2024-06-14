@@ -15,7 +15,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.peer_pulse.data.log_in.GoogleAuthUiClient
+import com.example.peer_pulse.data.login.GoogleAuthUiClient
 import com.example.peer_pulse.presentation.AuthViewModel
 import com.example.peer_pulse.presentation.LandingScreen
 import com.example.peer_pulse.presentation.main.MainScreen
@@ -72,6 +72,7 @@ fun NavigationHost(
                             "Sign in successful",
                             Toast.LENGTH_LONG
                         ).show()
+                        authViewModel.college = authViewModel.whichCollege(userEmail)
                         navHostController.navigate(Screens.MainScreen.route)
                         authViewModel.resetState()
                     } else {
@@ -125,7 +126,7 @@ fun NavigationHost(
             } }, navController = navHostController,authViewModel = authViewModel)
         }
         composable(route = Screens.MainScreen.route){
-            MainScreen()
+            MainScreen(authViewModel = authViewModel, navController = navHostController)
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.example.peer_pulse.data.log_in
+package com.example.peer_pulse.data.login
 
 data class SignInState(
     val isSignInSuccessful: Boolean = false,
