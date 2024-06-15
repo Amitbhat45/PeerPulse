@@ -162,7 +162,6 @@ fun SignUpPasswordScreen(
                             authViewModel.registerCollege()
                             authViewModel.signUp()
                         }
-                        navController.navigate(Screens.PreferenceScreen1.route)
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -193,7 +192,7 @@ fun SignUpPasswordScreen(
                                     is ResponseState.Success -> {
                                         if(response.data == true)
                                         {
-                                            navController.navigate(Screens.MainScreen.route){
+                                            navController.navigate(Screens.PreferenceScreen1.route){
                                                 launchSingleTop = true
                                             }
                                         }

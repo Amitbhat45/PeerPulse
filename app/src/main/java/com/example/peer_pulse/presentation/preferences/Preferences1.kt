@@ -201,8 +201,10 @@ fun Preferences1 (navController: NavController,
             ) {
                 Button(
                     onClick = {
-                    navController.navigate(Screens.MainScreen.route)
                         authViewModel.UserPreferences(selectedPrefs)
+                        navController.navigate(Screens.MainScreen.route){
+                            launchSingleTop = true
+                        }
                     },
                     modifier = Modifier
                         .fillMaxWidth()
