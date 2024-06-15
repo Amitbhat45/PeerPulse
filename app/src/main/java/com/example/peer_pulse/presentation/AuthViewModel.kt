@@ -54,6 +54,9 @@ class AuthViewModel @Inject constructor(
     private val _registerCollege = mutableStateOf<ResponseState<Boolean?>>(ResponseState.Success(null))
     val registerCollege : State<ResponseState<Boolean?>> = _registerCollege
 
+    private val _login = mutableStateOf<ResponseState<Boolean?>>(ResponseState.Success(null))
+    val login : State<ResponseState<Boolean?>> = _login
+
 
     val isUserAuthenticated get() = authRepository.isUserAuthenticated()
 
@@ -79,58 +82,12 @@ class AuthViewModel @Inject constructor(
     Log.d(TAG,"login failed")
         }
 }*/
-fun login(email: String, password: String) {
-    auth.signInWithEmailAndPassword(email, password)
-        .addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                Log.d(TAG, "Login successful")
-                // Handle successful login  navigate to Main Screen)
-                //navController.navigate(Screens.MainScreen.route)
-            } else {
-                Log.d(TAG, "Login failed", task.exception)
-                // Handle login failure (e.g., display error message)
-                val exception = task.exception
-
+    fun login(email: String, password: String) {
+    viewModelScope.launch {
+        authRepository.login(email, password).collect {
+                _login.value = it
             }
         }
-}
-
-
-    fun emailValidator(email : String) : Boolean{
-        val emailRegex = Regex("^\\d[a-zA-Z]{2}\\d{2}[a-zA-Z]{2}\\d{3}\\.[a-z]{2}@[a-z]+\\.edu\\.in$")
-        return emailRegex.matches(email)
-    }
-
-    fun passwordVerify(first : String, second : String) : Boolean{
-        return first == second
-    }
-
-    fun passwordValidate(password : String) : Boolean{
-        val passwordPattern = Pattern.compile(
-            "^(?=.*[A-Z])(?=.*\\d)(?=.*[@\$!%*?&])[A-Za-z\\d@\$!%*?&]{8,32}$"
-        )
-        return passwordPattern.matcher(password).matches()
-    }
-
-
-
-
-    /*suspend fun check(targetEmail: String): Boolean {
-        val db=FirebaseFirestore.getInstance()
-        val docRef = db.collection("users").document(targetEmail)
-        val documentSnapshot = try {
-            Log.d("AuthViewModel", "$docRef")
-            docRef.get().await()
-        } catch (e: FirebaseFirestoreException) {
-            return false
-        }
-        return documentSnapshot.exists()
-    }*/
-
-
-    suspend fun check(targetEmail: String): Boolean {
-        val query = firestore.collection("users").whereEqualTo("email", targetEmail).get().await()
-       return query.isEmpty
     }
     fun onSignInResult(result: SignInResult) {
         _state.update { it.copy(
@@ -139,15 +96,33 @@ fun login(email: String, password: String) {
 
         ) }
     }
-
-    fun resetState() {
-        _state.update { SignInState() }
+    suspend fun check(targetEmail: String): Boolean {
+        val query = firestore.collection("users").whereEqualTo("email", targetEmail).get().await()
+        return query.isEmpty
     }
 
+
+    fun emailValidator(email : String) : Boolean{
+        val emailRegex = Regex("^\\d[a-zA-Z]{2}\\d{2}[a-zA-Z]{2}\\d{3}\\.[a-z]{2}@[a-z]+\\.edu\\.in$")
+        return emailRegex.matches(email)
+    }
+    fun passwordVerify(first : String, second : String) : Boolean{
+        return first == second
+    }
+    fun passwordValidate(password : String) : Boolean{
+        val passwordPattern = Pattern.compile(
+            "^(?=.*[A-Z])(?=.*\\d)(?=.*[@\$!%*?&])[A-Za-z\\d@\$!%*?&]{8,32}$"
+        )
+        return passwordPattern.matcher(password).matches()
+    }
+
+    
+
     fun whichCollege(email: String) : String{
+        if (email.length < 3) return ""
         val collegeCode1 = email.substring(0,3)
         val collegeCode2 = collegeCode1.uppercase()
-        var answer : String = "Not Found"
+        var answer = "Not Found"
         colleges.forEach {
             if(it.code == collegeCode2){
                 answer = it.name
@@ -160,7 +135,7 @@ fun login(email: String, password: String) {
             val query = firestore.collection("colleges").whereEqualTo("name", college).get().await()
             if(query.isEmpty){
                 viewModelScope.launch {
-                    collegeRepository.registerCollege(college).collect{
+                    collegeRepository.registerCollege(college,email.substring(0,3).uppercase()).collect{
                         _registerCollege.value = it
                     }
                 }
@@ -169,6 +144,13 @@ fun login(email: String, password: String) {
         else{
             _registerCollege.value = ResponseState.Success(false)
         }
+    }
+
+
+    fun resetState() {
+        _state.update { SignInState() }
+        _signUp.value = ResponseState.Success(null)
+        _registerCollege.value = ResponseState.Success(null)
     }
 
 }

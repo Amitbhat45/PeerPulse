@@ -12,10 +12,9 @@ import javax.inject.Inject
 class CollegeRepositoryImpl @Inject constructor(
     private val firestore : FirebaseFirestore
 ): collegeRepository {
-    override suspend fun registerCollege(name: String): Flow<ResponseState<Boolean>> = flow {
+    override suspend fun registerCollege(name: String,code : String): Flow<ResponseState<Boolean>> = flow {
         emit(ResponseState.Loading)
-        val uid = firestore.collection("colleges").document().id
-        firestore.collection("colleges").document(uid).set(hashMapOf("name" to name)).await()
+        firestore.collection("colleges").document(code).set(hashMapOf("name" to name)).await()
         emit(ResponseState.Success(true))
     }.catch {
         emit(ResponseState.Error(it.message ?: "An unexpected error occurred"))
