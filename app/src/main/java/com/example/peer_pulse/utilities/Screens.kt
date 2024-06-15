@@ -9,5 +9,5 @@ sealed class Screens(val route: String){
     data object LandingScreen: Screens("LandingScreen")
     data object LoginScreen:Screens("LoginScreen")
     data object MainScreen:Screens("MainScreen")
-
+    data object ProfileScreen:Screens("ProfileScreen")
 }

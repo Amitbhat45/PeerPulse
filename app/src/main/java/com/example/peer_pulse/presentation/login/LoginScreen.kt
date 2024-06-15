@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -38,7 +39,9 @@ import com.example.peer_pulse.R
 import com.example.peer_pulse.data.login.SignInState
 import com.example.peer_pulse.presentation.AuthViewModel
 import com.example.peer_pulse.presentation.signup.AuthTopBar
+import com.example.peer_pulse.utilities.ResponseState
 import com.example.peer_pulse.utilities.Screens
+import com.example.peer_pulse.utilities.ToastMessage
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 
@@ -70,9 +73,11 @@ fun LoginScreen(state: SignInState,
         }
     ) {
         Column(modifier = Modifier.padding(it)) {
-            Column (modifier = Modifier
-                .padding(16.dp)
-                .weight(7.5f)){
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .weight(7.5f)
+            ) {
                 Text(
                     text = "Welcome back to PeerPulse",
                     fontSize = 24.sp,
@@ -123,8 +128,11 @@ fun LoginScreen(state: SignInState,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
                 )
                 Spacer(modifier = Modifier.height(25.dp))
-                Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center){
-                    Text(text = "or",fontWeight = FontWeight.Bold)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(text = "or", fontWeight = FontWeight.Bold)
                 }
                 Spacer(modifier = Modifier.height(25.dp))
                 Button(
@@ -140,9 +148,9 @@ fun LoginScreen(state: SignInState,
                 ) {
 
                     Row(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
+                        modifier = Modifier.fillMaxSize(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Image(
                             painter = painterResource(id = R.drawable.google_image),
                             contentDescription = "Google Logo",
@@ -150,8 +158,12 @@ fun LoginScreen(state: SignInState,
                                 .padding(start = 0.dp)
                                 .size(25.dp)
                         )
-                            Spacer(modifier = Modifier.width(60.dp))
-                        Text(text = "Continue with Google", color = Color.White,fontWeight = FontWeight.Bold)
+                        Spacer(modifier = Modifier.width(60.dp))
+                        Text(
+                            text = "Continue with Google",
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                 }
                 Column(
@@ -159,11 +171,11 @@ fun LoginScreen(state: SignInState,
 
                         .weight(3.5f),
                     verticalArrangement = Arrangement.Bottom
-                ){
+                ) {
                     Button(
                         onClick = {
                             authViewModel.login(email.value, password.value)
-                            navController.navigate(Screens.MainScreen.route){
+                            navController.navigate(Screens.MainScreen.route) {
                                 launchSingleTop = true
                             }
                         },
@@ -171,19 +183,39 @@ fun LoginScreen(state: SignInState,
                             .fillMaxWidth()
                             .padding(top = 10.dp),
                         shape = RoundedCornerShape(4.dp),
-                        enabled =  true
                     ) {
                         Text(
                             text = "Log In",
                             fontWeight = FontWeight.Bold
                         )
+                        when (val response = authViewModel.login.value) {
+                            is ResponseState.Error ->
+                            {
+                                ToastMessage(message =response.message)
+                            }
+                            ResponseState.Loading -> {
+                                CircularProgressIndicator()
+                            }
+                            is ResponseState.Success ->{
+                                if(response.data == true)
+                                {
+                                    navController.navigate(Screens.MainScreen.route){
+                                        launchSingleTop = true
+                                    }
+                                }
+                                else if(response.data == false)
+                                {
+                                    ToastMessage(message = "Login failed, please try again.")
+                                }
+                                else
+                                {
+
+                                }
+                            }
+                        }
                     }
                 }
-
-
-
             }
         }
     }
-
 }

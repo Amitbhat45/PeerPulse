@@ -54,6 +54,9 @@ class AuthViewModel @Inject constructor(
     private val _registerCollege = mutableStateOf<ResponseState<Boolean?>>(ResponseState.Success(null))
     val registerCollege : State<ResponseState<Boolean?>> = _registerCollege
 
+    private val _login = mutableStateOf<ResponseState<Boolean?>>(ResponseState.Success(null))
+    val login : State<ResponseState<Boolean?>> = _login
+
 
     val isUserAuthenticated get() = authRepository.isUserAuthenticated()
 
@@ -80,18 +83,11 @@ class AuthViewModel @Inject constructor(
         }
 }*/
     fun login(email: String, password: String) {
-        auth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    Log.d(TAG, "Login successful")
-                    // Handle successful login  navigate to Main Screen)
-                } else {
-                    Log.d(TAG, "Login failed", task.exception)
-                    // Handle login failure (e.g., display error message)
-                    val exception = task.exception
-
-                }
+    viewModelScope.launch {
+        authRepository.login(email, password).collect {
+                _login.value = it
             }
+        }
     }
     fun onSignInResult(result: SignInResult) {
         _state.update { it.copy(
@@ -123,6 +119,7 @@ class AuthViewModel @Inject constructor(
     
 
     fun whichCollege(email: String) : String{
+        if (email.length < 3) return ""
         val collegeCode1 = email.substring(0,3)
         val collegeCode2 = collegeCode1.uppercase()
         var answer = "Not Found"
@@ -138,7 +135,7 @@ class AuthViewModel @Inject constructor(
             val query = firestore.collection("colleges").whereEqualTo("name", college).get().await()
             if(query.isEmpty){
                 viewModelScope.launch {
-                    collegeRepository.registerCollege(college).collect{
+                    collegeRepository.registerCollege(college,email.substring(0,3).uppercase()).collect{
                         _registerCollege.value = it
                     }
                 }

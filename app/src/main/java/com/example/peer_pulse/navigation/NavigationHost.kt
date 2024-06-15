@@ -20,6 +20,8 @@ import com.example.peer_pulse.presentation.AuthViewModel
 import com.example.peer_pulse.presentation.LandingScreen
 import com.example.peer_pulse.presentation.main.MainScreen
 import com.example.peer_pulse.presentation.login.LoginScreen
+import com.example.peer_pulse.presentation.profile.ProfileScreen
+import com.example.peer_pulse.presentation.profile.ProfileViewModel
 import com.example.peer_pulse.presentation.signup.SignUpEmailScreen
 import com.example.peer_pulse.presentation.signup.SignUpPasswordScreen
 import com.example.peer_pulse.presentation.splashScreens.SplashScreen1
@@ -33,7 +35,8 @@ fun NavigationHost(
     navHostController: NavHostController,
     authViewModel: AuthViewModel,
     googleAuthUiClient: GoogleAuthUiClient,
-    applicationContext:Context
+    applicationContext:Context,
+    profileViewModel: ProfileViewModel
 ) {
     NavHost(
         navController = navHostController,
@@ -127,6 +130,13 @@ fun NavigationHost(
         }
         composable(route = Screens.MainScreen.route){
             MainScreen(authViewModel = authViewModel, navController = navHostController)
+        }
+        composable(Screens.ProfileScreen.route){
+            ProfileScreen(
+                navController = navHostController,
+                profileViewModel = profileViewModel,
+                authViewModel = authViewModel
+            )
         }
     }
 }
