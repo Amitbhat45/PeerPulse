@@ -162,6 +162,7 @@ fun SignUpPasswordScreen(
                             authViewModel.registerCollege()
                             authViewModel.signUp()
                         }
+                        navController.navigate(Screens.PreferenceScreen1.route)
                     },
                     modifier = Modifier
                         .fillMaxWidth()

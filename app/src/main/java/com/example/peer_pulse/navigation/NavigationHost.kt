@@ -20,6 +20,7 @@ import com.example.peer_pulse.presentation.AuthViewModel
 import com.example.peer_pulse.presentation.LandingScreen
 import com.example.peer_pulse.presentation.main.MainScreen
 import com.example.peer_pulse.presentation.login.LoginScreen
+import com.example.peer_pulse.presentation.preferences.Preferences1
 import com.example.peer_pulse.presentation.profile.ProfileScreen
 import com.example.peer_pulse.presentation.profile.ProfileViewModel
 import com.example.peer_pulse.presentation.signup.SignUpEmailScreen
@@ -127,6 +128,9 @@ fun NavigationHost(
                     Log.d("Login1", "Sign-in intent sender is null.")
                 }
             } }, navController = navHostController,authViewModel = authViewModel)
+        }
+        composable(route = Screens.PreferenceScreen1.route){
+            Preferences1(navController = navHostController,authViewModel)
         }
         composable(route = Screens.MainScreen.route){
             MainScreen(authViewModel = authViewModel, navController = navHostController)

@@ -69,19 +69,6 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-/*fun login(email: String,password: String){
-    FirebaseAuth.getInstance().signInWithEmailAndPassword(email,password)
-        .addOnCompleteListener {
-            Log.d(TAG,"login_Sucess")
-            Log.d(TAG,"${it.isSuccessful}")
-            if(it.isSuccessful){
-                Log.d(TAG,"yes yes yes")
-        }
-
-}.addOnFailureListener {
-    Log.d(TAG,"login failed")
-        }
-}*/
     fun login(email: String, password: String) {
     viewModelScope.launch {
         authRepository.login(email, password).collect {
@@ -101,6 +88,19 @@ class AuthViewModel @Inject constructor(
         return query.isEmpty
     }
 
+    fun UserPreferences(preferences: MutableList<String>){
+        if (userId == null || preferences.isEmpty()) {
+            return
+        }
+        val userRef = firestore.collection("users").document(userId!!)
+        userRef.update("preferences", preferences)
+            .addOnSuccessListener {
+                Log.d("UserPreferences", "Preferences stored successfully for user: $userId")
+            }
+            .addOnFailureListener { exception ->
+                Log.w("UserPreferences", "Error updating preferences: $exception")
+            }
+    }
 
     fun emailValidator(email : String) : Boolean{
         val emailRegex = Regex("^\\d[a-zA-Z]{2}\\d{2}[a-zA-Z]{2}\\d{3}\\.[a-z]{2}@[a-z]+\\.edu\\.in$")

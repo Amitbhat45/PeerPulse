@@ -195,8 +195,8 @@ fun SignUpEmailScreen(
 @Composable
 fun AuthTopBar(
     title : String,
-    onBackClick : () -> Unit,
-    backClick : Boolean
+    onBackClick : (() -> Unit)?=null,
+    backClick : Boolean =false
 ){
     CenterAlignedTopAppBar(
         title = {
@@ -208,10 +208,12 @@ fun AuthTopBar(
         navigationIcon = {
            if(backClick)
            {
-               IconButton(
-                   onClick = onBackClick
-               ) {
-                   Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBackIos, contentDescription = "Back button" )
+               if (onBackClick != null) {
+                   IconButton(
+                       onClick = onBackClick
+                   ) {
+                       Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBackIos, contentDescription = "Back button" )
+                   }
                }
            }
             else{
