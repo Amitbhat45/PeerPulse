@@ -1,6 +1,5 @@
 package com.example.peer_pulse.presentation
 
-import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -88,7 +87,7 @@ class AuthViewModel @Inject constructor(
         return query.isEmpty
     }
 
-    fun UserPreferences(preferences: MutableList<String>){
+    fun userPreferences(preferences: MutableList<String>){
         if (userId == null || preferences.isEmpty()) {
             return
         }
@@ -139,6 +138,9 @@ class AuthViewModel @Inject constructor(
                         _registerCollege.value = it
                     }
                 }
+            }
+            else{
+                _registerCollege.value = ResponseState.Success(true)
             }
         }
         else{
