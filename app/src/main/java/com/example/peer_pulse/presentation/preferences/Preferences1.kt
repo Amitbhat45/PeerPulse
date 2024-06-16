@@ -201,7 +201,7 @@ fun Preferences1 (navController: NavController,
             ) {
                 Button(
                     onClick = {
-                        authViewModel.UserPreferences(selectedPrefs)
+                        authViewModel.userPreferences(selectedPrefs)
                         navController.navigate(Screens.MainScreen.route){
                             launchSingleTop = true
                         }
