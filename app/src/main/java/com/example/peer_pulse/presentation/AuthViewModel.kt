@@ -140,6 +140,9 @@ class AuthViewModel @Inject constructor(
                     }
                 }
             }
+            else{
+                _registerCollege.value = ResponseState.Success(true)
+            }
         }
         else{
             _registerCollege.value = ResponseState.Success(false)
