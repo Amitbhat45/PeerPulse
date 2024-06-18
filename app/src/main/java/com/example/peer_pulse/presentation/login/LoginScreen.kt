@@ -175,9 +175,7 @@ fun LoginScreen(state: SignInState,
                     Button(
                         onClick = {
                             authViewModel.login(email.value, password.value)
-                            navController.navigate(Screens.MainScreen.route) {
-                                launchSingleTop = true
-                            }
+                            authViewModel.college = authViewModel.whichCollege(email.value)
                         },
                         modifier = Modifier
                             .fillMaxWidth()
