@@ -57,6 +57,9 @@ class AuthViewModel @Inject constructor(
     private val _login = mutableStateOf<ResponseState<Boolean?>>(ResponseState.Success(null))
     val login : State<ResponseState<Boolean?>> = _login
 
+    private val _signOut = mutableStateOf<ResponseState<Boolean?>>(ResponseState.Success(null))
+    val signOut : State<ResponseState<Boolean?>> = _signOut
+
 
     val isUserAuthenticated get() = authRepository.isUserAuthenticated()
 
@@ -65,6 +68,15 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             authRepository.signUp(email, password).collect {
                 _signUp.value = it
+            }
+        }
+        _signOut.value = ResponseState.Success(null)
+    }
+
+    fun signOut(){
+        viewModelScope.launch {
+            authRepository.signOut().collect {
+                _signOut.value = it
             }
         }
     }
@@ -151,6 +163,8 @@ class AuthViewModel @Inject constructor(
         _state.update { SignInState() }
         _signUp.value = ResponseState.Success(null)
         _registerCollege.value = ResponseState.Success(null)
+        _login.value = ResponseState.Success(null)
+        _signOut.value = ResponseState.Success(null)
     }
 
 }

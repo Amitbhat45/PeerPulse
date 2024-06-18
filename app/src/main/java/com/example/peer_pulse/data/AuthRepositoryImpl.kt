@@ -59,4 +59,12 @@ class AuthRepositoryImpl @Inject constructor(
         emit(ResponseState.Error(it.message ?: "An unexpected error occurred"))
     }
 
+    override suspend fun signOut(): Flow<ResponseState<Boolean>> = flow {
+        emit(ResponseState.Loading)
+        auth.signOut()
+        emit(ResponseState.Success(true))
+    }.catch {
+        emit(ResponseState.Error(it.message ?: "An unexpected error occurred"))
+    }
+
 }
