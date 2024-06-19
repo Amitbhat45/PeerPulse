@@ -53,10 +53,11 @@ fun LandingScreen(
                 .weight(6f)
         ) {
             Text(
-                text = "Peer-Pulse",
-                style = MaterialTheme.typography.displayMedium,
+
+                text = "  Campus Conversations,\nUnfiltered and Anonymous.",
+                style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
+                modifier = Modifier.align(Alignment.CenterHorizontally).padding(16.dp)
             )
         }
         Column (
