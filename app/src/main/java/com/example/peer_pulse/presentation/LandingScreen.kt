@@ -53,7 +53,7 @@ fun LandingScreen(
                 .weight(6f)
         ) {
             Text(
-                text = "Nan Lowda, \nNan Lussun",
+                text = "Peer-Pulse",
                 style = MaterialTheme.typography.displayMedium,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.align(Alignment.CenterHorizontally)

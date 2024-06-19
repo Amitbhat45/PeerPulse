@@ -71,7 +71,7 @@ fun Preferences1 (navController: NavController,
                     fontSize = 20.sp,
                     modifier = Modifier.padding(4.dp)
                 )
-                Spacer(modifier = Modifier.height(3.dp))
+                Spacer(modifier = Modifier.height(5.dp))
                 Column(
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -111,14 +111,14 @@ fun Preferences1 (navController: NavController,
                         }
                     }
                 }
-                Spacer(modifier = Modifier.height(3.dp))
+                Spacer(modifier = Modifier.height(5.dp))
                 Text(
                     text = "Extracurricular Activities ",
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
                     modifier = Modifier.padding(4.dp)
                 )
-                Spacer(modifier = Modifier.height(3.dp))
+                Spacer(modifier = Modifier.height(5.dp))
                 Column(
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -153,14 +153,14 @@ fun Preferences1 (navController: NavController,
                         }
                     }
                 }
-                Spacer(modifier = Modifier.height(3.dp))
+                Spacer(modifier = Modifier.height(5.dp))
                 Text(
                     text = "Other Interests",
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
                     modifier = Modifier.padding(4.dp)
                 )
-                Spacer(modifier = Modifier.height(3.dp))
+                Spacer(modifier = Modifier.height(5.dp))
                 Column(
                     modifier = Modifier
                         .fillMaxWidth(),
