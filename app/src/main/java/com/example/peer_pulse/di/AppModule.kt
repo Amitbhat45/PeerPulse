@@ -2,7 +2,11 @@ package com.example.peer_pulse.di
 
 import com.example.peer_pulse.data.CollegeRepositoryImpl
 import com.example.peer_pulse.data.AuthRepositoryImpl
+import com.example.peer_pulse.data.PostsRepositoryImpl
+import com.example.peer_pulse.data.UserRepositoryImpl
 import com.example.peer_pulse.domain.repository.AuthRepository
+import com.example.peer_pulse.domain.repository.PostsRepository
+import com.example.peer_pulse.domain.repository.UserRepository
 import com.example.peer_pulse.domain.repository.collegeRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -44,6 +48,22 @@ object AppModule {
         firestore: FirebaseFirestore
     ) : collegeRepository {
         return CollegeRepositoryImpl(firestore)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserRepository(
+        firestore: FirebaseFirestore
+    ) : UserRepository {
+        return UserRepositoryImpl(firestore)
+    }
+
+    @Provides
+    @Singleton
+    fun providePostsRepository(
+        firestore: FirebaseFirestore
+    ) : PostsRepository {
+        return PostsRepositoryImpl(firestore)
     }
 
 
