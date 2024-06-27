@@ -21,6 +21,9 @@ import com.example.peer_pulse.presentation.LandingScreen
 import com.example.peer_pulse.presentation.main.MainScreen
 import com.example.peer_pulse.presentation.login.LoginScreen
 import com.example.peer_pulse.presentation.preferences.Preferences1
+import com.example.peer_pulse.presentation.profile.BookmarkedPostsScreen
+import com.example.peer_pulse.presentation.profile.FollowingPagesScreen
+import com.example.peer_pulse.presentation.profile.MyPostsScreen
 import com.example.peer_pulse.presentation.profile.ProfileScreen
 import com.example.peer_pulse.presentation.profile.ProfileViewModel
 import com.example.peer_pulse.presentation.signup.SignUpEmailScreen
@@ -140,6 +143,24 @@ fun NavigationHost(
                 navController = navHostController,
                 profileViewModel = profileViewModel,
                 authViewModel = authViewModel
+            )
+        }
+        composable(Screens.MyPostScreen.route){
+            MyPostsScreen(
+                navController = navHostController,
+                profileViewModel = profileViewModel
+            )
+        }
+        composable(Screens.BookmarkedPostScreen.route){
+            BookmarkedPostsScreen(
+                navController = navHostController,
+                profileViewModel = profileViewModel
+            )
+        }
+        composable(Screens.FollowingPageScreen.route){
+            FollowingPagesScreen(
+                navController = navHostController,
+                profileViewModel = profileViewModel
             )
         }
     }

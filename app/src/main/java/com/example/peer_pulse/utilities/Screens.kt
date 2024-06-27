@@ -11,4 +11,7 @@ sealed class Screens(val route: String){
     data object PreferenceScreen1:Screens("PreferenceScreen1")
     data object MainScreen:Screens("MainScreen")
     data object ProfileScreen:Screens("ProfileScreen")
+    data object MyPostScreen:Screens("MyPostScreen")
+    data object BookmarkedPostScreen:Screens("BookmarkedPostScreen")
+    data object FollowingPageScreen:Screens("FollowingPageScreen")
 }
