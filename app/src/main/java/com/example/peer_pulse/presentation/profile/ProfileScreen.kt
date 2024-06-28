@@ -122,7 +122,7 @@ fun ProfileScreen(
                     )
                 }
                 Spacer(modifier = Modifier.height(3.dp))
-                Text(text = "${authViewModel.email}",
+                Text(text = authViewModel.email,
                     fontSize = 10.sp,)
 
                 Spacer(modifier = Modifier.height(10.dp))
@@ -136,9 +136,15 @@ fun ProfileScreen(
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(25.dp)
                 ) {
-                    card(text = "My Posts", imageVector = R.drawable.posts)
-                    card(text = "Bookmarks", imageVector = R.drawable.bookmarks_vector)
-                    card(text = "Following", imageVector = R.drawable.following_vector)
+                    card(text = "My Posts", imageVector = R.drawable.posts){
+                        navController.navigate(Screens.MyPostScreen.route)
+                    }
+                    card(text = "Bookmarks", imageVector = R.drawable.bookmarks_vector){
+                        navController.navigate(Screens.BookmarkedPostScreen.route)
+                    }
+                    card(text = "Following", imageVector = R.drawable.following_vector){
+                        navController.navigate(Screens.FollowingPageScreen.route)
+                    }
                 }
                 Spacer(modifier = Modifier.height(50.dp))
                 more(text = "About", imageVector = R.drawable.about_vector,{})
@@ -264,8 +270,8 @@ fun LogOutButton(
 }
 
 @Composable
-fun card(text:String, imageVector: Int){
-    OutlinedCard(onClick = { /*TODO*/ },
+fun card(text:String, imageVector: Int,onClick: () -> Unit){
+    OutlinedCard(onClick = { onClick() },
         shape = RoundedCornerShape(10.dp),
         modifier = Modifier
             .width(100.dp)
