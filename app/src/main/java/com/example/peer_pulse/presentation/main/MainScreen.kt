@@ -13,13 +13,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.peer_pulse.domain.model.Post
 import com.example.peer_pulse.presentation.AuthViewModel
+import com.example.peer_pulse.presentation.postUI.PostViewModel
 import com.example.peer_pulse.utilities.Screens
 
 @Composable
 fun MainScreen(
     authViewModel: AuthViewModel,
-    navController: NavController
+    navController: NavController,
+    postViewModel: PostViewModel
 ){
     Scaffold(
         bottomBar = {
@@ -29,6 +32,7 @@ fun MainScreen(
             )
         }
     ) {
+
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
@@ -41,6 +45,22 @@ fun MainScreen(
                 fontSize = 20.sp,
                 modifier = Modifier.padding(16.dp)
             )
+            Button(onClick = {
+                val postDetails = Post(
+
+                    userId = authViewModel.userId ?: "unknown_user",
+                    title = "Sample Post",
+                    description = "This is a sample post",
+                    imageUrl = listOf(""),
+                    timestamp = "",
+                    likes = 0,
+                    preferences = "Sample Preferences",
+                    preferenceId = "pref123"
+                )
+                postViewModel.savePost(postDetails)
+            }) {
+                Text("Save Post")
+            }
         }
     }
 }

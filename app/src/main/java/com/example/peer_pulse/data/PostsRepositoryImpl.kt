@@ -5,9 +5,12 @@ import com.example.peer_pulse.domain.repository.PostsRepository
 import com.example.peer_pulse.utilities.ResponseState
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
+
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -53,5 +56,29 @@ class PostsRepositoryImpl @Inject constructor(
         emit(ResponseState.Error(it.message ?: "An unexpected error occurred"))
     }
 
+    override suspend fun savePost(postDetails: Post): Flow<ResponseState<Post>> = flow {
+        emit(ResponseState.Loading)
+        val postCollection = firestore.collection("posts")
+        try {
+            val docRef = postCollection.add(postDetails).await()
+            val postId = docRef.id
+            postCollection.document(postId).update("id", postId).await()
+            val savedPost = postDetails.copy(id = postId)
+            emit(ResponseState.Success(savedPost))
+        } catch (e: Exception) {
+            emit(ResponseState.Error("Error saving post: ${e.message}"))
+        }
+    }
+
+    override suspend fun deletePost(postId: String): Flow<ResponseState<String>> = flow {
+        emit(ResponseState.Loading)
+        val postCollection = firestore.collection("posts")
+        try {
+            postCollection.document(postId).delete().await()
+            emit(ResponseState.Success(postId))
+        } catch (e: Exception) {
+            emit(ResponseState.Error("Error deleting post: ${e.message}"))
+        }
+    }
 
 }

@@ -138,7 +138,7 @@ fun NavigationHost(
             Preferences1(navController = navHostController,authViewModel)
         }
         composable(route = Screens.MainScreen.route){
-            MainScreen(authViewModel = authViewModel, navController = navHostController)
+            MainScreen(authViewModel = authViewModel, navController = navHostController,postViewModel)
         }
         composable(Screens.ProfileScreen.route){
             ProfileScreen(

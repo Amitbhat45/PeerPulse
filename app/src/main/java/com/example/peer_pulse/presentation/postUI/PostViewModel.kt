@@ -30,6 +30,12 @@ class PostViewModel @Inject constructor(
     private val _postState = mutableStateOf<ResponseState<Post?>>(ResponseState.Success(null))
     val postState : State<ResponseState<Post?>> = _postState
 
+    private val _savePostState = mutableStateOf<ResponseState<Post?>>(ResponseState.Success(null))
+    val savePostState: State<ResponseState<Post?>> = _savePostState
+
+    private val _deletePostState = mutableStateOf<ResponseState<String>>(ResponseState.Success(""))
+    val deletePostState: State<ResponseState<String>> = _deletePostState
+
     var userId = auth.currentUser?.uid
 
 
@@ -40,6 +46,22 @@ class PostViewModel @Inject constructor(
             }
         }
     }
+    fun savePost(postDetails:Post){
+        viewModelScope.launch {
+            postsRepository.savePost(postDetails).collect{ state ->
+                _savePostState.value = state
+            }
+        }
+    }
+
+    fun deletePost(postId: String) {
+        viewModelScope.launch {
+            postsRepository.deletePost(postId).collect { state ->
+                _deletePostState.value = state
+            }
+        }
+    }
+
 
 
 }

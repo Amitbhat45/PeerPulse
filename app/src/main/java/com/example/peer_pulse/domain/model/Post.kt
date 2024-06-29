@@ -1,7 +1,7 @@
 package com.example.peer_pulse.domain.model
 
 data class Post(
-    val id: String,
+    var id: String="",
     val userId: String,
     val title: String,
     val description: String,

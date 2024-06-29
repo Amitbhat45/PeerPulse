@@ -8,4 +8,7 @@ interface PostsRepository {
     suspend fun getPost(postId : String) : Flow<ResponseState<Post>>
     suspend fun getRepliesId(postId : String) : Flow<ResponseState<List<String>>>
     suspend fun getReply(postId: String,replyId : String) : Flow<ResponseState<String>>
+
+    suspend fun savePost(postDetails:Post):Flow<ResponseState<Post>>
+    suspend fun deletePost(postId:String):Flow<ResponseState<String>>
 }
