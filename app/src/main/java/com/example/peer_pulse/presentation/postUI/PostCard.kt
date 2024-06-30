@@ -48,7 +48,7 @@ fun PostCard(
                 val postDetails = response.data
                 if (postDetails != null) {
                     PostUI(
-                        post = postDetails
+                        //post = postDetails
                     )
                 }
             }
