@@ -14,4 +14,5 @@ sealed class Screens(val route: String){
     data object MyPostScreen:Screens("MyPostScreen")
     data object BookmarkedPostScreen:Screens("BookmarkedPostScreen")
     data object FollowingPageScreen:Screens("FollowingPageScreen")
+    data object AddPostScreen:Screens("AddPostScreen")
 }

@@ -20,6 +20,7 @@ import com.example.peer_pulse.presentation.AuthViewModel
 import com.example.peer_pulse.presentation.LandingScreen
 import com.example.peer_pulse.presentation.main.MainScreen
 import com.example.peer_pulse.presentation.login.LoginScreen
+import com.example.peer_pulse.presentation.postUI.AddPost
 import com.example.peer_pulse.presentation.postUI.PostViewModel
 import com.example.peer_pulse.presentation.preferences.Preferences1
 import com.example.peer_pulse.presentation.profile.BookmarkedPostsScreen
@@ -166,6 +167,9 @@ fun NavigationHost(
                 navController = navHostController,
                 profileViewModel = profileViewModel
             )
+        }
+        composable(Screens.AddPostScreen.route){
+            AddPost()
         }
     }
 }
