@@ -65,32 +65,45 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.peer_pulse.R
+import com.example.peer_pulse.domain.model.Post
 import com.example.peer_pulse.domain.model.preferences
 import com.example.peer_pulse.utilities.rememberImeState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddPost(
-
+    navController: NavController,
+    postViewModel: PostViewModel
 ) {
+    var titleText by remember { mutableStateOf("") }
+    var descriptionText by remember { mutableStateOf("") }
+    var images by remember {
+        mutableStateOf<List<Uri?>>(listOf())
+    }
+    var showDialog by remember {
+        mutableStateOf(false)
+    }
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = false
+    )
+    var preferencesText by remember {
+        mutableStateOf("")
+    }
     Scaffold(
         topBar = {
-            PostTitleBar()
+            PostTitleBar(
+                navController = navController,
+                postViewModel = postViewModel,
+                titleText = titleText,
+                descriptionText = descriptionText,
+                images = images,
+                preferencesText = preferencesText
+            )
         }
     ) {
-        var titleText by remember { mutableStateOf("") }
-        var descriptionText by remember { mutableStateOf("") }
-        var images by remember {
-            mutableStateOf<List<Uri?>>(listOf())
-        }
-        var showDialog by remember {
-            mutableStateOf(false)
-        }
-        val sheetState = rememberModalBottomSheetState(
-            skipPartiallyExpanded = false
-        )
         val imeState = rememberImeState()
         val scrollState = rememberScrollState()
 
@@ -232,17 +245,6 @@ fun AddPost(
                         .fillMaxWidth()
                         .imePadding()
                 ) {
-                    IconButton(
-                        onClick = {
-
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Image,
-                            contentDescription = null,
-                            tint = Color.White
-                        )
-                    }
                     val launcher =
                         rememberLauncherForActivityResult(contract = ActivityResultContracts.PickMultipleVisualMedia()) {
                             images = it
@@ -252,6 +254,17 @@ fun AddPost(
                             launcher.launch(
                                 PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageAndVideo)
                             )
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Image,
+                            contentDescription = null,
+                            tint = Color.White
+                        )
+                    }
+                    IconButton(
+                        onClick = {
+
                         }
                     ) {
                         Icon(
@@ -307,7 +320,11 @@ fun AddPost(
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(8.dp)
                         )
-                        PagesButton()
+                        PagesButton(
+                            onClick = {
+                                preferencesText = it
+                            }
+                        )
                         Spacer(modifier = Modifier.height(16.dp))
                         HorizontalDivider(color = Color.LightGray)
                         Text(text = "My communities",
@@ -342,8 +359,14 @@ fun AddPost(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PostTitleBar(
-
+    navController: NavController,
+    postViewModel: PostViewModel,
+    titleText : String,
+    descriptionText : String,
+    images : List<Uri?>,
+    preferencesText : String
 ) {
+    val showButton = titleText.isNotEmpty() && descriptionText.isNotEmpty() && preferencesText.isNotEmpty()
     TopAppBar(
         title = {
 
@@ -351,7 +374,7 @@ fun PostTitleBar(
         navigationIcon = {
             IconButton(
                 onClick = {
-
+                    navController.navigateUp()
                 },
                 modifier = Modifier.padding(0.dp)
             ) {
@@ -364,11 +387,18 @@ fun PostTitleBar(
         actions = {
             Button(
                 onClick = {
-
+                   postViewModel.savePost(
+                        preferences = preferencesText,
+                       preferencesId = preferencesText,
+                       title = titleText,
+                       description = descriptionText,
+                       images = images
+                   )
                 },
                 colors = ButtonDefaults.buttonColors(
                    containerColor = Color.Transparent
                 ),
+                enabled = showButton
             ) {
                 Text(
                     "Post",
@@ -390,22 +420,25 @@ fun PostTitleBar(
 
 @Composable
 fun PagesButton(
-
+    onClick: (String) -> Unit
 ) {
     Column (
         modifier = Modifier
             .fillMaxWidth()
     ) {
+        var selectedPreference by remember { mutableStateOf<String?>(null) }
         preferences.forEach {
+            val selected = it == selectedPreference
             Card(
                 onClick = {
-
+                    selectedPreference = if (selected) null else it
+                    onClick(it)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 8.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = Color.Transparent,
+                    containerColor = if(!selected)Color.Transparent  else Color.Blue,
                     contentColor = Color.White
                 )
             ) {
@@ -447,8 +480,8 @@ fun BottomIcons() {
     }
 
 
-@Preview
-@Composable
-fun AddPostPreview() {
-    AddPost()
-}
+//@Preview
+//@Composable
+//fun AddPostPreview() {
+//    AddPost()
+//}

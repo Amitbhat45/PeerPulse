@@ -84,22 +84,6 @@ fun MainScreen(
                 fontSize = 20.sp,
                 modifier = Modifier.padding(16.dp)
             )
-            Button(onClick = {
-                val postDetails = Post(
-
-                    userId = authViewModel.userId ?: "unknown_user",
-                    title = "Sample Post",
-                    description = "This is a sample post",
-                    imageUrl = listOf(""),
-                    timestamp = "",
-                    likes = 0,
-                    preferences = "Sample Preferences",
-                    preferenceId = "pref123"
-                )
-                postViewModel.savePost(postDetails)
-            }) {
-                Text("Save Post")
-            }
         }
     }
 }

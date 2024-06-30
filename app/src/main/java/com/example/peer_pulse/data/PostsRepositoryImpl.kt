@@ -56,19 +56,33 @@ class PostsRepositoryImpl @Inject constructor(
         emit(ResponseState.Error(it.message ?: "An unexpected error occurred"))
     }
 
-    override suspend fun savePost(postDetails: Post): Flow<ResponseState<Post>> = flow {
+    override suspend fun savePost(
+        title: String,
+        description: String,
+        images: List<String>,
+        preferences: String,
+        preferencesId: String,
+        userId: String
+    ): Flow<ResponseState<Boolean>> = flow {
         emit(ResponseState.Loading)
         val postCollection = firestore.collection("posts")
-        try {
-            val docRef = postCollection.add(postDetails).await()
-            val postId = docRef.id
-            postCollection.document(postId).update("id", postId).await()
-            val savedPost = postDetails.copy(id = postId)
-            emit(ResponseState.Success(savedPost))
-        } catch (e: Exception) {
-            emit(ResponseState.Error("Error saving post: ${e.message}"))
-        }
+        val postDetails = hashMapOf(
+            "title" to title,
+            "description" to description,
+            "images" to images,
+            "preferences" to preferences,
+            "preferencesId" to preferencesId,
+            "userId" to userId,
+            "timestamp" to System.currentTimeMillis(),
+            "likes" to 0
+        )
+        val id = postCollection.document().id
+        postCollection.document(id).set(postDetails).await()
+        emit(ResponseState.Success(true))
+    }.catch {
+        emit(ResponseState.Error(it.message ?: "An unexpected error occurred"))
     }
+
 
     override suspend fun deletePost(postId: String): Flow<ResponseState<String>> = flow {
         emit(ResponseState.Loading)
