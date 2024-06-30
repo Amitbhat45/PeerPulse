@@ -1,4 +1,5 @@
 [versions]
+accompanistInsets = "0.31.3-beta"
 agp = "8.4.1"
 coilCompose = "2.6.0"
 converterGson = "2.9.0"
@@ -35,6 +36,7 @@ googleGmsGoogleServices = "4.4.2"
 lifecycleRuntimeComposeAndroid = "2.8.1"
 
 [libraries]
+accompanist-insets = { module = "com.google.accompanist:accompanist-insets", version.ref = "accompanistInsets" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hiltNavigationCompose" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
