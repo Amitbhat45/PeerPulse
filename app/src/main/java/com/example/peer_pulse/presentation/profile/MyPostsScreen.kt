@@ -111,6 +111,7 @@ fun MyPostsScreen(
 
 
 
+/*
 @Preview
 @Composable
 fun PreviewMyPostsScreen() {
@@ -125,4 +126,4 @@ fun PreviewMyPostsScreen() {
         preferences = "preferences",
         preferenceId = "preferenceId"
     ))
-}
+}*/
