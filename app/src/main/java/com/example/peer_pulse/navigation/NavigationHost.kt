@@ -13,16 +13,21 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.example.peer_pulse.data.login.GoogleAuthUiClient
+import com.example.peer_pulse.domain.model.preferences
 import com.example.peer_pulse.presentation.AuthViewModel
 import com.example.peer_pulse.presentation.LandingScreen
 import com.example.peer_pulse.presentation.main.MainScreen
 import com.example.peer_pulse.presentation.login.LoginScreen
 import com.example.peer_pulse.presentation.postUI.AddPost
 import com.example.peer_pulse.presentation.postUI.PostViewModel
+import com.example.peer_pulse.presentation.preferences.PreferencePage
 import com.example.peer_pulse.presentation.preferences.Preferences1
+import com.example.peer_pulse.presentation.preferences.PreferencesViewModel
 import com.example.peer_pulse.presentation.profile.BookmarkedPostsScreen
 import com.example.peer_pulse.presentation.profile.FollowingPagesScreen
 import com.example.peer_pulse.presentation.profile.MyPostsScreen
@@ -43,7 +48,8 @@ fun NavigationHost(
     googleAuthUiClient: GoogleAuthUiClient,
     applicationContext:Context,
     profileViewModel: ProfileViewModel,
-    postViewModel : PostViewModel
+    postViewModel : PostViewModel,
+    preferencesViewModel: PreferencesViewModel
 ) {
     NavHost(
         navController = navHostController,
@@ -169,7 +175,26 @@ fun NavigationHost(
             )
         }
         composable(Screens.AddPostScreen.route){
-            AddPost()
+            AddPost(
+                navController = navHostController,
+                postViewModel = postViewModel
+            )
+        }
+        composable(
+            Screens.PagesScreen.route,
+            arguments = listOf(
+                navArgument("pageId"){type = NavType.StringType}
+            )
+        ){backStackEntry ->
+            val pageId = backStackEntry.arguments?.getString("pageId") ?: ""
+            PreferencePage(
+                preferenceId = pageId,
+                preferencesViewModel = preferencesViewModel,
+                postViewModel = postViewModel,
+                navController = navHostController
+            )
         }
     }
 }
+
+
