@@ -15,4 +15,9 @@ sealed class Screens(val route: String){
     data object BookmarkedPostScreen:Screens("BookmarkedPostScreen")
     data object FollowingPageScreen:Screens("FollowingPageScreen")
     data object AddPostScreen:Screens("AddPostScreen")
+    data object PagesScreen:Screens("pages/{pageId}"){
+        fun createRoute(pageId: String): String{
+            return "pages/$pageId"
+        }
+    }
 }
