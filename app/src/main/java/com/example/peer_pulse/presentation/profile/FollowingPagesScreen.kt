@@ -180,6 +180,7 @@ fun FollowingPageRow(
                         else
                             "You have unfollowed the page"
                     )
+                    profileViewModel.resetState()
                 }
                 else{
 

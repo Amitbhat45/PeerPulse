@@ -21,8 +21,6 @@ class ProfileViewModel @Inject constructor(
         auth.addAuthStateListener {
             userId = it.currentUser?.uid
         }
-        myPosts()
-        getBookmarkedPosts()
     }
 
     private val _state1 = mutableStateOf<ResponseState<List<String>?>>(ResponseState.Success(emptyList()))
@@ -45,7 +43,7 @@ class ProfileViewModel @Inject constructor(
     var bookmarkedPostIds: List<String?> = emptyList()
     var followingPageIds: List<String?> = emptyList()
 
-    private fun myPosts(){
+    fun myPosts(){
         userId?.let {
             viewModelScope.launch {
                 userRepository.myPosts(it).collect {state->
@@ -60,7 +58,7 @@ class ProfileViewModel @Inject constructor(
 
 
 
-    private fun getBookmarkedPosts(){
+     fun getBookmarkedPosts(){
         userId?.let {
             viewModelScope.launch {
                 userRepository.bookmarkedPosts(it).collect {state->
@@ -99,4 +97,12 @@ class ProfileViewModel @Inject constructor(
         val newFollowingPages = followingPageIds - name
         updateFollowingPages(newFollowingPages)
     }
+
+    fun resetState(){
+        _state1.value = ResponseState.Success(emptyList())
+        _state2.value = ResponseState.Success(emptyList())
+        _state3.value = ResponseState.Success(emptyList())
+        _state4.value = ResponseState.Success(null)
+    }
+
 }

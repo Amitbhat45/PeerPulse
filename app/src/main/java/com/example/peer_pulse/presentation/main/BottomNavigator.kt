@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.Business
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -26,6 +27,7 @@ import com.example.peer_pulse.utilities.Screens
 
 enum class BottomNavigationScreens( val route : String,val icon :ImageVector ) {
     Main(Screens.MainScreen.route,Icons.Outlined.Home),
+    Community(Screens.CommunityScreen.route, Icons.Outlined.Business),
     Profile(Screens.ProfileScreen.route, Icons.Outlined.AccountCircle),
 }
 

@@ -22,12 +22,15 @@ sealed class Screens(val route: String){
             return "pages/$pageId"
         }
     }
-    data object CollegePagesScreen:Screens("collegePages/{pageId}"){
-        fun createRoute(pageId: String): String{
+    data object CollegePagesScreen:Screens("collegePages/{pageId}") {
+        fun createRoute(pageId: String): String {
             return "collegePages/$pageId"
+        }
+    }
     data object PostViewScreen : Screens("post/{title}/{description}/{likes}/{timestamp}/{preferences}") {
         fun postdetails(post: post): String {
             return "post/${post.title}/${post.description}/${post.likes}/${post.timestamp}/${post.preferences}"
         }
     }
+    data object CommunityScreen : Screens("CommunityScreen")
 }
