@@ -14,6 +14,7 @@ import com.example.peer_pulse.data.login.GoogleAuthUiClient
 import com.example.peer_pulse.navigation.NavigationHost
 import com.example.peer_pulse.presentation.AuthViewModel
 import com.example.peer_pulse.presentation.postUI.PostViewModel
+import com.example.peer_pulse.presentation.preferences.PreferencesViewModel
 import com.example.peer_pulse.presentation.profile.ProfileViewModel
 import com.example.peer_pulse.ui.theme.PeerPulseTheme
 import com.google.android.gms.auth.api.identity.Identity
@@ -39,13 +40,15 @@ class MainActivity : ComponentActivity() {
                     val authViewModel : AuthViewModel = hiltViewModel()
                     val profileViewModel : ProfileViewModel = hiltViewModel()
                     val postViewModel : PostViewModel = hiltViewModel()
+                    val preferencesViewModel : PreferencesViewModel = hiltViewModel()
                     NavigationHost(
                         navHostController = navController,
                         authViewModel = authViewModel,
                         googleAuthUiClient = googleAuthUiClient,
                         applicationContext,
                         profileViewModel = profileViewModel,
-                        postViewModel = postViewModel
+                        postViewModel = postViewModel,
+                        preferencesViewModel = preferencesViewModel
                     )
                 }
             }
