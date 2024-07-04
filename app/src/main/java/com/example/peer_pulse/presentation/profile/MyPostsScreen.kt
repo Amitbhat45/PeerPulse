@@ -78,10 +78,10 @@ fun MyPostsScreen(
                         }
                     } else {
                         LazyColumn(
-                            modifier = Modifier.fillMaxSize().padding(it)
+                            modifier = Modifier.fillMaxSize()
                         ) {
-                            items(profileViewModel.postIds.size) {index->
-                                profileViewModel.postIds[index]?.let { it1 ->
+                            items(profileViewModel.postIds.size) {
+                                profileViewModel.postIds[it]?.let { it1 ->
                                     PostCard(
                                         id = it1,
                                         postViewModel = postViewModel

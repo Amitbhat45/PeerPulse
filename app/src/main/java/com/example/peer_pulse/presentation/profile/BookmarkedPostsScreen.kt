@@ -72,10 +72,10 @@ fun BookmarkedPostsScreen(
                         }
                     } else {
                         LazyColumn(
-                            modifier = Modifier.fillMaxSize().padding(it)
+                            modifier = Modifier.fillMaxSize()
                         ) {
-                            items(profileViewModel.bookmarkedPostIds.size) {index->
-                                profileViewModel.postIds[index]?.let { it1 ->
+                            items(profileViewModel.bookmarkedPostIds.size) {
+                                profileViewModel.postIds[it]?.let { it1 ->
                                     PostCard(
                                         id = it1,
                                         postViewModel = postViewModel

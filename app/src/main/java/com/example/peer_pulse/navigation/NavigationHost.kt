@@ -26,6 +26,7 @@ import com.example.peer_pulse.presentation.main.MainScreen
 import com.example.peer_pulse.presentation.login.LoginScreen
 import com.example.peer_pulse.presentation.postUI.AddPost
 import com.example.peer_pulse.presentation.postUI.PostViewModel
+import com.example.peer_pulse.presentation.postUI.postInsideView
 import com.example.peer_pulse.presentation.preferences.PreferencePage
 import com.example.peer_pulse.presentation.preferences.Preferences1
 import com.example.peer_pulse.presentation.preferences.PreferencesViewModel
@@ -205,6 +206,36 @@ fun NavigationHost(
             CollegePage(
                 collegeName = pageId,
                 //navController = navHostController
+            )
+        }
+        composable(
+            route = Screens.PostViewScreen.route,
+            arguments = listOf(
+                navArgument("title") { type = NavType.StringType },
+                navArgument("description") { type = NavType.StringType },
+                navArgument("likes") { type = NavType.IntType },
+                navArgument("timestamp") { type = NavType.StringType },
+                navArgument("preferences") { type = NavType.StringType } ,
+                //navArgument("imageUrl") { type = NavType.StringType }
+
+            )
+        ) { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("title") ?: ""
+            val description = backStackEntry.arguments?.getString("description") ?: ""
+            val likes = backStackEntry.arguments?.getInt("likes") ?: 0
+            val timestamp = backStackEntry.arguments?.getString("timestamp") ?: ""
+            val preferences = backStackEntry.arguments?.getString("preferences") ?: ""
+            //val imageUrlString = backStackEntry.arguments?.getString("imageUrl") ?: ""
+            //val imageUrl = imageUrlString.split(",").filter { it.isNotEmpty() }
+
+            postInsideView(
+                title = title,
+                description = description,
+                likes = likes,
+                timestamp = timestamp,
+                preferences = preferences,
+                navHostController,
+                //imageUrl = imageUrl
             )
         }
     }

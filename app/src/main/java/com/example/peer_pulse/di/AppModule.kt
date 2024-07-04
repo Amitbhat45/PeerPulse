@@ -1,10 +1,15 @@
 package com.example.peer_pulse.di
 
-import com.example.peer_pulse.data.CollegeRepositoryImpl
+import android.content.Context
+import androidx.room.Room
+import androidx.room.Room.databaseBuilder
 import com.example.peer_pulse.data.AuthRepositoryImpl
+import com.example.peer_pulse.data.CollegeRepositoryImpl
 import com.example.peer_pulse.data.PagesRepositoryImpl
 import com.example.peer_pulse.data.PostsRepositoryImpl
 import com.example.peer_pulse.data.UserRepositoryImpl
+import com.example.peer_pulse.data.room.PostDao
+import com.example.peer_pulse.data.room.PostsDatabase
 import com.example.peer_pulse.domain.repository.AuthRepository
 import com.example.peer_pulse.domain.repository.PagesRepository
 import com.example.peer_pulse.domain.repository.PostsRepository
@@ -15,6 +20,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -62,10 +68,23 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideDatabase(@ApplicationContext context: Context): PostsDatabase {
+        return PostsDatabase.getDatabase(context)
+    }
+
+    @Provides
+    fun providePostDao(database: PostsDatabase): PostDao {
+        return database.postDao()
+    }
+
+
+    @Provides
+    @Singleton
     fun providePostsRepository(
-        firestore: FirebaseFirestore
+        firestore: FirebaseFirestore,
+        databse:PostsDatabase
     ) : PostsRepository {
-        return PostsRepositoryImpl(firestore)
+        return PostsRepositoryImpl(firestore,databse)
     }
 
     @Provides

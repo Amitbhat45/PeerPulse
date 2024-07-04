@@ -1,5 +1,13 @@
 package com.example.peer_pulse.data
 
+import android.util.Log
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import com.example.peer_pulse.data.room.PostRemoteMediator
+import com.example.peer_pulse.data.room.PostsDatabase
+import com.example.peer_pulse.data.room.post
 import com.example.peer_pulse.domain.model.Post
 import com.example.peer_pulse.domain.repository.PostsRepository
 import com.example.peer_pulse.utilities.ResponseState
@@ -9,14 +17,17 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.flow
 
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class PostsRepositoryImpl @Inject constructor(
-    private val firestore : FirebaseFirestore
+    private val firestore : FirebaseFirestore,
+    private val database: PostsDatabase
 ) : PostsRepository {
+
     override suspend fun getPost(postId: String): Flow<ResponseState<Post>>  = callbackFlow{
         ResponseState.Loading
         val snapshot = firestore.collection("posts").document(postId).addSnapshotListener { snapshot, error ->
@@ -36,6 +47,15 @@ class PostsRepositoryImpl @Inject constructor(
 
     }.catch {
         emit(ResponseState.Error(it.message ?: "An unexpected error occurred"))
+    }
+
+    @OptIn(ExperimentalPagingApi::class)
+    override suspend fun getPosts(preferences: List<String>): Flow<PagingData<post>> {
+        return Pager(
+            config = PagingConfig(pageSize = 20, enablePlaceholders = false),
+            remoteMediator = PostRemoteMediator(firestore, database, preferences),
+            pagingSourceFactory = { database.postDao().getPosts(preferences) }
+        ).flow
     }
 
     override suspend fun getRepliesId(postId: String): Flow<ResponseState<List<String>>> = callbackFlow<ResponseState<List<String>>> {
@@ -68,16 +88,17 @@ class PostsRepositoryImpl @Inject constructor(
         val postCollection = firestore.collection("posts")
         val id = postCollection.document().id
         val postDetails = hashMapOf(
+            "id" to id,
+            "userId" to userId,
             "title" to title,
             "description" to description,
             "images" to images,
-            "preferences" to preferences,
-            "preferencesId" to preferencesId,
-            "userId" to userId,
             "timestamp" to System.currentTimeMillis(),
             "likes" to 0,
-            "id" to id
-        )
+            "preferences" to preferences,
+            "preferencesId" to preferencesId
+            )
+
         postCollection.document(id).set(postDetails).await()
         emit(ResponseState.Success(true))
     }.catch {
@@ -96,4 +117,7 @@ class PostsRepositoryImpl @Inject constructor(
         }
     }
 
+
+
 }
+
