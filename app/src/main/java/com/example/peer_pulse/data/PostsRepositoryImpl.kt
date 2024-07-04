@@ -1,10 +1,12 @@
 package com.example.peer_pulse.data
 
+import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.example.peer_pulse.data.room.PostRemoteMediator
+import com.example.peer_pulse.data.room.PostsDatabase
 import com.example.peer_pulse.data.room.post
 import com.example.peer_pulse.domain.model.Post
 import com.example.peer_pulse.domain.repository.PostsRepository
@@ -15,14 +17,17 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.flow
 
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class PostsRepositoryImpl @Inject constructor(
-    private val firestore : FirebaseFirestore
+    private val firestore : FirebaseFirestore,
+    private val database: PostsDatabase
 ) : PostsRepository {
+
     override suspend fun getPost(postId: String): Flow<ResponseState<Post>>  = callbackFlow{
         ResponseState.Loading
         val snapshot = firestore.collection("posts").document(postId).addSnapshotListener { snapshot, error ->
@@ -52,6 +57,7 @@ class PostsRepositoryImpl @Inject constructor(
             pagingSourceFactory = { database.postDao().getPosts(preferences) }
         ).flow
     }
+
     override suspend fun getRepliesId(postId: String): Flow<ResponseState<List<String>>> = callbackFlow<ResponseState<List<String>>> {
         ResponseState.Loading
         val snapshot = firestore.collection("posts").document(postId).collection("replies").get().await()
@@ -80,17 +86,19 @@ class PostsRepositoryImpl @Inject constructor(
     ): Flow<ResponseState<Boolean>> = flow {
         emit(ResponseState.Loading)
         val postCollection = firestore.collection("posts")
+        val id = postCollection.document().id
         val postDetails = hashMapOf(
+            "id" to id,
+            "userId" to userId,
             "title" to title,
             "description" to description,
             "images" to images,
-            "preferences" to preferences,
-            "preferencesId" to preferencesId,
-            "userId" to userId,
             "timestamp" to System.currentTimeMillis(),
-            "likes" to 0
-        )
-        val id = postCollection.document().id
+            "likes" to 0,
+            "preferences" to preferences,
+            "preferencesId" to preferencesId
+            )
+
         postCollection.document(id).set(postDetails).await()
         emit(ResponseState.Success(true))
     }.catch {
@@ -109,4 +117,7 @@ class PostsRepositoryImpl @Inject constructor(
         }
     }
 
+
+
 }
+

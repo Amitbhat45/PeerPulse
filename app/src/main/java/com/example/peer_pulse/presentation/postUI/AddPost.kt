@@ -70,7 +70,6 @@ import coil.compose.AsyncImage
 import com.example.peer_pulse.R
 import com.example.peer_pulse.domain.model.Post
 import com.example.peer_pulse.domain.model.preferences
-import com.example.peer_pulse.utilities.Screens
 import com.example.peer_pulse.utilities.rememberImeState
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -91,7 +90,7 @@ fun AddPost(
         skipPartiallyExpanded = false
     )
     var preferencesText by remember {
-        mutableStateOf("Choose")
+        mutableStateOf("")
     }
     Scaffold(
         topBar = {
@@ -145,7 +144,7 @@ fun AddPost(
                     )
                 ) {
                     Text(
-                        preferencesText,
+                        "Everyone",
                         color = Color.White,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
@@ -395,7 +394,6 @@ fun PostTitleBar(
                        description = descriptionText,
                        images = images
                    )
-                    navController.navigate(Screens.MainScreen.route)
                 },
                 colors = ButtonDefaults.buttonColors(
                    containerColor = Color.Transparent

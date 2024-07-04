@@ -1,6 +1,5 @@
 package com.example.peer_pulse.presentation.profile
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,7 +21,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -86,9 +84,7 @@ fun FollowingPagesScreen(
                         }
                     } else {
                         LazyColumn(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(it)
+                            modifier = Modifier.fillMaxSize()
                         ) {
                             items(preferences.size) { index ->
                                 FollowingPageRow(
@@ -102,9 +98,7 @@ fun FollowingPagesScreen(
                     }
                 } else {
                     Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(it),
+                        modifier = Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
@@ -180,8 +174,12 @@ fun FollowingPageRow(
             }
             is ResponseState.Success -> {
                 if(response.data != null){
-                    Toast.makeText(LocalContext.current, "Following Page Updated", Toast.LENGTH_SHORT).show()
-                    profileViewModel.resetState()
+                    ToastMessage(
+                        message = if(follow.value)
+                            "You have followed the page"
+                        else
+                            "You have unfollowed the page"
+                    )
                 }
                 else{
 

@@ -1,6 +1,5 @@
 package com.example.peer_pulse.data
 
-import android.util.Log
 import com.example.peer_pulse.domain.repository.UserRepository
 import com.example.peer_pulse.utilities.ResponseState
 import com.google.firebase.firestore.FirebaseFirestore
@@ -63,7 +62,6 @@ class UserRepositoryImpl @Inject constructor(
             .document(userId)
             .addSnapshotListener { snapshot, error ->
                 val response = if(snapshot != null){
-                    Log.d("UserRepositoryImpl", snapshot["preferences"].toString())
                     val pageNames = snapshot["preferences"] as List<String>
                     ResponseState.Success(pageNames)
                 }
