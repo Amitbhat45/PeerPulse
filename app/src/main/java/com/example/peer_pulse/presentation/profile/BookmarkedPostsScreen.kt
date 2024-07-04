@@ -61,7 +61,7 @@ fun BookmarkedPostsScreen(
                 if (response.data != null) {
                     if (profileViewModel.bookmarkedPostIds.isEmpty()) {
                         Column(
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier.fillMaxSize().padding(it),
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
@@ -72,7 +72,7 @@ fun BookmarkedPostsScreen(
                         }
                     } else {
                         LazyColumn(
-                            modifier = Modifier.fillMaxSize()
+                            modifier = Modifier.fillMaxSize().padding(it)
                         ) {
                             items(profileViewModel.bookmarkedPostIds.size) {
                                 profileViewModel.postIds[it]?.let { it1 ->

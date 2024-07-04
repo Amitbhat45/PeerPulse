@@ -73,7 +73,7 @@ fun FollowingPagesScreen(
                 if (response.data != null) {
                     if (profileViewModel.followingPageIds.isEmpty()) {
                         Column(
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier.fillMaxSize().padding(it),
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
@@ -84,7 +84,7 @@ fun FollowingPagesScreen(
                         }
                     } else {
                         LazyColumn(
-                            modifier = Modifier.fillMaxSize()
+                            modifier = Modifier.fillMaxSize().padding(it)
                         ) {
                             items(preferences.size) { index ->
                                 FollowingPageRow(
@@ -98,7 +98,7 @@ fun FollowingPagesScreen(
                     }
                 } else {
                     Column(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier.fillMaxSize().padding(it),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
