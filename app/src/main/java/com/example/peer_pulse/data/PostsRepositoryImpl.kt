@@ -66,6 +66,7 @@ class PostsRepositoryImpl @Inject constructor(
     ): Flow<ResponseState<Boolean>> = flow {
         emit(ResponseState.Loading)
         val postCollection = firestore.collection("posts")
+        val id = postCollection.document().id
         val postDetails = hashMapOf(
             "title" to title,
             "description" to description,
@@ -74,9 +75,9 @@ class PostsRepositoryImpl @Inject constructor(
             "preferencesId" to preferencesId,
             "userId" to userId,
             "timestamp" to System.currentTimeMillis(),
-            "likes" to 0
+            "likes" to 0,
+            "id" to id
         )
-        val id = postCollection.document().id
         postCollection.document(id).set(postDetails).await()
         emit(ResponseState.Success(true))
     }.catch {

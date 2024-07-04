@@ -57,7 +57,7 @@ fun PreferencePage(
                .padding(it)
        ) {
             PageHeader(
-                //navController = navController,
+                navController = navController,
                 preferenceId = preferenceId,
             )
            Spacer(modifier = Modifier.height(40.dp))
@@ -73,7 +73,7 @@ fun PreferencePage(
 
 @Composable
 fun PageHeader(
-   // navController: NavController
+   navController: NavController,
     preferenceId : String
 ){
     Box(modifier = Modifier.height(200.dp)) {
@@ -93,7 +93,7 @@ fun PageHeader(
         ){
             IconButton(
                 onClick = {
-                   // navController.navigateUp()
+                   navController.navigateUp()
                 }
             ) {
                 Icon(imageVector = Icons.Filled.ArrowBackIosNew, contentDescription =null )
