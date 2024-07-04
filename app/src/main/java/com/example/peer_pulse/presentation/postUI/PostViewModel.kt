@@ -67,9 +67,11 @@ class PostViewModel @Inject constructor(
                 "Music",
                 "Gaming"
             )
-            postsRepository.getPosts(userPreferences).collectLatest { pagingData ->
-                _userFeedState.value = pagingData
-            }
+            postsRepository.getPosts(userPreferences)
+                .cachedIn(viewModelScope)
+                .collectLatest { pagingData ->
+                    _userFeedState.value = pagingData
+                }
         }
     }
 

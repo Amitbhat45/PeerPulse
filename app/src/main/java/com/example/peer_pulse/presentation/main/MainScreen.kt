@@ -25,6 +25,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -40,6 +41,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -62,7 +64,7 @@ import com.example.peer_pulse.presentation.postUI.PostUI
 import com.example.peer_pulse.utilities.Screens
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
-
+import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -74,7 +76,7 @@ fun MainScreen(
 ){
     val userFeedState = postViewModel.userFeedState
     val lazyPagingItems = userFeedState.collectAsLazyPagingItems()
-
+    val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(pageCount = { hometabs.size})
     val selectedTabIndex = remember { derivedStateOf { pagerState.currentPage } }
     Scaffold(
@@ -97,55 +99,18 @@ fun MainScreen(
     ) {
 
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
             modifier = Modifier
                 .padding(it)
                 .fillMaxSize()
         ) {
             Spacer(modifier = Modifier.height(4.dp))
-            Column(modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())) {
-                // Iterate over the paging items
-                for (post in lazyPagingItems.itemSnapshotList.items) {
-                    post?.let {
-                        PostUI(post = it)
-                    }
-                }}
-
-                /*lazyPagingItems.apply {
-                    when {
-                        loadState.refresh is LoadState.Loading -> {
-                            item { LoadingItem() }
-                        }
-                        loadState.append is LoadState.Loading -> {
-                            item { LoadingItem() }
-                        }
-                        loadState.refresh is LoadState.Error -> {
-                            val e = lazyPagingItems.loadState.refresh as LoadState.Error
-                            item { ErrorItem(message = e.error.localizedMessage ?: "An error occurred") }
-                        }
-                        loadState.append is LoadState.Error -> {
-                            val e = lazyPagingItems.loadState.append as LoadState.Error
-                            item { ErrorItem(message = e.error.localizedMessage ?: "An error occurred") }
-                        }
-                    }*/
-            /*LazyColumn {
-                item (lazyPagingItems){ post->
-                    post?.let {
-                        PostUI(post = it)
-                    }
-
-                }
-            }*/
-           /* TabRow(
+            TabRow(
                 selectedTabIndex = selectedTabIndex.value,
                 modifier = Modifier.fillMaxWidth(),
-                //containerColor = Color(0xFF1b1a25),
+                //containerColor = Color(0xFFffffffff),
                 indicator = { tabPositions ->
                     TabRowDefaults.Indicator(
-                        //color = Color(0xFF8fcce3), // Change the color here
+                        color = Color(0xFFffffff), // Change the color here
                         modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex.value])
                     )
                 }
@@ -157,7 +122,9 @@ fun MainScreen(
                         selectedContentColor = Color(0xFFffffff),
                         unselectedContentColor = MaterialTheme.colorScheme.outline,
                         onClick = {
-                            pagerState.currentPage
+                            scope.launch {
+                                pagerState.animateScrollToPage(currentTab.index)
+                            }
                         },
                         text = { Text(text = hometabs[index].txt1) },
 
@@ -175,8 +142,19 @@ fun MainScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Column (modifier = Modifier.fillMaxSize()){
+                        Column(modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())) {
+                            for (post in lazyPagingItems.itemSnapshotList.items) {
+                                post?.let {
+                                    PostUI(post = it,navController)
+                                    HorizontalDivider(
+                                        Modifier.fillMaxWidth()
+                                    )
+                                }
+                            }}
 
-                    }*/
+                    }
             /*Text(
                 text = authViewModel.college,
                 fontSize = 20.sp,
@@ -185,7 +163,7 @@ fun MainScreen(
 
         }
     }
-}
+}}}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -195,27 +173,34 @@ fun TopAppBarWithSearch() {
     Row(
         Modifier
             .fillMaxWidth()
-            .padding(top = 40.dp, start = 25.dp, end = 50.dp),
+            .padding(top = 40.dp, start = 25.dp, end = 40.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
             painter = painterResource(id = R.drawable.ic_launcher_background),
             contentDescription = "App Logo", // Ensure contentDescription is descriptive
             Modifier
-                .size(35.dp)
+                .size(38.dp)
                 .clip(CircleShape)
         )
-        Spacer(modifier = Modifier.width(20.dp))
+        Spacer(modifier = Modifier.width(12.dp))
         OutlinedTextField(
             value = searchQuery,
             onValueChange = { searchQuery = it },
-            placeholder = { Text("Search for keyword",fontSize = 10.sp) },
+            placeholder = {
+                Text(
+                    "Search for keyword",
+                    fontSize = 14.sp,
+                    color = Color.Gray ,
+                    modifier = Modifier.padding(bottom=35.dp)
+                )
+            },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(45.dp)
-            ,
+                .height(40.dp) // Standard height for text fields
+                .padding(horizontal = 16.dp), // Padding for proper alignment
             colors = TextFieldDefaults.textFieldColors(
-                //backgroundColor = Color.White, // Set a solid background color
+                //backgroundColor = Color.White, // Set a solid background color if needed
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
                 //textColor = Color.Black // Ensure text color contrasts with the background

@@ -1,8 +1,10 @@
 package com.example.peer_pulse.presentation.postUI
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -29,26 +31,49 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.example.peer_pulse.R
 import com.example.peer_pulse.data.room.post
 import com.example.peer_pulse.domain.model.Post
+import com.example.peer_pulse.utilities.Screens
 
 @Composable
 fun PostUI(
-    post: post
+    post: post,
+    navController: NavController
 ){
-    Card(onClick = { /*TODO*/ },
+    Card(onClick = { navController.navigate(Screens.PostViewScreen.postdetails(post)) {
+        launchSingleTop = true
+    } },
         modifier = Modifier
             .fillMaxWidth()
             .height(200.dp),
         shape = RoundedCornerShape(0.dp)
-    ) {
 
+    ) {
+        /*val postdetail = post(
+            id = "1",
+            userId = "user1",
+            title = post.title,
+            description = post.description,
+            images = post.images,
+            timestamp = post.timestamp,
+            likes = 10,
+            preferences = post.preferences,
+            preferencesId = "pref1"
+        )*/
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFF121212))
+        ){
             Column (
                 Modifier
                     .fillMaxSize()
                     .padding(15.dp)){
-                Row (Modifier.fillMaxWidth()){
+                Row (Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically){
                     Image(painter = painterResource(id = R.drawable.ic_launcher_background), contentDescription ="topicimage" ,
                         Modifier
                             .size(35.dp)
@@ -56,20 +81,24 @@ fun PostUI(
                     Spacer(modifier = Modifier.width(5.dp))
                     Column(Modifier.fillMaxWidth()) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(text = "Topic_name" ,fontSize = 15.sp,
+                            Text(text = "${post.preferences}" ,fontSize = 15.sp,
                                 fontWeight = FontWeight.Bold,
+                                modifier = Modifier.clickable { navController.navigate(Screens.PagesScreen.createRoute(post.preferences)){
+                                    launchSingleTop = true
+                                } }
                                 )
                             Spacer(modifier = Modifier.width(5.dp))
-                            Text(text = "${post.timestamp}",fontSize = 10.sp)
+                            Text(text = "${post.timestamp}",fontSize = 10.sp, color=Color.Gray)
                         }
-                        Spacer(modifier = Modifier.height(2.dp))
+                        Spacer(modifier = Modifier.height(0.dp))
                         Text(text = "Clgname",
                             fontSize = 10.sp,
+                            color=Color.Gray
                             //fontWeight = FontWeight.Bold
                         )
                     }
                 }
-                Spacer(modifier = Modifier.height(15.dp))
+                Spacer(modifier = Modifier.height(10.dp))
                 Row(Modifier.fillMaxWidth()) {
                     Column(Modifier.weight(1f)) {
                         Text(
@@ -84,35 +113,41 @@ fun PostUI(
                             text = "${post.description}",
                             fontSize = 14.sp,
                             maxLines = 2,
-                            overflow = TextOverflow.Ellipsis
+                            overflow = TextOverflow.Ellipsis,
+                            color = Color.Gray
                         )
                     }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_launcher_background), // Replace with your post image resource
-                        contentDescription = "postimage",
-                        Modifier
-                            .size(80.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                            .align(Alignment.Top)
-                    )
+                    if (post.images.isNotEmpty()) {
+                        Spacer(modifier = Modifier.width(8.dp))
+                        AsyncImage(
+                            model = post.images[0],
+                            contentDescription = "Post Image",
+                            modifier = Modifier
+                                .height(70.dp).width(70.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .align(Alignment.Top),
+                           // placeholder = painterResource(R.drawable.ic_launcher_background),
+                           // error = painterResource(R.drawable.ic_launcher_background)
+                        )
+                    }
                 }
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(15.dp))
                 Row(modifier = Modifier
                     .fillMaxWidth()
                     .padding(),
-                    horizontalArrangement =  Arrangement.spacedBy(130.dp, alignment = Alignment.CenterHorizontally)) {
+                    horizontalArrangement =  Arrangement.spacedBy(130.dp, alignment = Alignment.CenterHorizontally), verticalAlignment = Alignment.CenterVertically) {
                     Image(painter = painterResource(id = R.drawable.likes_vector), contentDescription = "likes",Modifier.size(20.dp).
-                    clickable {  })
-                    Image(painter = painterResource(id = R.drawable.comment_vector), contentDescription = "replys",Modifier.size(16.dp))
+                    clickable {  },colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(Color.Gray))
+                    Image(painter = painterResource(id = R.drawable.comment_vector), contentDescription = "replys",Modifier.size(13.dp),
+                        colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(Color.Gray))
                     Image(painter = painterResource(id = R.drawable.bookmarks_vector), contentDescription = "bookmark",Modifier.size(20.dp).clickable {  },
-                        colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(Color.Black))
+                        colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(Color.Gray))
                 }
             }
 
         }
 
-    }
+    }}
 
 
 
