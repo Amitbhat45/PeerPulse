@@ -46,7 +46,8 @@ fun PreferencePage(
     preferenceId : String,
     preferencesViewModel: PreferencesViewModel,
     postViewModel: PostViewModel,
-    navController: NavController
+    navController: NavController,
+    isPreference : Boolean
 ) {
    Scaffold(
 
@@ -57,8 +58,9 @@ fun PreferencePage(
                .padding(it)
        ) {
             PageHeader(
-                navController = navController,
+                //navController = navController,
                 preferenceId = preferenceId,
+                isPreference = isPreference
             )
            Spacer(modifier = Modifier.height(40.dp))
            PostLazyColumn(
@@ -73,8 +75,9 @@ fun PreferencePage(
 
 @Composable
 fun PageHeader(
-   navController: NavController,
-    preferenceId : String
+   //navController: NavController,
+    preferenceId : String,
+    isPreference: Boolean
 ){
     Box(modifier = Modifier.height(200.dp)) {
         Image(
@@ -93,7 +96,7 @@ fun PageHeader(
         ){
             IconButton(
                 onClick = {
-                   navController.navigateUp()
+                  // navController.navigateUp()
                 }
             ) {
                 Icon(imageVector = Icons.Filled.ArrowBackIosNew, contentDescription =null )
@@ -134,14 +137,16 @@ fun PageHeader(
                 color = Color.Black
             )
         }
-        Button(
-            onClick = {
+        if (isPreference) {
+            Button(
+                onClick = {
 
-            },
-            modifier = Modifier
-                .padding(16.dp),
-        ) {
-            Text(text = "Follow")
+                },
+                modifier = Modifier
+                    .padding(16.dp),
+            ) {
+                Text(text = "Follow")
+            }
         }
     }
 }

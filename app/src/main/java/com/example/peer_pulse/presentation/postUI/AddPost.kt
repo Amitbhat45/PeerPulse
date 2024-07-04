@@ -91,7 +91,7 @@ fun AddPost(
         skipPartiallyExpanded = false
     )
     var preferencesText by remember {
-        mutableStateOf("")
+        mutableStateOf("Choose")
     }
     Scaffold(
         topBar = {
@@ -145,7 +145,7 @@ fun AddPost(
                     )
                 ) {
                     Text(
-                        "Everyone",
+                        preferencesText,
                         color = Color.White,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
