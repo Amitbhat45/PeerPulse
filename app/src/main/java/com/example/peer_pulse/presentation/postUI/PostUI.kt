@@ -1,6 +1,5 @@
 package com.example.peer_pulse.presentation.postUI
 
-import android.inputmethodservice.Keyboard
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,12 +29,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.peer_pulse.domain.model.Post
 import com.example.peer_pulse.R
+import com.example.peer_pulse.data.room.post
+import com.example.peer_pulse.domain.model.Post
 
 @Composable
 fun PostUI(
-    //post : Post
+    post: post
 ){
     Card(onClick = { /*TODO*/ },
         modifier = Modifier
@@ -61,7 +60,7 @@ fun PostUI(
                                 fontWeight = FontWeight.Bold,
                                 )
                             Spacer(modifier = Modifier.width(5.dp))
-                            Text(text = "2h",fontSize = 10.sp)
+                            Text(text = "${post.timestamp}",fontSize = 10.sp)
                         }
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(text = "Clgname",
@@ -74,7 +73,7 @@ fun PostUI(
                 Row(Modifier.fillMaxWidth()) {
                     Column(Modifier.weight(1f)) {
                         Text(
-                            text = "This is the title of the Post",
+                            text = "${post.title}",
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
                             maxLines = 1,
@@ -82,7 +81,7 @@ fun PostUI(
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "this is the description of the post it should be a maximum of only two lines, it shouldn't exceed that abcd efgh ijkl mnopqrstuv",
+                            text = "${post.description}",
                             fontSize = 14.sp,
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis
@@ -122,7 +121,7 @@ fun PostUI(
 fun prev(){
     LazyColumn {
         items(10) { // Example with 10 items
-            PostUI()
+          //  PostUI()
             HorizontalDivider(color = Color.Gray)
         }
     }

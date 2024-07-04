@@ -169,7 +169,7 @@ fun NavigationHost(
             )
         }
         composable(Screens.AddPostScreen.route){
-            AddPost()
+            AddPost(navHostController,postViewModel)
         }
     }
 }
