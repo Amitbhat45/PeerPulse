@@ -59,14 +59,13 @@ fun PreferencePage(
             PageHeader(
                 //navController = navController,
                 preferenceId = preferenceId,
-                navController = navController
             )
            Spacer(modifier = Modifier.height(40.dp))
-          /* PostLazyColumn(
+           PostLazyColumn(
                 preferencesViewModel = preferencesViewModel,
                 preferenceId = preferenceId,
                postViewModel = postViewModel
-           )*/
+           )
        }
    }
 }
@@ -74,7 +73,7 @@ fun PreferencePage(
 
 @Composable
 fun PageHeader(
-    navController: NavController,
+   // navController: NavController
     preferenceId : String
 ){
     Box(modifier = Modifier.height(200.dp)) {
@@ -94,7 +93,7 @@ fun PageHeader(
         ){
             IconButton(
                 onClick = {
-                   navController.navigateUp()
+                   // navController.navigateUp()
                 }
             ) {
                 Icon(imageVector = Icons.Filled.ArrowBackIosNew, contentDescription =null )
@@ -126,13 +125,13 @@ fun PageHeader(
             Text(
                 text = preferenceId,
                 fontSize = 20.sp,
-
+                color = Color.Black,
                 fontWeight = FontWeight.Bold,
             )
             Text(
                 text = "Internet · 30.9K Followers",
                 fontSize = 14.sp,
-
+                color = Color.Black
             )
         }
         Button(
