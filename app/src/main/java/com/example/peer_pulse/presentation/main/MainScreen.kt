@@ -26,6 +26,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -92,17 +93,18 @@ fun MainScreen(
 @Composable
 fun TopAppBarWithSearch() {
     var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
-
     Row(
         Modifier
             .fillMaxWidth()
-            .padding(top=40.dp,start=25.dp,end=50.dp),
+            .padding(top = 40.dp, start = 25.dp, end = 50.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
             painter = painterResource(id = R.drawable.ic_launcher_background),
             contentDescription = "App Logo", // Ensure contentDescription is descriptive
-            Modifier.size(35.dp).clip(CircleShape)
+            Modifier
+                .size(35.dp)
+                .clip(CircleShape)
         )
         Spacer(modifier = Modifier.width(20.dp))
         OutlinedTextField(
@@ -124,3 +126,4 @@ fun TopAppBarWithSearch() {
         )
     }
 }
+

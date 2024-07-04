@@ -2,12 +2,12 @@ package com.example.peer_pulse.domain.model
 
 data class Post(
     var id: String="",
-    val userId: String,
-    val title: String,
-    val description: String,
-    val imageUrl: List<String>,
-    val timestamp: String,
-    val likes: Int,
-    val preferences : String,
-    val preferenceId : String
+    var userId: String = "",
+    var title: String = "",
+    var description: String = "",
+    var imageUrl: List<String> = emptyList(),
+    var timestamp: Long = 0,
+    var likes: Int = 0,
+    var preferences : String = "",
+    var preferenceId : String = ""
 )

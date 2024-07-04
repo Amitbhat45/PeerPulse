@@ -138,12 +138,15 @@ fun ProfileScreen(
                 ) {
                     card(text = "My Posts", imageVector = R.drawable.posts){
                         navController.navigate(Screens.MyPostScreen.route)
+                        profileViewModel.myPosts()
                     }
                     card(text = "Bookmarks", imageVector = R.drawable.bookmarks_vector){
                         navController.navigate(Screens.BookmarkedPostScreen.route)
+                        profileViewModel.getBookmarkedPosts()
                     }
                     card(text = "Following", imageVector = R.drawable.following_vector){
                         navController.navigate(Screens.FollowingPageScreen.route)
+                        profileViewModel.getFollowingPages()
                     }
                 }
                 Spacer(modifier = Modifier.height(50.dp))
