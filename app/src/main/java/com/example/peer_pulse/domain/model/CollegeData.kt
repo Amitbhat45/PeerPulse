@@ -1,8 +1,13 @@
 package com.example.peer_pulse.domain.model
 
+import com.example.peer_pulse.R
+
 data class College(
     val name :String,
-    val code : String
+    val code : String,
+    val logo : Int? = null,
+    val background : Int?= null,
+    val description : String? = null
 )
 
 
@@ -28,7 +33,12 @@ val colleges = listOf(
     College("DAYANANDA SAGAR COLLEGE OF ENGINEERING", "1DS"),
     College("DON BOSCO INSTITUTE OF TECHNOLOGY", "1DB"),
     College("DR. T THIMAIAH INSTITUTE OF TECHNOLOGY", "1GV"),
-    College("DR. AMBEDKAR INSTITUTE OF TECHNOLOGY", "1DA"),
+    College(
+        "DR. AMBEDKAR INSTITUTE OF TECHNOLOGY",
+        "1DA",
+        logo = R.drawable.drait_logo,
+        background = R.drawable.drait_background,
+        description = "Dr. Ambedkar Institute of Technology (Dr. AIT) was founded by M.H. Jayaprakash Narayan in 1980. Named after Dr. B.R. Ambedkar, the institute is affiliated to Visvesvaraya Technological University (VTU), Belagavi and is recognized and accredited by AICTE and NBA respectively. The institution is accredited by NAAC with ‘A+’ Grade. The Institution has achieved 163 Rank in National Institutional Ranking Framework (NIRF). "),
     College("EAST POINT COLLEGE OF ENGINEERING AND TECHNOLOGY", "1EP"),
     College("EAST WEST INSTITUTE OF TECHNOLOGY", "1EW"),
     College("GHOUSIA COLLEGE OF ENGINEERING", "1GC"),
@@ -228,25 +238,5 @@ val colleges = listOf(
     College("WADIYAR CENTRE FOR ARCHITECTURE","4CM"),
     College("Maharaja Institute of Technology", "4MN"),
     College("A. J. Institute of Engineering", "4JK"),
-//    College("ALBADAR RURAL INSTITUTE OF TECHNOLOGY", "5AB"),
-//    College("GOVT. ENGINEERING COLLEGE KOPPAL", "5GC"),
-//    College("GOVT. ENGINEERING COLLEGE HAVERI", "5GH"),
-//    College("GOVT. ENGINEERING COLLEGE KRISHNAGIRI", "5GR"),
-//    College("GOVT. ENGINEERING COLLEGE RAMANAGARA", "5RG"),
-//    College("GOVT. ENGINEERING COLLEGE RAICHUR", "5RR"),
-//    College("RAICHUR INSTITUTE OF TECHNOLOGY", "5RT"),
-//    College("RANI CHANNAMMA COLLEGE OF INFORMATION SCIENCE", "5RC"),
-//    College("RAO BAHADDUR Y MAHABALESHWARAPPA ENGG COLLEGE", "5RM"),
-//    College("VISVESVARAYA COLLEGE OF ENGINEERING", "5VE"),
-//    College("VISVESVARAYA INSTITUTE OF TECHNOLOGY", "5VT"),
-//    College("WOMEN'S COLLEGE OF ENGINEERING", "5WE"),
-//    College("C Byregowda Institute of Technology", "5CG"),
-//    College("Dayananda Sagar Academy of Tech. & Mgmt.", "5DA"),
-//    College("East West Institute of Technology", "5EW"),
-//    College("HKBK College of Engineering", "5HK"),
-//    College("MVJ College of Engineering", "5MJ"),
-//    College("Raja Rajeswari College of Engineering", "5RR"),
-//    College("Shirdi Sai Engineering College", "5SS"),
-//    College("Sri Krishna Institute of Technology", "5KT"),
-//    College("Vemana Institute of Technology", "5VI")
 )
+
