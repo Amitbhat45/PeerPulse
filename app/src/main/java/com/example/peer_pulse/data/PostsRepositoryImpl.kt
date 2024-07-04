@@ -1,5 +1,11 @@
 package com.example.peer_pulse.data
 
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import com.example.peer_pulse.data.room.PostRemoteMediator
+import com.example.peer_pulse.data.room.post
 import com.example.peer_pulse.domain.model.Post
 import com.example.peer_pulse.domain.repository.PostsRepository
 import com.example.peer_pulse.utilities.ResponseState
@@ -38,6 +44,14 @@ class PostsRepositoryImpl @Inject constructor(
         emit(ResponseState.Error(it.message ?: "An unexpected error occurred"))
     }
 
+    @OptIn(ExperimentalPagingApi::class)
+    override suspend fun getPosts(preferences: List<String>): Flow<PagingData<post>> {
+        return Pager(
+            config = PagingConfig(pageSize = 20, enablePlaceholders = false),
+            remoteMediator = PostRemoteMediator(firestore, database, preferences),
+            pagingSourceFactory = { database.postDao().getPosts(preferences) }
+        ).flow
+    }
     override suspend fun getRepliesId(postId: String): Flow<ResponseState<List<String>>> = callbackFlow<ResponseState<List<String>>> {
         ResponseState.Loading
         val snapshot = firestore.collection("posts").document(postId).collection("replies").get().await()
