@@ -20,4 +20,9 @@ sealed class Screens(val route: String){
             return "pages/$pageId"
         }
     }
+    data object CollegePagesScreen:Screens("collegePages/{pageId}"){
+        fun createRoute(pageId: String): String{
+            return "collegePages/$pageId"
+        }
+    }
 }

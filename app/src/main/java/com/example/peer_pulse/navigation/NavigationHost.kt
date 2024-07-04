@@ -21,6 +21,7 @@ import com.example.peer_pulse.data.login.GoogleAuthUiClient
 import com.example.peer_pulse.domain.model.preferences
 import com.example.peer_pulse.presentation.AuthViewModel
 import com.example.peer_pulse.presentation.LandingScreen
+import com.example.peer_pulse.presentation.college_page.CollegePage
 import com.example.peer_pulse.presentation.main.MainScreen
 import com.example.peer_pulse.presentation.login.LoginScreen
 import com.example.peer_pulse.presentation.postUI.AddPost
@@ -191,7 +192,19 @@ fun NavigationHost(
                 preferenceId = pageId,
                 preferencesViewModel = preferencesViewModel,
                 postViewModel = postViewModel,
-                navController = navHostController
+                navController = navHostController,
+            )
+        }
+        composable(
+            Screens.CollegePagesScreen.route,
+            arguments = listOf(
+                navArgument("pageId"){type = NavType.StringType}
+            )
+        ){backStackEntry ->
+            val pageId = backStackEntry.arguments?.getString("pageId") ?: ""
+            CollegePage(
+                collegeName = pageId,
+                //navController = navHostController
             )
         }
     }
