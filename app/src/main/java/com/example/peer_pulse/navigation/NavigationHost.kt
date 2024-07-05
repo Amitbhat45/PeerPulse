@@ -2,11 +2,13 @@ package com.example.peer_pulse.navigation
 
 import android.app.Activity
 import android.content.Context
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -43,6 +45,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NavigationHost(
     navHostController: NavHostController,
@@ -214,7 +217,7 @@ fun NavigationHost(
                 navArgument("title") { type = NavType.StringType },
                 navArgument("description") { type = NavType.StringType },
                 navArgument("likes") { type = NavType.IntType },
-                navArgument("timestamp") { type = NavType.StringType },
+                navArgument("timestamp") { type = NavType.LongType },
                 navArgument("preferences") { type = NavType.StringType } ,
                 //navArgument("imageUrl") { type = NavType.StringType }
 
@@ -223,7 +226,7 @@ fun NavigationHost(
             val title = backStackEntry.arguments?.getString("title") ?: ""
             val description = backStackEntry.arguments?.getString("description") ?: ""
             val likes = backStackEntry.arguments?.getInt("likes") ?: 0
-            val timestamp = backStackEntry.arguments?.getString("timestamp") ?: ""
+            val timestamp = backStackEntry.arguments?.getLong("timestamp") ?: 0L
             val preferences = backStackEntry.arguments?.getString("preferences") ?: ""
             //val imageUrlString = backStackEntry.arguments?.getString("imageUrl") ?: ""
             //val imageUrl = imageUrlString.split(",").filter { it.isNotEmpty() }

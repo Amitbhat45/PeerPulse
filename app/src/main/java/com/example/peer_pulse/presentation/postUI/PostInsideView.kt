@@ -1,5 +1,7 @@
 package com.example.peer_pulse.presentation.postUI
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -43,16 +45,18 @@ import coil.compose.AsyncImage
 import com.example.peer_pulse.R
 import com.example.peer_pulse.data.room.post
 import com.example.peer_pulse.domain.model.Post
+import com.example.peer_pulse.domain.model.getPreferenceById
 import com.example.peer_pulse.presentation.signup.AuthTopBar
 import com.example.peer_pulse.utilities.Screens
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun postInsideView(
     title: String,
     description: String,
     likes: Int,
-    timestamp: String,
+    timestamp: Long,
     preferences: String,
     navController: NavController,
     //imageUrl: List<String>?
@@ -60,6 +64,7 @@ fun postInsideView(
     var Reply by remember {
         mutableStateOf("")
     }
+    val pref = getPreferenceById(preferences)
     Scaffold(
         topBar = {
             AuthTopBar(
@@ -81,10 +86,21 @@ fun postInsideView(
                     .fillMaxWidth()
                     .padding(20.dp),
                 verticalAlignment = Alignment.CenterVertically,){
-                Image(painter = painterResource(id = R.drawable.ic_launcher_background), contentDescription ="topicimage" ,
-                    Modifier
-                        .size(35.dp)
-                        .clip(CircleShape))
+                if (pref != null) {
+                    Image(
+                        painter = painterResource(id = pref.logo),
+                        contentDescription = "topicimage",
+                        Modifier
+                            .size(35.dp)
+                            .clip(CircleShape)
+                    )
+                }
+                else{
+                    Image(painter = painterResource(id = R.drawable.ic_launcher_background), contentDescription ="topicimage" ,
+                        Modifier
+                            .size(35.dp)
+                            .clip(CircleShape))
+                }
                 Spacer(modifier = Modifier.width(5.dp))
                 Column(Modifier.fillMaxWidth()) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -95,7 +111,7 @@ fun postInsideView(
                             } }
                         )
                         Spacer(modifier = Modifier.width(5.dp))
-                        Text(text = "${timestamp}",fontSize = 10.sp, color= Color.Gray)
+                        Text(text = getTimeAgo(timestamp),fontSize = 10.sp, color= Color.Gray)
                     }
                     Spacer(modifier = Modifier.height(0.dp))
                     Text(text = "Clgname",
