@@ -24,6 +24,7 @@ import com.example.peer_pulse.domain.model.preferences
 import com.example.peer_pulse.presentation.AuthViewModel
 import com.example.peer_pulse.presentation.LandingScreen
 import com.example.peer_pulse.presentation.college_page.CollegePage
+import com.example.peer_pulse.presentation.community.communityScreen
 import com.example.peer_pulse.presentation.main.MainScreen
 import com.example.peer_pulse.presentation.login.LoginScreen
 import com.example.peer_pulse.presentation.postUI.AddPost
@@ -240,6 +241,9 @@ fun NavigationHost(
                 navHostController,
                 //imageUrl = imageUrl
             )
+        }
+        composable(Screens.CommunityScreen.route){
+            communityScreen(navController = navHostController)
         }
     }
 }

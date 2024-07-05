@@ -37,7 +37,8 @@ import com.example.peer_pulse.R
 
 @Composable
 fun SideBarSheet(
-
+    sideBarOpen: Boolean,
+    onClose: () -> Unit
 ) {
     var yourComm by remember {
         mutableStateOf(true)
@@ -56,6 +57,7 @@ fun SideBarSheet(
             selected = false ,
             onClick = {
                 yourComm = !yourComm
+
             },
             badge = {
                 Icon(
@@ -81,6 +83,7 @@ fun SideBarSheet(
             selected = false ,
             onClick = {
                 allComm = !allComm
+
             },
             badge = {
                 Text(
@@ -90,15 +93,16 @@ fun SideBarSheet(
             },
             shape = RectangleShape
         )
+
     }
 }
 
 
-@Preview(showBackground = true)
+/*@Preview(showBackground = true)
 @Composable
 fun SideBarPreview() {
     SideBarSheet()
-}
+}*/
 
 
 @Composable
@@ -132,4 +136,21 @@ fun YourCommunities(){
         },
         shape = RectangleShape
     )
+    NavigationDrawerItem(
+        label = {
+            Text(text = "Student Club")
+        },
+        selected = false ,
+        onClick = {
+
+        },
+        icon = {
+            Image(painter = painterResource(id = R.drawable.drait_logo),
+                contentDescription =null,
+                modifier = Modifier.size(28.dp)
+            )
+        },
+        shape = RectangleShape
+    )
+
 }

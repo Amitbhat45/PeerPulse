@@ -1,10 +1,13 @@
 package com.example.peer_pulse.presentation.main
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,6 +37,7 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -67,6 +71,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MainScreen(
@@ -110,7 +115,7 @@ fun MainScreen(
                 //containerColor = Color(0xFFffffffff),
                 indicator = { tabPositions ->
                     TabRowDefaults.Indicator(
-                        color = Color(0xFFffffff), // Change the color here
+                        color = Color.Gray,
                         modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex.value])
                     )
                 }
@@ -177,14 +182,14 @@ fun TopAppBarWithSearch() {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
-            painter = painterResource(id = R.drawable.ic_launcher_background),
+            painter = painterResource(id = R.drawable.applogoblue),
             contentDescription = "App Logo", // Ensure contentDescription is descriptive
             Modifier
                 .size(38.dp)
                 .clip(CircleShape)
         )
         Spacer(modifier = Modifier.width(12.dp))
-        OutlinedTextField(
+       TextField(
             value = searchQuery,
             onValueChange = { searchQuery = it },
             placeholder = {
@@ -192,21 +197,22 @@ fun TopAppBarWithSearch() {
                     "Search for keyword",
                     fontSize = 14.sp,
                     color = Color.Gray ,
-                    modifier = Modifier.padding(bottom=35.dp)
+                    modifier = Modifier.padding( 5.dp)
+
                 )
             },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(40.dp) // Standard height for text fields
-                .padding(horizontal = 16.dp), // Padding for proper alignment
+                .padding(horizontal = 15.dp),
+                //.innerPadding(top = 5.dp),
             colors = TextFieldDefaults.textFieldColors(
-                //backgroundColor = Color.White, // Set a solid background color if needed
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
-                //textColor = Color.Black // Ensure text color contrasts with the background
             ),
             singleLine = true,
-            shape = RoundedCornerShape(20.dp)
+            shape = RoundedCornerShape(20.dp) ,
+
         )
     }
 }

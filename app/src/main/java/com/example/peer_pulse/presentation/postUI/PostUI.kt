@@ -109,6 +109,7 @@ fun PostUI(
                     }
                 }
                 Spacer(modifier = Modifier.height(10.dp))
+                if (post.images.isNotEmpty()) {
                 Row(Modifier.fillMaxWidth()) {
                     Column(Modifier.weight(1f)) {
                         Text(
@@ -127,7 +128,6 @@ fun PostUI(
                             color = Color.Gray
                         )
                     }
-                    if (post.images.isNotEmpty()) {
                         Spacer(modifier = Modifier.width(8.dp))
                         AsyncImage(
                             model = post.images[0],
@@ -138,9 +138,29 @@ fun PostUI(
                                 .align(Alignment.Top),
                            // placeholder = painterResource(R.drawable.ic_launcher_background),
                            // error = painterResource(R.drawable.ic_launcher_background)
+                        )}}
+
+                   else{
+                    Row(Modifier.fillMaxWidth()) {
+                    Column(Modifier.fillMaxWidth()) {
+                        Text(
+                            text = "${post.title}",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "${post.description}",
+                            fontSize = 14.sp,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                            color = Color.Gray
+                        )
+                    }}
                     }
-                }
+
                 Spacer(modifier = Modifier.height(13.dp))
                 Row(
                     modifier = Modifier

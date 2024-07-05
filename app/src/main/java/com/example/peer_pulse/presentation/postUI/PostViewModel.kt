@@ -65,7 +65,8 @@ class PostViewModel @Inject constructor(
                 "Architectural Engineering",
                 "Sports",
                 "Music",
-                "Gaming"
+                "Gaming",
+                "College Events"
             )
             postsRepository.getPosts(userPreferences)
                 .cachedIn(viewModelScope)

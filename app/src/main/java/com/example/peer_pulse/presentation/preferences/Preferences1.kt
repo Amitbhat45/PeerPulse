@@ -202,7 +202,7 @@ fun Preferences1 (navController: NavController,
                 Button(
                     onClick = {
                         authViewModel.userPreferences(selectedPrefs)
-                        navController.navigate(Screens.MainScreen.route){
+                        navController.navigate(Screens.MainScreen.route) {
                             launchSingleTop = true
                         }
                     },
@@ -266,9 +266,8 @@ private fun updateSelectedPrefs(prefName: String, selected: Boolean, selectedPre
         selectedPrefs.remove(prefName)
     }
 }
-/*
 @Composable
 @Preview
 fun prev(){
 //Preferences1()
-}*/
+}
