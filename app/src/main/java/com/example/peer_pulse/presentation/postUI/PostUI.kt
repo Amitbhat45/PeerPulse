@@ -1,5 +1,7 @@
 package com.example.peer_pulse.presentation.postUI
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -36,13 +38,20 @@ import coil.compose.AsyncImage
 import com.example.peer_pulse.R
 import com.example.peer_pulse.data.room.post
 import com.example.peer_pulse.domain.model.Post
+import com.example.peer_pulse.domain.model.getPreferenceById
 import com.example.peer_pulse.utilities.Screens
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.temporal.ChronoUnit
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun PostUI(
     post: post,
     navController: NavController
 ){
+
     Card(onClick = { navController.navigate(Screens.PostViewScreen.postdetails(post)) {
         launchSingleTop = true
     } },
@@ -52,17 +61,7 @@ fun PostUI(
         shape = RoundedCornerShape(0.dp)
 
     ) {
-        /*val postdetail = post(
-            id = "1",
-            userId = "user1",
-            title = post.title,
-            description = post.description,
-            images = post.images,
-            timestamp = post.timestamp,
-            likes = 10,
-            preferences = post.preferences,
-            preferencesId = "pref1"
-        )*/
+        val pref = getPreferenceById(post.preferences)
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -74,24 +73,35 @@ fun PostUI(
                     .padding(15.dp)){
                 Row (Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically){
-                    Image(painter = painterResource(id = R.drawable.ic_launcher_background), contentDescription ="topicimage" ,
-                        Modifier
-                            .size(35.dp)
-                            .clip(CircleShape))
+                    if (pref != null) {
+                        Image(
+                            painter = painterResource(id = pref.logo),
+                            contentDescription = "topicimage",
+                            Modifier
+                                .size(35.dp)
+                                .clip(CircleShape)
+                        )
+                    }
+                    else{
+                        Image(painter = painterResource(id = R.drawable.ic_launcher_background), contentDescription ="topicimage" ,
+                            Modifier
+                                .size(35.dp)
+                                .clip(CircleShape))
+                    }
                     Spacer(modifier = Modifier.width(5.dp))
                     Column(Modifier.fillMaxWidth()) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(text = "${post.preferences}" ,fontSize = 15.sp,
+                            Text(text = "${post.preferences}" ,fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
                                 modifier = Modifier.clickable { navController.navigate(Screens.PagesScreen.createRoute(post.preferences)){
                                     launchSingleTop = true
                                 } }
                                 )
-                            Spacer(modifier = Modifier.width(5.dp))
-                            Text(text = "${post.timestamp}",fontSize = 10.sp, color=Color.Gray)
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(text = getTimeAgo(post.timestamp),fontSize = 10.sp, color=Color.Gray)
                         }
-                        Spacer(modifier = Modifier.height(0.dp))
-                        Text(text = "Clgname",
+
+                        Text(text = "Dr.Ait",
                             fontSize = 10.sp,
                             color=Color.Gray
                             //fontWeight = FontWeight.Bold
@@ -131,17 +141,66 @@ fun PostUI(
                         )
                     }
                 }
-                Spacer(modifier = Modifier.height(15.dp))
-                Row(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(),
-                    horizontalArrangement =  Arrangement.spacedBy(130.dp, alignment = Alignment.CenterHorizontally), verticalAlignment = Alignment.CenterVertically) {
-                    Image(painter = painterResource(id = R.drawable.likes_vector), contentDescription = "likes",Modifier.size(20.dp).
-                    clickable {  },colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(Color.Gray))
-                    Image(painter = painterResource(id = R.drawable.comment_vector), contentDescription = "replys",Modifier.size(13.dp),
-                        colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(Color.Gray))
-                    Image(painter = painterResource(id = R.drawable.bookmarks_vector), contentDescription = "bookmark",Modifier.size(20.dp).clickable {  },
-                        colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(Color.Gray))
+                Spacer(modifier = Modifier.height(13.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = if (post.likes > 0) "${post.likes}" else "Likes",
+                            fontSize = 12.sp,
+                            color = Color.Gray
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Image(
+                            painter = painterResource(id = R.drawable.likes_vector),
+                            contentDescription = "likes",
+                            Modifier
+                                .size(20.dp)
+                                .clickable { },
+                            colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(Color.Gray)
+                        )
+                    }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Replies",
+                            fontSize = 12.sp,
+                            color = Color.Gray
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Image(
+                            painter = painterResource(id = R.drawable.comment_vector),
+                            contentDescription = "replies",
+                            Modifier.size(13.dp),
+                            colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(Color.Gray)
+                        )
+                    }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Bookmark",
+                            fontSize = 12.sp,
+                            color = Color.Gray
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Image(
+                            painter = painterResource(id = R.drawable.bookmarks_vector),
+                            contentDescription = "bookmark",
+                            Modifier
+                                .size(20.dp)
+                                .clickable { },
+                            colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(Color.Gray)
+                        )
+                    }
                 }
             }
 
@@ -150,7 +209,23 @@ fun PostUI(
     }}
 
 
+@RequiresApi(Build.VERSION_CODES.O)
+fun getTimeAgo(timestamp: Long): String {
+    val postDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault())
+    val now = LocalDateTime.now()
+    val duration = ChronoUnit.SECONDS.between(postDateTime, now)
 
+    val minutes = duration / 60
+    val hours = minutes / 60
+    val days = hours / 24
+
+    return when {
+        days > 0 -> "$days days ago"
+        hours > 0 -> "$hours hours ago"
+        minutes > 0 -> "$minutes minutes ago"
+        else -> "Just now"
+    }
+}
 @Preview
 @Composable
 fun prev(){
