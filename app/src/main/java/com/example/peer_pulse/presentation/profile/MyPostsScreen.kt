@@ -67,7 +67,7 @@ fun MyPostsScreen(
                 if (response.data != null) {
                     if (profileViewModel.postIds.isEmpty()) {
                         Column(
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier.fillMaxSize().padding(it),
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
@@ -78,7 +78,7 @@ fun MyPostsScreen(
                         }
                     } else {
                         LazyColumn(
-                            modifier = Modifier.fillMaxSize()
+                            modifier = Modifier.fillMaxSize().padding(it)
                         ) {
                             items(profileViewModel.postIds.size) {
                                 profileViewModel.postIds[it]?.let { it1 ->
@@ -92,7 +92,7 @@ fun MyPostsScreen(
                     }
                 } else {
                     Column(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier.fillMaxSize().padding(it),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {

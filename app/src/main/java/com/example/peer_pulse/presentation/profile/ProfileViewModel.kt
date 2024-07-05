@@ -63,6 +63,9 @@ class ProfileViewModel @Inject constructor(
             viewModelScope.launch {
                 userRepository.bookmarkedPosts(it).collect {state->
                     _state2.value = state
+                    if (state is ResponseState.Success){
+                        bookmarkedPostIds = state.data
+                    }
                 }
             }
         }
@@ -73,6 +76,9 @@ class ProfileViewModel @Inject constructor(
             viewModelScope.launch {
                 userRepository.followingPages(it).collect {state->
                     _state3.value = state
+                    if (state is ResponseState.Success){
+                        followingPageIds = state.data
+                    }
                 }
             }
         }
