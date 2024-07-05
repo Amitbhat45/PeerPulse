@@ -139,20 +139,65 @@ fun postInsideView(
                     .height(400.dp)
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(0.dp)))
-            Row(modifier = Modifier
-                .fillMaxWidth(),
-                horizontalArrangement =  Arrangement.spacedBy(130.dp, alignment = Alignment.CenterHorizontally), verticalAlignment = Alignment.CenterVertically) {
-                Image(painter = painterResource(id = R.drawable.likes_vector), contentDescription = "likes",
-                    Modifier
-                        .size(20.dp)
-                        .clickable { },colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(Color.Gray))
-                Image(painter = painterResource(id = R.drawable.comment_vector), contentDescription = "replys",Modifier.size(13.dp),
-                    colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(Color.Gray))
-                Image(painter = painterResource(id = R.drawable.bookmarks_vector), contentDescription = "bookmark",
-                    Modifier
-                        .size(20.dp)
-                        .clickable { },
-                    colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(Color.Gray))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text =  "Likes",
+                        fontSize = 12.sp,
+                        color = Color.Gray
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Image(
+                        painter = painterResource(id = R.drawable.likes_vector),
+                        contentDescription = "likes",
+                        Modifier
+                            .size(20.dp)
+                            .clickable {  },
+                        colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(Color.Gray)
+                    )
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Replies",
+                        fontSize = 12.sp,
+                        color = Color.Gray
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Image(
+                        painter = painterResource(id = R.drawable.comment_vector),
+                        contentDescription = "replies",
+                        Modifier.size(13.dp),
+                        colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(Color.Gray)
+                    )
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Bookmark",
+                        fontSize = 12.sp,
+                        color = Color.Gray
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Image(
+                        painter = painterResource(id = R.drawable.bookmarks_vector),
+                        contentDescription = "bookmark",
+                        Modifier
+                            .size(20.dp)
+                            .clickable {  },
+                        colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(Color.Gray)
+                    )
+                }
             }
             Spacer(modifier = Modifier.height(30.dp))
             Column(Modifier.fillMaxSize(),

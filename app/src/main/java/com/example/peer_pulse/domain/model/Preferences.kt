@@ -55,3 +55,7 @@ val trialPreferences  = listOf(
         background = R.drawable.collge_events_background
     ),
 )
+
+fun getPreferenceById(id: String): Preferences? {
+    return trialPreferences.find { it.id == id }
+}

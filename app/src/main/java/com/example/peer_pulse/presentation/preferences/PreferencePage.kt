@@ -128,7 +128,6 @@ fun PageHeader(
             Text(
                 text = preferenceId,
                 fontSize = 20.sp,
-                color = Color.Black,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 4.dp)
             )
