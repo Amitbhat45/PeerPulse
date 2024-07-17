@@ -1,6 +1,9 @@
 package com.example.peer_pulse.presentation.postUI
 
+import android.content.Context
 import android.os.Build
+import android.util.Log
+import android.widget.ImageView
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -27,19 +30,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import coil.compose.LocalImageLoader
+import coil.compose.rememberImagePainter
+import coil.request.ImageRequest
+
 import com.example.peer_pulse.R
 import com.example.peer_pulse.data.room.post
 import com.example.peer_pulse.domain.model.Post
 import com.example.peer_pulse.domain.model.getPreferenceById
 import com.example.peer_pulse.utilities.Screens
+import com.google.accompanist.coil.rememberCoilPainter
+import com.google.accompanist.imageloading.LoadPainterDefaults
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -129,16 +141,38 @@ fun PostUI(
                         )
                     }
                         Spacer(modifier = Modifier.width(8.dp))
-                        AsyncImage(
-                            model = post.images[0],
+                    Log.d("PostUI", "Loading image URL: ${post.images[0]}")
+                    if (post.images.isNotEmpty()) {
+                        val painter = rememberImagePainter(
+                            data = post.images[0],
+                            imageLoader = LocalImageLoader.current,
+                            builder = {
+                                if (false == true) this.crossfade(LoadPainterDefaults.FadeInTransitionDuration)
+                                placeholder(0)
+                            }
+                        )
+                        Image(
+                            painter = painter,
                             contentDescription = "Post Image",
                             modifier = Modifier
-                                .height(70.dp).width(70.dp)
+                                .height(70.dp)
+                                .width(70.dp)
                                 .clip(RoundedCornerShape(8.dp))
                                 .align(Alignment.Top),
-                           // placeholder = painterResource(R.drawable.ic_launcher_background),
-                           // error = painterResource(R.drawable.ic_launcher_background)
-                        )}}
+                            contentScale = ContentScale.Crop,
+                            )
+                    } else {
+                        // Placeholder when there are no images
+                        Image(
+                            painterResource(R.drawable.ic_launcher_background),
+                            contentDescription = "No Image",
+                            modifier = Modifier
+                                .height(70.dp)
+                                .width(70.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                        )
+                    }
+                }}
 
                    else{
                     Row(Modifier.fillMaxWidth()) {
@@ -246,6 +280,29 @@ fun getTimeAgo(timestamp: Long): String {
         else -> "Just now"
     }
 }
+
+
+/*@Composable
+fun GlideImageLoader(imageUrl: String, modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+
+    AndroidView(
+        factory = { ctx: Context ->
+            ImageView(ctx).apply {
+                scaleType = ImageView.ScaleType.CENTER_CROP
+                Glide.with(ctx)
+                    .load(imageUrl)
+                    .placeholder(R.drawable.ic_launcher_background)
+                    .error(R.drawable.drait_logo)
+                    .into(this)
+            }
+        },
+        modifier = modifier
+            .height(70.dp)
+            .width(70.dp)
+            .clip(RoundedCornerShape(8.dp))
+    )
+}*/
 @Preview
 @Composable
 fun prev(){
