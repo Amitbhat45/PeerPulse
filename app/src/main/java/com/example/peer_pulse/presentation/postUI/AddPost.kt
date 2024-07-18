@@ -1,9 +1,14 @@
 package com.example.peer_pulse.presentation.postUI
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -22,7 +27,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
@@ -50,6 +54,7 @@ import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -58,25 +63,29 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.peer_pulse.R
-import com.example.peer_pulse.domain.model.Post
 import com.example.peer_pulse.domain.model.preferences
 import com.example.peer_pulse.utilities.rememberImeState
+import com.example.peer_pulse.MainActivity.Companion.REQUEST_READ_EXTERNAL_STORAGE
+import com.example.peer_pulse.MainActivity.Companion.REQUEST_READ_MEDIA_IMAGES
+import com.example.peer_pulse.MainActivity.Companion.REQUEST_READ_MEDIA_VISUAL_USER_SELECTED
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddPost(
     navController: NavController,
-    postViewModel: PostViewModel
+    postViewModel: PostViewModel,
+    permissionGranted: MutableState<Boolean>
 ) {
     var titleText by remember { mutableStateOf("") }
     var descriptionText by remember { mutableStateOf("") }
@@ -92,6 +101,50 @@ fun AddPost(
     var preferencesText by remember {
         mutableStateOf("")
     }
+    val context = LocalContext.current
+    val activity = context as ComponentActivity
+
+
+    val launcher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.PickMultipleVisualMedia()) {uris->
+            images = uris
+        }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    fun checkPermissions() {
+        when {
+            Build.VERSION.SDK_INT <= Build.VERSION_CODES.R -> {
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_READ_EXTERNAL_STORAGE)
+                } else {
+                    permissionGranted.value = true
+                    launcher.launch(PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageAndVideo))
+                }
+            }
+            Build.VERSION.SDK_INT == Build.VERSION_CODES.S || Build.VERSION.SDK_INT == Build.VERSION_CODES.TIRAMISU -> {
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.READ_MEDIA_IMAGES), REQUEST_READ_MEDIA_IMAGES)
+                } else {
+                    permissionGranted.value = true
+                    launcher.launch(PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageAndVideo))
+                }
+            }
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> {
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED), REQUEST_READ_MEDIA_VISUAL_USER_SELECTED)
+                } else {
+                    permissionGranted.value = true
+                    launcher.launch(PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageAndVideo))
+                }
+            }
+        }
+    }
+    /*LaunchedEffect(permissionGranted) {
+        if (permissionGranted.value) {
+            launcher.launch(PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageAndVideo))
+            permissionGranted.value = false
+        }
+    }*/
     Scaffold(
         topBar = {
             PostTitleBar(
@@ -245,15 +298,10 @@ fun AddPost(
                         .fillMaxWidth()
                         .imePadding()
                 ) {
-                    val launcher =
-                        rememberLauncherForActivityResult(contract = ActivityResultContracts.PickMultipleVisualMedia()) {
-                            images = it
-                        }
                     IconButton(
                         onClick = {
-                            launcher.launch(
-                                PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageAndVideo)
-                            )
+                            checkPermissions()
+
                         }
                     ) {
                         Icon(

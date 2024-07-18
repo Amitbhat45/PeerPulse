@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,7 +27,9 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -38,6 +41,7 @@ import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -51,7 +55,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -189,30 +195,10 @@ fun TopAppBarWithSearch() {
                 .clip(CircleShape)
         )
         Spacer(modifier = Modifier.width(12.dp))
-       TextField(
+        CustomTextField(
             value = searchQuery,
             onValueChange = { searchQuery = it },
-            placeholder = {
-                Text(
-                    "Search for keyword",
-                    fontSize = 14.sp,
-                    color = Color.Gray ,
-                    modifier = Modifier.padding( 5.dp)
-
-                )
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(40.dp) // Standard height for text fields
-                .padding(horizontal = 15.dp),
-                //.innerPadding(top = 5.dp),
-            colors = TextFieldDefaults.textFieldColors(
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-            ),
-            singleLine = true,
-            shape = RoundedCornerShape(20.dp) ,
-
+            placeholder = "Search for Topic"
         )
     }
 }
@@ -233,3 +219,52 @@ val hometabs= listOf(
     )
 
 )
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CustomTextField(
+    value: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit,
+    placeholder: String,
+    modifier: Modifier = Modifier,
+    textColor: Color = Color.White,
+    placeholderColor: Color = Color.Gray,
+    backgroundColor: Color = Color(0xff262626),
+    shape: Shape = RoundedCornerShape(20.dp)
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(40.dp)
+            .padding(horizontal = 15.dp)
+            .background(color = backgroundColor, shape = shape)
+            .padding(horizontal = 10.dp, vertical = 8.dp)
+    ) {
+        if (value.text.isEmpty()) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "Search icon",
+                    tint = placeholderColor,
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = placeholder,
+                    color = placeholderColor,
+                    fontSize = 14.sp,
+                )
+            }
+        }
+        BasicTextField(
+            value = value,
+            onValueChange = onValueChange,
+            singleLine = true,
+            textStyle = TextStyle(
+                color = textColor,
+                fontSize = 14.sp
+            ),
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}

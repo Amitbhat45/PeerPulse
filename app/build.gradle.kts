@@ -5,7 +5,6 @@ plugins {
     id("com.google.dagger.hilt.android")
     id ("kotlin-kapt")
     id("kotlin-android")
-    //id("com.google.devtools.ksp")
 }
 
 android {
@@ -88,8 +87,6 @@ dependencies {
 
     //Image
     implementation(libs.coil.compose)
-    implementation(libs.accompanist.coil)
-
 
     //Hilt
     implementation(libs.hilt.android)
@@ -120,9 +117,9 @@ dependencies {
     kapt(libs.androidx.room.compiler)
     implementation(libs.androidx.room.paging)
 
-    //GlideImage
-    /*implementation(libs.glide)
-    kapt("com.github.bumptech.glide:ksp:4.13.0")
-    implementation(libs.accompanist.glide)*/
+    //Glide
+    implementation (libs.glide)
+    annotationProcessor (libs.compiler)
+    implementation (libs.compose)
 
 }
