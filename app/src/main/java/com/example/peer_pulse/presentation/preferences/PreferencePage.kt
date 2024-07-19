@@ -1,5 +1,7 @@
 package com.example.peer_pulse.presentation.preferences
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -149,6 +151,7 @@ fun PageHeader(
 
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun PostLazyColumn(
     preferencesViewModel: PreferencesViewModel,
