@@ -274,9 +274,8 @@ fun RootNavigation(
             startDestination = Screens.CommunityScreen.route,
             route = Screens.CommunityGraph.route
         ){
-
             composable(Screens.CommunityScreen.route){
-                val collegeLogo = colleges.find { it.name == authViewModel.college }?.logo ?: R.drawable.google_image
+                val collegeLogo = colleges.find { it.name == authViewModel.college }?.logo ?: R.drawable.about_vector
                 val collegeName = colleges.find { it.name == authViewModel.college }?.name ?: ""
                 val collegeCode = colleges.find { it.name == authViewModel.college }?.code ?: ""
                 CommunityScreen(

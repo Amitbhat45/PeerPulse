@@ -5,12 +5,14 @@ import androidx.room.Room
 import androidx.room.Room.databaseBuilder
 import com.example.peer_pulse.data.AuthRepositoryImpl
 import com.example.peer_pulse.data.CollegeRepositoryImpl
+import com.example.peer_pulse.data.CommunityRepositoryImpl
 import com.example.peer_pulse.data.PagesRepositoryImpl
 import com.example.peer_pulse.data.PostsRepositoryImpl
 import com.example.peer_pulse.data.UserRepositoryImpl
 import com.example.peer_pulse.data.room.PostDao
 import com.example.peer_pulse.data.room.PostsDatabase
 import com.example.peer_pulse.domain.repository.AuthRepository
+import com.example.peer_pulse.domain.repository.CommunityRepository
 import com.example.peer_pulse.domain.repository.PagesRepository
 import com.example.peer_pulse.domain.repository.PostsRepository
 import com.example.peer_pulse.domain.repository.UserRepository
@@ -93,6 +95,14 @@ object AppModule {
         firestore: FirebaseFirestore
     ) : PagesRepository {
         return PagesRepositoryImpl(firestore)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCommunityRepository(
+        firestore: FirebaseFirestore
+    ) : CommunityRepository {
+        return CommunityRepositoryImpl(firestore)
     }
 
 

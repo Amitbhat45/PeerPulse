@@ -9,5 +9,7 @@ data class Post(
     var timestamp: Long = 0,
     var likes: Int = 0,
     var preferences : String = "",
-    var preferenceId : String = ""
+    var preferenceId : String = "",
+    var collegeCode : String = "",
+    var communityName : String = ""
 )

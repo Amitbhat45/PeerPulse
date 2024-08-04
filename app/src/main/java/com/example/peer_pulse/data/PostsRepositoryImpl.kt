@@ -87,17 +87,16 @@ class PostsRepositoryImpl @Inject constructor(
         emit(ResponseState.Loading)
         val postCollection = firestore.collection("posts")
         val id = postCollection.document().id
-        val postDetails = hashMapOf(
-            "id" to id,
-            "userId" to userId,
-            "title" to title,
-            "description" to description,
-            "images" to images,
-            "timestamp" to System.currentTimeMillis(),
-            "likes" to 0,
-            "preferences" to preferences,
-            "preferencesId" to preferencesId
-            )
+        val postDetails = Post(
+            id = id,
+            title = title,
+            description = description,
+            imageUrl = images,
+            preferences = preferences,
+            preferenceId = preferencesId,
+            userId = userId,
+            timestamp = System.currentTimeMillis()
+        )
 
         postCollection.document(id).set(postDetails).await()
         emit(ResponseState.Success(true))
