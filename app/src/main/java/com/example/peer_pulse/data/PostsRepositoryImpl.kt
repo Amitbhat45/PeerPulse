@@ -7,6 +7,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.example.peer_pulse.data.room.PostRemoteMediator
 import com.example.peer_pulse.data.room.PostsDatabase
+import com.example.peer_pulse.data.room.TimeRange
 import com.example.peer_pulse.data.room.post
 import com.example.peer_pulse.domain.model.Post
 import com.example.peer_pulse.domain.repository.PostsRepository
@@ -57,6 +58,38 @@ class PostsRepositoryImpl @Inject constructor(
             pagingSourceFactory = { database.postDao().getPosts(preferences) }
         ).flow
     }
+
+    @OptIn(ExperimentalPagingApi::class)
+    override suspend fun getMostLikedPostsLastWeek(preferences: List<String>): Flow<PagingData<post>> {
+        return Pager(
+            config = PagingConfig(pageSize = 20, enablePlaceholders = false),
+            remoteMediator = PostRemoteMediator(firestore, database, preferences, TimeRange.LAST_WEEK, sortByLikes = true),
+            pagingSourceFactory = { database.postDao().getPosts(preferences) }
+        ).flow
+    }
+
+    @OptIn(ExperimentalPagingApi::class)
+    override suspend fun getMostLikedPostsLastMonth(preferences: List<String>): Flow<PagingData<post>> {
+        return Pager(
+            config = PagingConfig(pageSize = 20, enablePlaceholders = false),
+            remoteMediator = PostRemoteMediator(firestore, database, preferences, TimeRange.LAST_MONTH, sortByLikes = true),
+            pagingSourceFactory = { database.postDao().getPosts(preferences) }
+        ).flow
+    }
+
+   @OptIn(ExperimentalPagingApi::class)
+   override suspend fun getMostLikedPostsLastYear(preferences: List<String>): Flow<PagingData<post>> {
+        return Pager(
+            config = PagingConfig(pageSize = 20, enablePlaceholders = false),
+            remoteMediator = PostRemoteMediator(firestore, database, preferences, TimeRange.LAST_YEAR, sortByLikes = true),
+            pagingSourceFactory = { database.postDao().getPosts(preferences) }
+        ).flow
+    }
+
+
+
+
+
 
     override suspend fun getRepliesId(postId: String): Flow<ResponseState<List<String>>> = callbackFlow<ResponseState<List<String>>> {
         ResponseState.Loading

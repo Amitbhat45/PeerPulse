@@ -1,5 +1,7 @@
 package com.example.peer_pulse
 
+import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -39,6 +41,7 @@ class MainActivity : ComponentActivity(), PermissionCallback{
         const val REQUEST_READ_EXTERNAL_STORAGE = 100
         const val REQUEST_READ_MEDIA_IMAGES = 101
         const val REQUEST_READ_MEDIA_VISUAL_USER_SELECTED = 102
+        const val REQUEST_CODE_PICK_IMAGE = 200
     }
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,6 +90,28 @@ class MainActivity : ComponentActivity(), PermissionCallback{
                     }
                 } else {
                     onPermissionDenied()
+                }
+            }
+        }
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
+                REQUEST_CODE_PICK_IMAGE -> {
+                    val clipData = data?.clipData
+                    if (clipData != null) {
+                        for (i in 0 until clipData.itemCount) {
+                            val uri = clipData.getItemAt(i).uri
+                            grantUriPermission(packageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        }
+                    } else {
+                        data?.data?.let { uri ->
+                            grantUriPermission(packageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        }
+                    }
                 }
             }
         }

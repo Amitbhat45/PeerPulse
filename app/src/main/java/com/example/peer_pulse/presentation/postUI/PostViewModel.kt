@@ -21,13 +21,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 
 @HiltViewModel
 class PostViewModel @Inject constructor(
     private val postsRepository: PostsRepository,
-    private val auth : FirebaseAuth
+    private val auth : FirebaseAuth,
+    private val firestore: FirebaseFirestore
 ) : ViewModel() {
 
     init {
@@ -36,6 +38,8 @@ class PostViewModel @Inject constructor(
         }
     }
 
+    private val _userPreferences = MutableStateFlow<List<String>>(emptyList())
+    val userPreferences: StateFlow<List<String>> get() = _userPreferences
 
     private val _postState = mutableStateOf<ResponseState<Post?>>(ResponseState.Success(null))
     val postState : State<ResponseState<Post?>> = _postState
@@ -51,24 +55,37 @@ class PostViewModel @Inject constructor(
     private val _userFeedState = MutableStateFlow<PagingData<post>>(PagingData.empty())
     val userFeedState: StateFlow<PagingData<post>> get() = _userFeedState
 
+    private val _mostLikedLastWeek = MutableStateFlow<PagingData<post>>(PagingData.empty())
+    val mostLikedLastWeek: StateFlow<PagingData<post>> get() = _mostLikedLastWeek
+
+    private val _mostLikedLastMonth = MutableStateFlow<PagingData<post>>(PagingData.empty())
+    val mostLikedLastMonth: StateFlow<PagingData<post>> get() = _mostLikedLastMonth
+
+    private val _mostLikedLastYear = MutableStateFlow<PagingData<post>>(PagingData.empty())
+    val mostLikedLastYear: StateFlow<PagingData<post>> get() = _mostLikedLastYear
+
     init {
         fetchPosts()
+    }
+    private fun fetchUserPreferences() {
+        viewModelScope.launch {
+            try {
+                val userDocument = userId?.let { firestore.collection("users").document(it).get().await() }
+                val preferences = userDocument?.get("preferences") as? List<String> ?: emptyList()
+                _userPreferences.value = preferences
+                Log.d("pref","$_userPreferences")
+            } catch (e: Exception) {
+                _userPreferences.value = emptyList()
+                Log.d("pref","empty")
+            }
+        }
     }
 
     private fun fetchPosts() {
         viewModelScope.launch {
-            val userPreferences = listOf(
-                "Software Engineering",
-                "Electrical Engineering",
-                "Civil Engineering",
-                "Mechanical Engineering",
-                "Architectural Engineering",
-                "Sports",
-                "Music",
-                "Gaming",
-                "College Events"
-            )
-            postsRepository.getPosts(userPreferences)
+            val userDocument = userId?.let { firestore.collection("users").document(it).get().await() }
+            val preferences1 = userDocument?.get("preferences") as? List<String> ?: emptyList()
+            postsRepository.getPosts(preferences1)
                 .cachedIn(viewModelScope)
                 .collectLatest { pagingData ->
                     _userFeedState.value = pagingData
@@ -78,6 +95,39 @@ class PostViewModel @Inject constructor(
 
     fun refreshFeed() {
         fetchPosts()
+    }
+
+    fun fetchMostLikedLastWeek() {
+        viewModelScope.launch {
+            val preferences = _userPreferences.value
+            postsRepository.getMostLikedPostsLastWeek(preferences)
+                .cachedIn(viewModelScope)
+                .collectLatest { pagingData ->
+                    _mostLikedLastWeek.value = pagingData
+                }
+        }
+    }
+
+    fun fetchMostLikedLastMonth() {
+        viewModelScope.launch {
+            val preferences = _userPreferences.value
+            postsRepository.getMostLikedPostsLastMonth(preferences)
+                .cachedIn(viewModelScope)
+                .collectLatest { pagingData ->
+                    _mostLikedLastMonth.value = pagingData
+                }
+        }
+    }
+
+    fun fetchMostLikedLastYear() {
+        viewModelScope.launch {
+            val preferences = _userPreferences.value
+            postsRepository.getMostLikedPostsLastYear(preferences)
+                .cachedIn(viewModelScope)
+                .collectLatest { pagingData ->
+                    _mostLikedLastYear.value = pagingData
+                }
+        }
     }
 
     fun getPost(postId: String){

@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,10 +30,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.ArrowDropDown
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
@@ -43,6 +48,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -153,24 +159,31 @@ fun MainScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Column (modifier = Modifier.fillMaxSize()){
-                        Column(modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(rememberScrollState())) {
-                            for (post in lazyPagingItems.itemSnapshotList.items) {
-                                post?.let {
-                                    PostUI(post = it,navController)
-                                    HorizontalDivider(
-                                        Modifier.fillMaxWidth()
-                                    )
+                        when (hometabs[selectedTabIndex.value].txt1) {
+                            "HOME" -> {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .verticalScroll(rememberScrollState())
+                                ) {
+                                    for (post in lazyPagingItems.itemSnapshotList.items) {
+                                        post?.let {
+                                            PostUI(post = it, navController)
+                                            HorizontalDivider(
+                                                Modifier.fillMaxWidth()
+                                            )
+                                        }
+                                    }
                                 }
-                            }}
+                            }
+                            "POPULAR" -> {
+                               Filter()
+                            }
+                            // Add more cases for other tabs if needed
+                        }
 
                     }
-            /*Text(
-                text = authViewModel.college,
-                fontSize = 20.sp,
-                modifier = Modifier.padding(16.dp)
-            )*/
+
 
         }
     }
@@ -219,6 +232,86 @@ val hometabs= listOf(
     )
 
 )
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun Filter() {
+    val scope = rememberCoroutineScope()
+    val bottomSheetState = rememberModalBottomSheetState()
+    var showBottomSheet by remember { mutableStateOf(false) }
+    var selectedFilter by remember { mutableStateOf("Past Week") }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .background(Color(0xff0a0a0a))
+            .fillMaxWidth()
+            .height(50.dp)
+            .clickable {
+                scope.launch { showBottomSheet = true }
+            }
+    ) {
+        Text(
+            text = selectedFilter,
+            color = Color.Gray,
+            modifier = Modifier
+                .padding(start = 15.dp)
+
+        )
+        Spacer(modifier = Modifier.width(2.dp))
+        Icon(
+            imageVector = Icons.Outlined.ArrowDropDown,
+            contentDescription = "Dropdown Icon"
+        )
+    }
+
+    if (showBottomSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { scope.launch { showBottomSheet = false } },
+            sheetState = bottomSheetState
+        ) {
+            BottomSheetContent(
+                onOptionSelected = { filter ->
+                    selectedFilter = filter
+                    scope.launch { showBottomSheet = false }
+                }
+            )
+        }
+    }
+}
+
+@Composable
+fun BottomSheetContent(onOptionSelected: (String) -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "Past Week",
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(onClick = { onOptionSelected("Past Week") })
+                .padding(8.dp)
+        )
+        Text(
+            text = "Past Month",
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(onClick = { onOptionSelected("Past Month") })
+                .padding(8.dp)
+        )
+        Text(
+            text = "Past Year",
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(onClick = { onOptionSelected("Past Year") })
+                .padding(8.dp)
+        )
+    }
+}
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

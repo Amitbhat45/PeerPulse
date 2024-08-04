@@ -7,16 +7,16 @@ import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import kotlinx.coroutines.tasks.await
-
-
-
+import java.util.Calendar
 
 
 @OptIn(ExperimentalPagingApi::class)
 class PostRemoteMediator(
     private val firestore: FirebaseFirestore,
     private val database: PostsDatabase,
-    private val userPreferences: List<String>
+    private val userPreferences: List<String>,
+    private val timeRange: TimeRange? = null,
+    private val sortByLikes: Boolean = false
 ) : RemoteMediator<Int, post>() {
 
     override suspend fun load(
@@ -30,15 +30,28 @@ class PostRemoteMediator(
                 LoadType.APPEND -> state.lastItemOrNull()?.id
             }
 
-            val query = firestore.collection("posts")
+            val baseQuery = firestore.collection("posts")
                 .whereIn("preferences", userPreferences)
-                .orderBy("timestamp", Query.Direction.DESCENDING)
-                .limit(state.config.pageSize.toLong())
+
+
+            val timeFilteredQuery = when (timeRange) {
+                TimeRange.LAST_WEEK -> baseQuery.whereGreaterThan("timestamp", getLastWeekTimestamp())
+                TimeRange.LAST_MONTH -> baseQuery.whereGreaterThan("timestamp", getLastMonthTimestamp())
+                TimeRange.LAST_YEAR -> baseQuery.whereGreaterThan("timestamp", getLastYearTimestamp())
+                null -> baseQuery
+            }
+
+
+            val finalQuery = if (sortByLikes) {
+                timeFilteredQuery.orderBy("likes", Query.Direction.DESCENDING)
+            } else {
+                timeFilteredQuery.orderBy("timestamp", Query.Direction.DESCENDING)
+            }.limit(state.config.pageSize.toLong())
 
             val snapshot = if (loadKey != null) {
-                query.startAfter(loadKey).get().await()
+                finalQuery.startAfter(loadKey).get().await()
             } else {
-                query.get().await()
+                finalQuery.get().await()
             }
 
             val posts = snapshot.documents.map { document ->
@@ -56,8 +69,6 @@ class PostRemoteMediator(
                 }
             }
 
-            //Log.d("PostRemoteMediator", "Number of posts retrieved: ${posts.size}")
-
             database.withTransaction {
                 if (loadType == LoadType.REFRESH) {
                     database.postDao().clearPosts()
@@ -69,7 +80,33 @@ class PostRemoteMediator(
             MediatorResult.Error(e)
         }
     }
+
+    private fun getLastWeekTimestamp(): Long {
+        val calendar = Calendar.getInstance()
+        calendar.add(Calendar.WEEK_OF_YEAR, -1)
+        return calendar.timeInMillis
+    }
+
+    private fun getLastMonthTimestamp(): Long {
+        val calendar = Calendar.getInstance()
+        calendar.add(Calendar.MONTH, -1)
+        return calendar.timeInMillis
+    }
+
+    private fun getLastYearTimestamp(): Long {
+        val calendar = Calendar.getInstance()
+        calendar.add(Calendar.YEAR, -1)
+        return calendar.timeInMillis
+    }
 }
+
+
+enum class TimeRange {
+    LAST_WEEK,
+    LAST_MONTH,
+    LAST_YEAR
+}
+
 
 
 

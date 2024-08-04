@@ -22,4 +22,8 @@ interface PostsRepository {
     ):Flow<ResponseState<Boolean>>
     suspend fun deletePost(postId:String):Flow<ResponseState<String>>
     suspend fun getPosts(preferences: List<String>): Flow<PagingData<post>>
+    suspend fun getMostLikedPostsLastWeek(preferences: List<String>): Flow<PagingData<post>>
+    suspend fun getMostLikedPostsLastMonth(preferences: List<String>): Flow<PagingData<post>>
+    suspend fun  getMostLikedPostsLastYear(preferences: List<String>): Flow<PagingData<post>>
+
 }

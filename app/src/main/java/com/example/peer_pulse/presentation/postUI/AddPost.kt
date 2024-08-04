@@ -1,6 +1,7 @@
 package com.example.peer_pulse.presentation.postUI
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
@@ -105,10 +106,19 @@ fun AddPost(
     val activity = context as ComponentActivity
 
 
-    val launcher =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.PickMultipleVisualMedia()) {uris->
-            images = uris
+    val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.PickMultipleVisualMedia()) { uris ->
+        images = uris
+        uris.forEach { uri ->
+            try {
+                context.contentResolver.takePersistableUriPermission(
+                    uri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+            } catch (e: SecurityException) {
+                e.printStackTrace()
+            }
         }
+    }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun checkPermissions() {

@@ -90,9 +90,10 @@ object AppModule {
     @Provides
     @Singleton
     fun providePagesRepository(
-        firestore: FirebaseFirestore
+        firestore: FirebaseFirestore,
+        databse:PostsDatabase
     ) : PagesRepository {
-        return PagesRepositoryImpl(firestore)
+        return PagesRepositoryImpl(firestore,databse)
     }
 
 

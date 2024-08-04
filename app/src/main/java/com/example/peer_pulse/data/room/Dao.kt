@@ -14,6 +14,9 @@ interface PostDao {
     @Query("SELECT * FROM posts WHERE preferences IN (:userPreferences) ORDER BY timestamp DESC")
     fun getPosts(userPreferences: List<String>): PagingSource<Int, post>
 
+    /*@Query("SELECT * FROM posts WHERE topicName = :topicId ORDER BY timestamp DESC")
+    fun getPostsByTopic(topicId: String): PagingSource<Int, post>*/
+
     @Query("DELETE FROM posts")
     suspend fun clearPosts()
 }
