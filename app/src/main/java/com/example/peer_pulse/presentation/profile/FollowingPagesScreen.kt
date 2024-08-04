@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -21,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -28,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.peer_pulse.R
 import com.example.peer_pulse.domain.model.preferences
+import com.example.peer_pulse.domain.model.trialPreferences
 import com.example.peer_pulse.presentation.postUI.PostCard
 import com.example.peer_pulse.presentation.signup.AuthTopBar
 import com.example.peer_pulse.utilities.ResponseState
@@ -73,7 +76,9 @@ fun FollowingPagesScreen(
                 if (response.data != null) {
                     if (profileViewModel.followingPageIds.isEmpty()) {
                         Column(
-                            modifier = Modifier.fillMaxSize().padding(it),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(it),
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
@@ -84,13 +89,17 @@ fun FollowingPagesScreen(
                         }
                     } else {
                         LazyColumn(
-                            modifier = Modifier.fillMaxSize().padding(it)
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(it)
                         ) {
-                            items(preferences.size) { index ->
+                            items(trialPreferences.size) { index ->
                                 FollowingPageRow(
-                                    name = preferences[index],
-                                    following = profileViewModel.followingPageIds.contains(preferences[index]),
-                                    profileViewModel = profileViewModel
+                                    name = trialPreferences[index].id,
+                                    following = profileViewModel.followingPageIds.contains(
+                                        trialPreferences[index].id),
+                                    profileViewModel = profileViewModel,
+                                    logo = trialPreferences[index].logo
                                 )
 
                             }
@@ -98,7 +107,9 @@ fun FollowingPagesScreen(
                     }
                 } else {
                     Column(
-                        modifier = Modifier.fillMaxSize().padding(it),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(it),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
@@ -117,16 +128,17 @@ fun FollowingPagesScreen(
 fun FollowingPageRow(
     name : String,
     following : Boolean,
-    profileViewModel: ProfileViewModel
+    profileViewModel: ProfileViewModel,
+    logo : Int
 ){
-    var follow = remember{ mutableStateOf(following)}
+    val follow = remember{ mutableStateOf(following)}
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(4.dp)
     ){
         Image(
-            painter = painterResource(id = R.drawable.google_image),
+            painter = painterResource(id = logo),
             contentDescription = "page image",
             modifier = Modifier
                 .size(32.dp)
@@ -159,6 +171,9 @@ fun FollowingPageRow(
                 .weight(3f)
                 .size(width = 24.dp, height = 40.dp)
                 .align(Alignment.CenterVertically),
+            colors = ButtonDefaults.buttonColors(
+                containerColor= if(follow.value) Color.Transparent else Color.Red
+            )
         ) {
             Text(
                 text = if(follow.value) "Unfollow" else "Follow"

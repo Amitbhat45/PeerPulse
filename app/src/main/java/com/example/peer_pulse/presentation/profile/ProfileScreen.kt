@@ -164,10 +164,11 @@ fun ProfileScreen(
                     authViewModel = authViewModel,
                     onSuccess = {
                         authViewModel.resetState()
-                        navController.navigate(Screens.LandingScreen.route) {
-                            popUpTo(Screens.LandingScreen.route) {
+                        navController.navigate(Screens.AuthGraph.route) {
+                            popUpTo(Screens.AuthGraph.route) {
                                 inclusive = true
                             }
+                            launchSingleTop = true
                         }
                     },
                     onDialogLogOutButtonClicked = {

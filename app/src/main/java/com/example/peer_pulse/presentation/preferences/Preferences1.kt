@@ -202,8 +202,10 @@ fun Preferences1 (navController: NavController,
                 Button(
                     onClick = {
                         authViewModel.userPreferences(selectedPrefs)
-                        navController.navigate(Screens.MainScreen.route) {
-                            launchSingleTop = true
+                        navController.navigate(Screens.MainGraph.route) {
+                            popUpTo(Screens.AuthGraph.route) {
+                                inclusive = true
+                            }
                         }
                     },
                     modifier = Modifier

@@ -117,6 +117,9 @@ class PostViewModel @Inject constructor(
         }
     }
 
-
+    fun resetState(){
+        _savePostState.value = ResponseState.Success(null)
+        _deletePostState.value = ResponseState.Success("")
+    }
 
 }

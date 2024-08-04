@@ -33,4 +33,13 @@ sealed class Screens(val route: String){
         }
     }
     data object CommunityScreen : Screens("CommunityScreen")
+
+
+    // Graph Routes
+    data object AuthGraph: Screens("AuthGraph")
+    data object MainGraph: Screens("MainGraph")
+    data object ProfileGraph: Screens("ProfileGraph")
+    data object PostGraph: Screens("PostGraph")
+    data object PreferencesGraph: Screens("PreferencesGraph")
+    data object CommunityGraph: Screens("CommunityGraph")
 }

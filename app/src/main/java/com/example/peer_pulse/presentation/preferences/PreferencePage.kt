@@ -44,6 +44,7 @@ import com.example.peer_pulse.presentation.postUI.PostCard
 import com.example.peer_pulse.presentation.postUI.PostViewModel
 import com.example.peer_pulse.utilities.ResponseState
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun PreferencePage(
     preferenceId : String,
@@ -60,7 +61,7 @@ fun PreferencePage(
                .padding(it)
        ) {
             PageHeader(
-                //navController = navController,
+                navController = navController,
                 preferenceId = preferenceId,
             )
            Spacer(modifier = Modifier.height(40.dp))
@@ -76,7 +77,7 @@ fun PreferencePage(
 
 @Composable
 fun PageHeader(
-   //navController: NavController,
+   navController: NavController,
     preferenceId : String,
 ){
     val logo = trialPreferences.find { it.id == preferenceId}?.logo ?: R.drawable.following_vector
@@ -98,7 +99,7 @@ fun PageHeader(
         ){
             IconButton(
                 onClick = {
-                  // navController.navigateUp()
+                  navController.navigateUp()
                 }
             ) {
                 Icon(imageVector = Icons.Filled.ArrowBackIosNew, contentDescription =null )
@@ -187,9 +188,9 @@ fun PostLazyColumn(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun PreferencePagePreview() {
-    PageHeader(preferenceId = "College Events")
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun PreferencePagePreview() {
+//    PageHeader(preferenceId = "College Events")
+//}
 

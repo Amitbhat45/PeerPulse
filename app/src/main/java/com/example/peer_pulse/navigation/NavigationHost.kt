@@ -15,16 +15,19 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.navigation.NavGraph
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.peer_pulse.R
 import com.example.peer_pulse.data.login.GoogleAuthUiClient
+import com.example.peer_pulse.domain.model.colleges
 import com.example.peer_pulse.presentation.AuthViewModel
 import com.example.peer_pulse.presentation.LandingScreen
 import com.example.peer_pulse.presentation.college_page.CollegePage
-import com.example.peer_pulse.presentation.community.communityScreen
+import com.example.peer_pulse.presentation.community.CommunityScreen
 import com.example.peer_pulse.presentation.main.MainScreen
 import com.example.peer_pulse.presentation.login.LoginScreen
 import com.example.peer_pulse.presentation.postUI.AddPost
@@ -182,10 +185,12 @@ fun NavigationHost(
             )
         }
         composable(Screens.AddPostScreen.route){
+            val collegeLogo = colleges.find { it.name == authViewModel.college }?.logo ?: R.drawable.google_image
             AddPost(
                 navController = navHostController,
                 postViewModel = postViewModel,
-                permissionGranted = permissionGranted
+                permissionGranted = permissionGranted,
+                collegeLogo = collegeLogo
             )
         }
         composable(
@@ -244,9 +249,9 @@ fun NavigationHost(
                 //imageUrl = imageUrl
             )
         }
-        composable(Screens.CommunityScreen.route){
-            communityScreen(navController = navHostController)
-        }
+//        composable(Screens.CommunityScreen.route){
+//            CommunityScreen(navController = navHostController)
+//        }
     }
 }
 

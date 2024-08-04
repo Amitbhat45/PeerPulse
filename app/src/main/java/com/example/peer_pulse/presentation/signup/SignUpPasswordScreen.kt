@@ -3,15 +3,19 @@ package com.example.peer_pulse.presentation.signup
 import androidx.collection.emptyLongSet
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,6 +32,7 @@ import com.example.peer_pulse.presentation.AuthViewModel
 import com.example.peer_pulse.utilities.ResponseState
 import com.example.peer_pulse.utilities.Screens
 import com.example.peer_pulse.utilities.ToastMessage
+import com.example.peer_pulse.utilities.rememberImeState
 import kotlinx.coroutines.launch
 
 @Composable
@@ -56,8 +61,18 @@ fun SignUpPasswordScreen(
             )
         }
     ) {
+        val imeState = rememberImeState()
+        val scrollState = rememberScrollState()
+        LaunchedEffect(key1 = imeState.value) {
+            if(imeState.value){
+                scrollState.scrollTo(scrollState.maxValue)
+            }
+        }
         Column(
             modifier = Modifier.padding(it)
+                .padding(4.dp)
+                .fillMaxSize()
+                .verticalScroll(scrollState)
         ) {
             Column(
                 modifier = Modifier
