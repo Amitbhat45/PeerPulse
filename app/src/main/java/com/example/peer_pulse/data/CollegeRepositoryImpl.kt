@@ -2,6 +2,7 @@ package com.example.peer_pulse.data
 
 import com.example.peer_pulse.domain.model.Community
 import com.example.peer_pulse.domain.repository.collegeRepository
+import com.example.peer_pulse.presentation.community.CommunityMessageScreen
 import com.example.peer_pulse.utilities.ResponseState
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
@@ -32,7 +33,8 @@ class CollegeRepositoryImpl @Inject constructor(
         )
         firestore.collection("colleges").document(code).set(collegeMap).await()
         communityList.forEach {
-            firestore.collection("colleges").document(code).collection("communities").document(it.name).set(it).await()
+            val communityMap = Community(it.name,it.description)
+            firestore.collection("colleges").document(code).collection("communities").document(it.name).set(communityMap).await()
         }
         emit(ResponseState.Success(true))
     }.catch {

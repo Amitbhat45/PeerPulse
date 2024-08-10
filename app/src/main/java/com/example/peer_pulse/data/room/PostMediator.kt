@@ -32,6 +32,7 @@ class PostRemoteMediator(
 
             val query = firestore.collection("posts")
                 .whereIn("preferences", userPreferences)
+                .whereEqualTo("collegeCode","")
                 .orderBy("timestamp", Query.Direction.DESCENDING)
                 .limit(state.config.pageSize.toLong())
 

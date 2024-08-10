@@ -11,5 +11,4 @@ data class Post(
     var preferences : String = "",
     var preferenceId : String = "",
     var collegeCode : String = "",
-    var communityName : String = ""
 )

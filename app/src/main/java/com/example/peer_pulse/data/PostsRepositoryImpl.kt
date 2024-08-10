@@ -82,7 +82,8 @@ class PostsRepositoryImpl @Inject constructor(
         images: List<String>,
         preferences: String,
         preferencesId: String,
-        userId: String
+        userId: String,
+        collegeCode: String,
     ): Flow<ResponseState<Boolean>> = flow {
         emit(ResponseState.Loading)
         val postCollection = firestore.collection("posts")
@@ -95,7 +96,8 @@ class PostsRepositoryImpl @Inject constructor(
             preferences = preferences,
             preferenceId = preferencesId,
             userId = userId,
-            timestamp = System.currentTimeMillis()
+            timestamp = System.currentTimeMillis(),
+            collegeCode = collegeCode,
         )
 
         postCollection.document(id).set(postDetails).await()

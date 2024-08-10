@@ -92,7 +92,8 @@ class PostViewModel @Inject constructor(
         description : String,
         images : List<Uri?>,
         preferences : String,
-        preferencesId : String
+        preferencesId : String,
+        collegeName : String
     ){
         val image : List<String> =  images.map { it.toString() }
         viewModelScope.launch {
@@ -102,7 +103,8 @@ class PostViewModel @Inject constructor(
                 image,
                 preferences,
                 preferencesId,
-                userId!!
+                userId!!,
+                collegeName
             ).collect{ state ->
                 _savePostState.value = state
             }

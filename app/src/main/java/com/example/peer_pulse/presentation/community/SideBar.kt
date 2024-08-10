@@ -30,9 +30,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.peer_pulse.R
 import com.example.peer_pulse.domain.model.colleges
 import com.example.peer_pulse.utilities.ResponseState
+import com.example.peer_pulse.utilities.Screens
 import com.example.peer_pulse.utilities.ToastMessage
 
 
@@ -41,6 +43,7 @@ fun SideBarSheet(
     collegeCode : String,
     collegeLogo: Int,
     communityViewModel: CommunityViewModel,
+    navController: NavController
 ) {
     ModalDrawerSheet {
 //        Spacer(modifier = Modifier.height(8.dp))
@@ -83,7 +86,8 @@ fun SideBarSheet(
         AllCommunities(
             collegeCode = collegeCode,
             collegeLogo = collegeLogo,
-            communityViewModel = communityViewModel
+            communityViewModel = communityViewModel,
+            navController = navController
         )
     }
 }
@@ -92,7 +96,8 @@ fun SideBarSheet(
 fun AllCommunities(
     collegeCode: String,
     collegeLogo: Int,
-    communityViewModel: CommunityViewModel
+    communityViewModel: CommunityViewModel,
+    navController: NavController
 ) {
     LaunchedEffect(key1 = communityViewModel.allCommunityList.value) {
            communityViewModel.getAllCommunities(collegeCode)
@@ -116,7 +121,8 @@ fun AllCommunities(
                         collegeLogo = collegeLogo,
                         communityName = community.name,
                         onCommunityClicked = {
-
+                          communityViewModel.getMessagesByCommunity(collegeCode,community.name)
+                            navController.navigate(Screens.CommunityTopicScreen.createRoute(community.name))
                         }
                     )
                 }
