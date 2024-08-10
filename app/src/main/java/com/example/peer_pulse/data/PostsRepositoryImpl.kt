@@ -12,7 +12,6 @@ import com.example.peer_pulse.data.room.post
 import com.example.peer_pulse.domain.model.Post
 import com.example.peer_pulse.domain.repository.PostsRepository
 import com.example.peer_pulse.utilities.ResponseState
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.delay
@@ -151,30 +150,6 @@ class PostsRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun likePost(postId: String, userId: String): Flow<ResponseState<Boolean>> = flow {
-        emit(ResponseState.Loading)
-        try {
-            val postRef = firestore.collection("posts").document(postId)
-            val userLikeRef = postRef.collection("likes").document(userId)
-
-            firestore.runTransaction { transaction ->
-                val snapshot = transaction.get(userLikeRef)
-
-                if (!snapshot.exists()) {
-                    // User hasn't liked the post yet, so proceed with liking
-                    transaction.set(userLikeRef, hashMapOf("liked" to true))
-                    transaction.update(postRef, "likes", FieldValue.increment(1))
-                } else {
-                    // User has already liked the post
-                    throw Exception("User has already liked this post.")
-                }
-            }.await()
-
-            emit(ResponseState.Success(true))
-        } catch (e: Exception) {
-            emit(ResponseState.Error(e.message ?: "An error occurred while liking the post"))
-        }
-    }
 
 
 }

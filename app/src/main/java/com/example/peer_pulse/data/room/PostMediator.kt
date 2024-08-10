@@ -27,42 +27,26 @@ class PostRemoteMediator(
             val loadKey = when (loadType) {
                 LoadType.REFRESH -> null
                 LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
-                LoadType.APPEND -> state.lastItemOrNull()?.let { listOf(it.likes, it.timestamp) }
+                LoadType.APPEND -> state.lastItemOrNull()?.id
             }
 
-            var query = firestore.collection("posts")
+            val baseQuery = firestore.collection("posts")
                 .whereIn("preferences", userPreferences)
 
-            // Apply time filter
+
             val timeFilteredQuery = when (timeRange) {
-                TimeRange.LAST_WEEK -> {
-                   // Log.d("PostRemoteMediator", "Applying time filter: LAST_WEEK")
-                    query.whereGreaterThan("timestamp", getLastWeekTimestamp())
-                }
-                TimeRange.LAST_MONTH -> {
-                   // Log.d("PostRemoteMediator", "Applying time filter: LAST_MONTH")
-                    query.whereGreaterThan("timestamp", getLastMonthTimestamp())
-                }
-                TimeRange.LAST_YEAR -> {
-                   // Log.d("PostRemoteMediator", "Applying time filter: LAST_YEAR")
-                    query.whereGreaterThan("timestamp", getLastYearTimestamp())
-                }
-                null -> {
-                    //Log.d("PostRemoteMediator", "No time filter applied")
-                    query
-                }
+                TimeRange.LAST_WEEK -> baseQuery.whereGreaterThan("timestamp", getLastWeekTimestamp())
+                TimeRange.LAST_MONTH -> baseQuery.whereGreaterThan("timestamp", getLastMonthTimestamp())
+                TimeRange.LAST_YEAR -> baseQuery.whereGreaterThan("timestamp", getLastYearTimestamp())
+                null -> baseQuery
             }
 
-            // Apply ordering
+
             val finalQuery = if (sortByLikes) {
-                timeFilteredQuery
-                    .orderBy("likes", Query.Direction.DESCENDING)
-                    .orderBy("timestamp", Query.Direction.DESCENDING) // Use a secondary order to maintain consistent results
+                timeFilteredQuery.orderBy("likes", Query.Direction.DESCENDING)
             } else {
                 timeFilteredQuery.orderBy("timestamp", Query.Direction.DESCENDING)
             }.limit(state.config.pageSize.toLong())
-
-           // Log.d("PostRemoteMediator", "Final query: $finalQuery")
 
             val snapshot = if (loadKey != null) {
                 finalQuery.startAfter(loadKey).get().await()
@@ -116,12 +100,12 @@ class PostRemoteMediator(
     }
 }
 
+
 enum class TimeRange {
     LAST_WEEK,
     LAST_MONTH,
     LAST_YEAR
 }
-
 
 
 
