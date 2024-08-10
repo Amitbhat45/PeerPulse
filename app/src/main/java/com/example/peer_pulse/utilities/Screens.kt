@@ -33,7 +33,11 @@ sealed class Screens(val route: String){
         }
     }
     data object CommunityScreen : Screens("CommunityScreen")
-
+    data object CommunityTopicScreen : Screens("CommunityTopicScreen/{communityName}"){
+        fun createRoute(communityName: String): String {
+            return "CommunityTopicScreen/$communityName"
+        }
+    }
 
     // Graph Routes
     data object AuthGraph: Screens("AuthGraph")

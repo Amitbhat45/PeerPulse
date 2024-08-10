@@ -26,6 +26,7 @@ import com.example.peer_pulse.data.login.GoogleAuthUiClient
 import com.example.peer_pulse.domain.model.colleges
 import com.example.peer_pulse.presentation.AuthViewModel
 import com.example.peer_pulse.presentation.LandingScreen
+import com.example.peer_pulse.presentation.community.CommunityMessageScreen
 import com.example.peer_pulse.presentation.community.CommunityScreen
 import com.example.peer_pulse.presentation.community.CommunityViewModel
 import com.example.peer_pulse.presentation.login.LoginScreen
@@ -179,11 +180,13 @@ fun RootNavigation(
         ){
             composable(Screens.AddPostScreen.route){
                 val collegeLogo = colleges.find { it.name == authViewModel.college }?.logo ?: R.drawable.google_image
+                val collegeName = colleges.find { it.name == authViewModel.college }?.name ?: ""
                 AddPost(
                     navController = navHostController,
                     postViewModel = postViewModel,
                     permissionGranted = permissionGranted,
-                    collegeLogo = collegeLogo
+                    collegeLogo = collegeLogo,
+                    collegeName = collegeName
                 )
             }
             composable(
@@ -274,9 +277,8 @@ fun RootNavigation(
             startDestination = Screens.CommunityScreen.route,
             route = Screens.CommunityGraph.route
         ){
-
             composable(Screens.CommunityScreen.route){
-                val collegeLogo = colleges.find { it.name == authViewModel.college }?.logo ?: R.drawable.google_image
+                val collegeLogo = colleges.find { it.name == authViewModel.college }?.logo ?: R.drawable.about_vector
                 val collegeName = colleges.find { it.name == authViewModel.college }?.name ?: ""
                 val collegeCode = colleges.find { it.name == authViewModel.college }?.code ?: ""
                 CommunityScreen(
@@ -285,6 +287,21 @@ fun RootNavigation(
                     collegeLogo = collegeLogo,
                     collegeName = collegeName,
                     collegeCode = collegeCode
+                )
+            }
+            composable(
+                Screens.CommunityTopicScreen.route,
+                arguments = listOf(
+                    navArgument("communityName"){type = NavType.StringType}
+                )
+            ){backstackEntry->
+                val communityName = backstackEntry.arguments?.getString("communityName") ?: ""
+                CommunityMessageScreen(
+                  navController = navHostController,
+                   communityViewModel = communityViewModel,
+                    communityName = communityName,
+                    collegeCode = colleges.find { it.name == authViewModel.college }?.code ?: "",
+                    permissionGranted = permissionGranted
                 )
             }
         }

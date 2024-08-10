@@ -186,11 +186,13 @@ fun NavigationHost(
         }
         composable(Screens.AddPostScreen.route){
             val collegeLogo = colleges.find { it.name == authViewModel.college }?.logo ?: R.drawable.google_image
+            val collegeName = colleges.find { it.name == authViewModel.college }?.name ?: ""
             AddPost(
                 navController = navHostController,
                 postViewModel = postViewModel,
                 permissionGranted = permissionGranted,
-                collegeLogo = collegeLogo
+                collegeLogo = collegeLogo,
+                collegeName = collegeName
             )
         }
         composable(

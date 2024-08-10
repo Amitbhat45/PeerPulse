@@ -38,7 +38,8 @@ class AuthRepositoryImpl @Inject constructor(
                 val userId = user.uid
                 val userMap = hashMapOf(
                     "userId" to userId,
-                    "email" to email
+                    "email" to email,
+                    "bookmarks" to listOf<String>(),
                 )
                 firestore.collection("users").document(userId).set(userMap).await()
                 emit(ResponseState.Success(true))

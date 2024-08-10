@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -165,7 +166,8 @@ fun SignUpPasswordScreen(
             Column(
                 modifier = Modifier
                     .padding(16.dp)
-                    .weight(3.5f),
+                    .weight(3.5f)
+                    .imePadding(),
                 verticalArrangement = Arrangement.Bottom
             ) {
                 Button(

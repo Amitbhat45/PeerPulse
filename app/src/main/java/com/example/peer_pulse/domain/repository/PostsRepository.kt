@@ -18,7 +18,8 @@ interface PostsRepository {
         images : List<String>,
         preferences : String,
         preferencesId : String,
-        userId : String
+        userId : String,
+        collegeCode : String,
     ):Flow<ResponseState<Boolean>>
     suspend fun deletePost(postId:String):Flow<ResponseState<String>>
     suspend fun getPosts(preferences: List<String>): Flow<PagingData<post>>
