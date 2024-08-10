@@ -1,6 +1,7 @@
 package com.example.peer_pulse.presentation.postUI
 
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -23,6 +24,12 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,6 +48,7 @@ import com.example.peer_pulse.R
 import com.example.peer_pulse.data.room.post
 import com.example.peer_pulse.domain.model.Post
 import com.example.peer_pulse.domain.model.getPreferenceById
+import com.example.peer_pulse.utilities.ResponseState
 import com.example.peer_pulse.utilities.Screens
 import java.time.Instant
 import java.time.LocalDateTime
@@ -52,9 +60,30 @@ import java.time.temporal.ChronoUnit
 @Composable
 fun PostUI(
     post: post,
-    navController: NavController
+    navController: NavController,
+    postViewModel: PostViewModel
 ){
+    val likePostState by postViewModel.likePostState.collectAsState()
+    val likedPosts by remember { mutableStateOf(mutableMapOf<String, Boolean>()) }
+    var likeCount by remember(post.id) { mutableStateOf(post.likes) }
 
+
+    LaunchedEffect(likePostState) {
+        when (likePostState) {
+            is ResponseState.Success -> {
+                if ((likePostState as ResponseState.Success<Boolean>).data) {
+                    likedPosts[post.id] = true
+                }
+            }
+            is ResponseState.Error -> {
+                // Optionally rollback the like UI
+                /*isLiked = false
+                likeCount -= 1*/
+               // Toast.makeText(context, "Failed to like the post.", Toast.LENGTH_SHORT).show()
+            }
+            else -> {}
+        }
+    }
     Card(onClick = { navController.navigate(Screens.PostViewScreen.postdetails(post)) {
         launchSingleTop = true
     } },
@@ -134,7 +163,8 @@ fun PostUI(
                     Spacer(modifier = Modifier.width(7.dp))
                     GlideImage(model = post.images[0], contentDescription ="" ,
                         modifier = Modifier
-                            .height(70.dp).width(70.dp)
+                            .height(70.dp)
+                            .width(70.dp)
                             .clip(RoundedCornerShape(8.dp))
                             .align(Alignment.Top))
                         /*AsyncImage(
@@ -177,21 +207,32 @@ fun PostUI(
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = if (post.likes > 0) "${post.likes}" else "Likes",
+                            if (likeCount > 0) "$likeCount" else "Likes",
                             fontSize = 12.sp,
                             color = Color.Gray
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Image(
-                            painter = painterResource(id = R.drawable.likes_vector),
+                            painter = if (likedPosts.getOrDefault(post.id, false)) {
+                                painterResource(id = R.drawable.like_filled24)
+                            } else {
+                                painterResource(id = R.drawable.likes_vector)
+                            },
                             contentDescription = "likes",
                             Modifier
                                 .size(20.dp)
-                                .clickable { },
+                                .clickable {
+                                    if (!likedPosts.getOrDefault(post.id, false)) {
+                                        likedPosts[post.id] = true
+                                        likeCount += 1
+                                        postViewModel.userId?.let { postViewModel.likePost(post.id, it) }
+                                    } else {
+                                        likedPosts[post.id] = false
+                                        likeCount-=1
+                                    }
+                                },
                             colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(Color.Gray)
                         )
                     }

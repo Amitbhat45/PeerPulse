@@ -90,7 +90,7 @@ fun PreferencePage(
                 followbuttonrow(preferenceId = preferenceId)
                 for (post in lazyPagingItems.itemSnapshotList.items) {
                     post?.let {
-                        PostUI(post = it,navController)
+                        PostUI(post = it,navController,postViewModel)
                         HorizontalDivider(
                             Modifier.fillMaxWidth()
                         )
