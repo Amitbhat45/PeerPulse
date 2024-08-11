@@ -20,12 +20,13 @@ class AuthRepositoryImpl @Inject constructor(
     private val firestore: FirebaseFirestore
 ) : AuthRepository {
     private var operationSuccessful = false
+    var errorMessage = ""
     override fun isUserAuthenticated(): Boolean {
         return auth.currentUser != null
     }
 
 
-    override suspend fun signUp(email: String, password: String): Flow<ResponseState<Boolean>> = flow {
+    override suspend fun signUp(email: String, password: String,userName : String): Flow<ResponseState<Boolean>> = flow {
         emit(ResponseState.Loading)
         val authResult = auth.createUserWithEmailAndPassword(email, password).await()
         val user = authResult.user
@@ -40,6 +41,7 @@ class AuthRepositoryImpl @Inject constructor(
                     "userId" to userId,
                     "email" to email,
                     "bookmarks" to listOf<String>(),
+                    "username" to userName
                 )
                 firestore.collection("users").document(userId).set(userMap).await()
                 emit(ResponseState.Success(true))
@@ -64,6 +66,26 @@ class AuthRepositoryImpl @Inject constructor(
         emit(ResponseState.Loading)
         auth.signOut()
         emit(ResponseState.Success(true))
+    }.catch {
+        emit(ResponseState.Error(it.message ?: "An unexpected error occurred"))
+    }
+
+    override suspend fun verifyUsername(userName: String): Flow<ResponseState<Boolean>> = flow{
+        emit(ResponseState.Loading)
+        operationSuccessful = false
+        firestore.collection("users").whereEqualTo("userName", userName).get().addOnSuccessListener {
+            operationSuccessful = it.isEmpty
+        }.addOnFailureListener {
+            errorMessage = it.message ?: "An unexpected error occurred"
+        }.await()
+        if(operationSuccessful){
+            emit(ResponseState.Success(true))
+        } else {
+            emit(ResponseState.Error("Username already exists"))
+        }
+        if(errorMessage.isNotEmpty()){
+            emit(ResponseState.Error(errorMessage))
+        }
     }.catch {
         emit(ResponseState.Error(it.message ?: "An unexpected error occurred"))
     }

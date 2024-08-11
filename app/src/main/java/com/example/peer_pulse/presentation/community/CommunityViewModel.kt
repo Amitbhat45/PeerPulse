@@ -78,7 +78,8 @@ class CommunityViewModel @Inject constructor(
         userId: String,
         communityName: String,
         collegeCode: String,
-        timeStamp: Long
+        timeStamp: Long,
+        userName : String
     ) {
         viewModelScope.launch {
             communityRepository.sendMessage(
@@ -87,7 +88,8 @@ class CommunityViewModel @Inject constructor(
                 userId = userId,
                 communityName = communityName,
                 collegeCode = collegeCode,
-                timeStamp = timeStamp
+                timeStamp = timeStamp,
+                userName = userName
             ).collect { state ->
                 _sendMessage.value = state
             }

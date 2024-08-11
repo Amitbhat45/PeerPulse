@@ -77,7 +77,7 @@ fun ProfileScreen(
         ) {
             var isEditing by remember { mutableStateOf(false) }
             var username by remember {
-                mutableStateOf("USERNAME")
+                mutableStateOf(profileViewModel.userName)
             }
             val focusRequester = remember { FocusRequester() }
             Column(
@@ -89,7 +89,10 @@ fun ProfileScreen(
                     if (isEditing) {
                         BasicTextField(
                             value = username,
-                            onValueChange = { username = it },
+                            onValueChange = {
+                                username = it
+                                profileViewModel.updateUsername(username)
+                            },
                             textStyle = TextStyle(
                                 fontSize = 17.sp,
                                 fontWeight = FontWeight.Bold,
@@ -104,13 +107,14 @@ fun ProfileScreen(
                         )
                         LaunchedEffect(Unit) {
                             focusRequester.requestFocus()
-                        }} else {
+                        }
+                    } else {
                         Text(
                             text = username,
                             fontSize = 17.sp,
                             fontWeight = FontWeight.Bold,
 
-                        )
+                            )
                     }
                     Spacer(modifier = Modifier.weight(1f))
                     Text(
@@ -122,40 +126,44 @@ fun ProfileScreen(
                     )
                 }
                 Spacer(modifier = Modifier.height(3.dp))
-                Text(text = authViewModel.email,
-                    fontSize = 10.sp,)
+                Text(
+                    text = authViewModel.email,
+                    fontSize = 10.sp,
+                )
 
                 Spacer(modifier = Modifier.height(10.dp))
-                Spacer(modifier = Modifier
-                    .fillMaxWidth()
-                    .height(2.5.dp)
-                    .background(Color.Gray))
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(2.5.dp)
+                        .background(Color.Gray)
+                )
                 Spacer(modifier = Modifier.height(20.dp))
                 Row(
                     modifier = Modifier
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(25.dp)
                 ) {
-                    card(text = "My Posts", imageVector = R.drawable.posts){
+                    card(text = "My Posts", imageVector = R.drawable.posts) {
                         navController.navigate(Screens.MyPostScreen.route)
                         profileViewModel.myPosts()
                     }
-                    card(text = "Bookmarks", imageVector = R.drawable.bookmarks_vector){
+                    card(text = "Bookmarks", imageVector = R.drawable.bookmarks_vector) {
                         navController.navigate(Screens.BookmarkedPostScreen.route)
                         profileViewModel.getBookmarkedPosts()
                     }
-                    card(text = "Following", imageVector = R.drawable.following_vector){
+                    card(text = "Following", imageVector = R.drawable.following_vector) {
                         navController.navigate(Screens.FollowingPageScreen.route)
                         profileViewModel.getFollowingPages()
                     }
                 }
                 Spacer(modifier = Modifier.height(50.dp))
-                more(text = "About", imageVector = R.drawable.about_vector,{})
+                more(text = "About", imageVector = R.drawable.about_vector, {})
                 Spacer(modifier = Modifier.height(15.dp))
                 HorizontalDivider(
                     Modifier.fillMaxWidth()
                 )
-                more(text = "Terms and Condition", imageVector = R.drawable.tandc_vector,{})
+                more(text = "Terms and Condition", imageVector = R.drawable.tandc_vector, {})
                 Spacer(modifier = Modifier.height(15.dp))
                 HorizontalDivider(
                     Modifier.fillMaxWidth()
@@ -184,13 +192,17 @@ fun ProfileScreen(
 @Composable
 fun LogOutButton(
     authViewModel: AuthViewModel,
-    onSuccess : () -> Unit,
-    onDialogLogOutButtonClicked : () -> Unit
-){
+    onSuccess: () -> Unit,
+    onDialogLogOutButtonClicked: () -> Unit
+) {
     var expanded by remember {
         mutableStateOf(false)
     }
-    Row(Modifier.fillMaxWidth().padding(top=15.dp), horizontalArrangement = Arrangement.Center,) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(top = 15.dp), horizontalArrangement = Arrangement.Center
+    ) {
         Image(painter = painterResource(R.drawable.logout_vector), contentDescription = "image")
         Spacer(modifier = Modifier.width(30.dp))
         Text(
@@ -198,30 +210,31 @@ fun LogOutButton(
             fontSize = 15.sp
         )
         Spacer(modifier = Modifier.weight(1f))
-        Image(painter = painterResource(id = R.drawable.baseline_arrow_forward_ios_24), contentDescription ="forward",
+        Image(painter = painterResource(id = R.drawable.baseline_arrow_forward_ios_24),
+            contentDescription = "forward",
             Modifier.clickable { expanded = true })
 
     }
     //Text(text = "Log Out")
-        when (val response = authViewModel.signOut.value) {
-            is ResponseState.Error -> {
-                ToastMessage(message = response.message)
-            }
+    when (val response = authViewModel.signOut.value) {
+        is ResponseState.Error -> {
+            ToastMessage(message = response.message)
+        }
 
-            ResponseState.Loading -> {
-                CircularProgressIndicator()
-            }
+        ResponseState.Loading -> {
+            CircularProgressIndicator()
+        }
 
-            is ResponseState.Success -> {
-                if (response.data == true) {
-                    onSuccess()
-                } else if (response.data == false) {
-                    ToastMessage(message = "Error Logging Out")
-                } else {
+        is ResponseState.Success -> {
+            if (response.data == true) {
+                onSuccess()
+            } else if (response.data == false) {
+                ToastMessage(message = "Error Logging Out")
+            } else {
 
-                }
             }
         }
+    }
 
     if (expanded) {
         Dialog(
@@ -250,7 +263,7 @@ fun LogOutButton(
                     Row(
                         horizontalArrangement = Arrangement.End,
                         modifier = Modifier.fillMaxWidth()
-                    ){
+                    ) {
                         TextButton(
                             onClick = {
                                 expanded = false
@@ -274,19 +287,21 @@ fun LogOutButton(
 }
 
 @Composable
-fun card(text:String, imageVector: Int,onClick: () -> Unit){
-    OutlinedCard(onClick = { onClick() },
+fun card(text: String, imageVector: Int, onClick: () -> Unit) {
+    OutlinedCard(
+        onClick = { onClick() },
         shape = RoundedCornerShape(10.dp),
         modifier = Modifier
             .width(100.dp)
-            .height(85.dp)) {
+            .height(85.dp)
+    ) {
         Column( // Use Box for flexible positioning
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-           Image(painter = painterResource(id = imageVector), contentDescription = "")
-           Spacer(modifier = Modifier.height(2.dp))
+            Image(painter = painterResource(id = imageVector), contentDescription = "")
+            Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = text,
                 modifier = Modifier.padding(top = 8.dp),
@@ -299,20 +314,25 @@ fun card(text:String, imageVector: Int,onClick: () -> Unit){
 }
 
 @Composable
-fun more(text:String,imageVector:Int,onClick: () -> Unit){
+fun more(text: String, imageVector: Int, onClick: () -> Unit) {
 
-        Row(Modifier.fillMaxWidth().padding(top=15.dp), horizontalArrangement = Arrangement.Center,) {
-            Image(painter = painterResource(id = imageVector), contentDescription = "image")
-            Spacer(modifier = Modifier.width(30.dp))
-            Text(
-                text = text,
-                fontSize = 15.sp
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            Image(painter = painterResource(id = R.drawable.baseline_arrow_forward_ios_24), contentDescription ="forward",
-                Modifier.clickable { onClick() })
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(top = 15.dp), horizontalArrangement = Arrangement.Center
+    ) {
+        Image(painter = painterResource(id = imageVector), contentDescription = "image")
+        Spacer(modifier = Modifier.width(30.dp))
+        Text(
+            text = text,
+            fontSize = 15.sp
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        Image(painter = painterResource(id = R.drawable.baseline_arrow_forward_ios_24),
+            contentDescription = "forward",
+            Modifier.clickable { onClick() })
 
-        }
+    }
 
 }
 

@@ -301,7 +301,8 @@ fun RootNavigation(
                    communityViewModel = communityViewModel,
                     communityName = communityName,
                     collegeCode = colleges.find { it.name == authViewModel.college }?.code ?: "",
-                    permissionGranted = permissionGranted
+                    permissionGranted = permissionGranted,
+                    userName = profileViewModel.userName
                 )
             }
         }

@@ -87,7 +87,8 @@ class CommunityRepositoryImpl @Inject constructor(
         userId : String,
         communityName: String,
         collegeCode : String,
-        timeStamp : Long
+        timeStamp : Long,
+        userName : String
     ): Flow<ResponseState<Boolean>> = flow {
         emit(ResponseState.Loading)
         val id = firestore.collection("messages").document().id
@@ -98,7 +99,8 @@ class CommunityRepositoryImpl @Inject constructor(
             communityName = communityName,
             collegeCode = collegeCode,
             timeStamp = timeStamp,
-            messageId = id
+            messageId = id,
+            userName = userName
         )
         firestore.collection("messages").document(id).set(messageMap).await()
         emit(ResponseState.Success(true))

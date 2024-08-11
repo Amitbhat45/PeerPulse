@@ -91,5 +91,41 @@ class UserRepositoryImpl @Inject constructor(
         emit(ResponseState.Error(it.message ?: "An unexpected error occurred"))
     }
 
+    override suspend fun updateUsername(
+        userId: String,
+        username: String
+    ): Flow<ResponseState<Boolean>> = flow {
+        emit(ResponseState.Loading)
+        firestore.runTransaction { transaction ->
+            val userDocRef = firestore.collection("users").document(userId)
+            transaction.update(userDocRef, "username", username)
+        }.await()
+        emit(ResponseState.Success(true))
+    }.catch {
+        emit(ResponseState.Error(it.message ?: "An unexpected error occurred"))
+
+    }
+
+    override suspend fun getUsername(userId: String): Flow<ResponseState<String>> = callbackFlow {
+        ResponseState.Loading
+        val snapshotListener = firestore.collection("users")
+            .document(userId)
+            .addSnapshotListener { snapshot, error ->
+                val response = if(snapshot != null){
+                    val username = snapshot["username"] as String
+                    ResponseState.Success(username)
+                }
+                else{
+                    ResponseState.Error(error?.message ?: "An unexpected error occurred")
+                }
+                trySend(response).isSuccess
+            }
+        awaitClose {
+            snapshotListener.remove()
+        }
+    }.catch {
+        emit(ResponseState.Error(it.message ?: "An unexpected error occurred"))
+    }
+
 
 }

@@ -90,7 +90,8 @@ fun CommunityMessageScreen(
     communityViewModel: CommunityViewModel,
     communityName: String,
     permissionGranted: MutableState<Boolean>,
-    collegeCode: String
+    collegeCode: String,
+    userName : String
 ) {
     Scaffold(
         topBar = {
@@ -146,7 +147,8 @@ fun CommunityMessageScreen(
                             permissionGranted = permissionGranted,
                             communityViewModel = communityViewModel,
                             communityName = communityName,
-                            collegeCode = collegeCode
+                            collegeCode = collegeCode,
+                            userName = userName
                         )
                     } else {
                         val listState = rememberLazyListState()
@@ -166,7 +168,8 @@ fun CommunityMessageScreen(
                                     currentUser = communityViewModel.userId == response.data[index].userId,
                                     time = convertMillisTo24HourFormat(response.data[index].timeStamp),
                                     messageId = response.data[index].messageId,
-                                    communityViewModel = communityViewModel
+                                    communityViewModel = communityViewModel,
+                                    userName = response.data[index].userName
                                 )
                             }
                         }
@@ -175,7 +178,8 @@ fun CommunityMessageScreen(
                             permissionGranted = permissionGranted,
                             communityViewModel = communityViewModel,
                             communityName = communityName,
-                            collegeCode = collegeCode
+                            collegeCode = collegeCode,
+                            userName = userName
                         )
                     }
                 }
@@ -215,7 +219,8 @@ fun MessageBar(
     permissionGranted: MutableState<Boolean>,
     communityViewModel: CommunityViewModel,
     communityName: String,
-    collegeCode: String
+    collegeCode: String,
+    userName: String
 ) {
     var messageText by remember {
         mutableStateOf<String>("")
@@ -334,7 +339,8 @@ fun MessageBar(
                     userId = communityViewModel.userId ?: "",
                     communityName = communityName,
                     collegeCode = collegeCode,
-                    timeStamp = System.currentTimeMillis()
+                    timeStamp = System.currentTimeMillis(),
+                    userName = userName
                 )
                 messageText = ""
                 image = null
@@ -374,7 +380,8 @@ fun MessageCard(
     image: String? = null,
     currentUser: Boolean,
     time: String,
-    communityViewModel: CommunityViewModel
+    communityViewModel: CommunityViewModel,
+    userName: String
 ) {
     val scope = rememberCoroutineScope()
     var showDialog by remember {
@@ -403,7 +410,7 @@ fun MessageCard(
             Column {
                 if(!currentUser) {
                     Text(
-                        text = "UserName",
+                        text = userName,
                         modifier = Modifier.padding(
                             bottom = 0.dp,
                             top = 8.dp,

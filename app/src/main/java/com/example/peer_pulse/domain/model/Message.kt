@@ -9,6 +9,7 @@ data class Message(
     var imageUrl: String? = null,
     var collegeCode : String = "",
     var communityName : String = "",
-    var timeStamp: Long = 0
+    var timeStamp: Long = 0,
+    var userName : String = ""
 )
 
