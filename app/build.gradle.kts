@@ -65,6 +65,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.lifecycle.runtime.compose.android)
     implementation(libs.androidx.databinding.adapters)
+    implementation(libs.firebase.messaging)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -84,6 +85,7 @@ dependencies {
     implementation(libs.play.services.auth)
     implementation (libs.firebase.core)
     implementation(libs.firebase.firestore)
+    implementation (libs.firebase.messaging.ktx)
 
     //Image
     implementation(libs.coil.compose)

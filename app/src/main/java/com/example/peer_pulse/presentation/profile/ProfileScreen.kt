@@ -18,6 +18,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -79,19 +80,25 @@ fun ProfileScreen(
             var username by remember {
                 mutableStateOf(profileViewModel.userName)
             }
+            var userNameValid by remember {
+                mutableStateOf<Boolean?>(null)
+            }
             val focusRequester = remember { FocusRequester() }
             Column(
                 modifier = Modifier
                     .padding(start = 16.dp, top = 25.dp, bottom = 16.dp, end = 16.dp)
                     .weight(9f)
             ) {
-                Row(horizontalArrangement = Arrangement.Center) {
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
                     if (isEditing) {
                         BasicTextField(
                             value = username,
                             onValueChange = {
                                 username = it
-                                profileViewModel.updateUsername(username)
+                                authViewModel.verifyUsername(username)
                             },
                             textStyle = TextStyle(
                                 fontSize = 17.sp,
@@ -104,6 +111,7 @@ fun ProfileScreen(
                             ),
                             modifier = Modifier
                                 .focusRequester(focusRequester)
+                                .padding(end = 10.dp)
                         )
                         LaunchedEffect(Unit) {
                             focusRequester.requestFocus()
@@ -113,17 +121,84 @@ fun ProfileScreen(
                             text = username,
                             fontSize = 17.sp,
                             fontWeight = FontWeight.Bold,
-
-                            )
+                            modifier = Modifier.padding(end = 10.dp)
+                        )
                     }
-                    Spacer(modifier = Modifier.weight(1f))
+                    when (val response = authViewModel.verifyUsername.value) {
+                        is ResponseState.Error -> {
+                            ToastMessage(message = response.message)
+                        }
+
+                        ResponseState.Loading -> {
+                            CircularProgressIndicator()
+                        }
+
+                        is ResponseState.Success -> {
+                            if (response.data == true) {
+                                userNameValid = true
+                            } else if (response.data == false) {
+                                if(username == profileViewModel.userName) {
+                                    userNameValid = true
+                                }
+                                else {
+                                    userNameValid = false
+                                }
+                            } else {
+                                userNameValid = null
+                            }
+                        }
+                    }
+
                     Text(
-                        text = if (isEditing) "SAVE" else "EDIT",
-                        fontSize = 12.sp,
-                        modifier = Modifier
-                            .padding(end = 10.dp)
-                            .clickable { isEditing = !isEditing },
+                        text = if (isEditing) {
+                            when (userNameValid) {
+                                true -> {
+                                    "Username available"
+                                }
+
+                                false -> {
+                                    "Username already exists"
+                                }
+
+                                else -> {
+                                    ""
+                                }
+                            }
+                        } else
+                            "",
+                        fontSize = 10.sp,
                     )
+                    Spacer(modifier = Modifier.weight(1f))
+                    TextButton(
+                        onClick = {
+                            if (isEditing) {
+                                if (userNameValid == true) {
+                                    profileViewModel.updateUsername(username)
+                                    isEditing = !isEditing
+                                    userNameValid = null
+                                } else {
+
+                                }
+                            } else {
+                                isEditing = !isEditing
+                                userNameValid = null
+                            }
+                        },
+                        enabled = userNameValid == true || !isEditing,
+                        colors = ButtonColors(
+                            containerColor = Color.Transparent,
+                            contentColor = Color.White,
+                            disabledContentColor = Color.Gray,
+                            disabledContainerColor = Color.Transparent,
+                        )
+                    ) {
+                        Text(
+                            text = if (isEditing) "SAVE" else "EDIT",
+                            fontSize = 12.sp,
+                            modifier = Modifier
+                                .padding(end = 10.dp)
+                        )
+                    }
                 }
                 Spacer(modifier = Modifier.height(3.dp))
                 Text(

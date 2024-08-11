@@ -73,18 +73,11 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun verifyUsername(userName: String): Flow<ResponseState<Boolean>> = flow{
         emit(ResponseState.Loading)
         operationSuccessful = false
-        firestore.collection("users").whereEqualTo("userName", userName).get().addOnSuccessListener {
-            operationSuccessful = it.isEmpty
-        }.addOnFailureListener {
-            errorMessage = it.message ?: "An unexpected error occurred"
-        }.await()
-        if(operationSuccessful){
+        val query = firestore.collection("users").whereEqualTo("username", userName).get().await()
+        if (query.isEmpty) {
             emit(ResponseState.Success(true))
         } else {
-            emit(ResponseState.Error("Username already exists"))
-        }
-        if(errorMessage.isNotEmpty()){
-            emit(ResponseState.Error(errorMessage))
+            emit(ResponseState.Success(false))
         }
     }.catch {
         emit(ResponseState.Error(it.message ?: "An unexpected error occurred"))
