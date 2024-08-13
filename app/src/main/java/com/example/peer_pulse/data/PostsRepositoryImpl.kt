@@ -62,7 +62,13 @@ class PostsRepositoryImpl @Inject constructor(
     override suspend fun getMostLikedPostsLastWeek(preferences: List<String>): Flow<PagingData<post>> {
         return Pager(
             config = PagingConfig(pageSize = 20, enablePlaceholders = false),
-            remoteMediator = PostRemoteMediator(firestore, database, preferences, TimeRange.LAST_WEEK, sortByLikes = true),
+            remoteMediator = PostRemoteMediator(
+                firestore = firestore,
+                database = database,
+                userPreferences = preferences,
+                timeRange = TimeRange.LAST_WEEK,
+                sortByLikes = true
+            ),
             pagingSourceFactory = { database.postDao().getPosts(preferences) }
         ).flow
     }

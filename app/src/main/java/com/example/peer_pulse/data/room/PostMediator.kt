@@ -30,10 +30,11 @@ class PostRemoteMediator(
                 LoadType.APPEND -> state.lastItemOrNull()?.id
             }
 
+            // Base query with user preferences
             val baseQuery = firestore.collection("posts")
-                .whereIn("preferences", userPreferences)
+                .whereArrayContainsAny("preferences", userPreferences) // using whereArrayContainsAny for arrays
 
-
+            // Time filter based on the provided time range
             val timeFilteredQuery = when (timeRange) {
                 TimeRange.LAST_WEEK -> baseQuery.whereGreaterThan("timestamp", getLastWeekTimestamp())
                 TimeRange.LAST_MONTH -> baseQuery.whereGreaterThan("timestamp", getLastMonthTimestamp())
@@ -41,19 +42,21 @@ class PostRemoteMediator(
                 null -> baseQuery
             }
 
-
+            // Sort and limit the query
             val finalQuery = if (sortByLikes) {
                 timeFilteredQuery.orderBy("likes", Query.Direction.DESCENDING)
             } else {
                 timeFilteredQuery.orderBy("timestamp", Query.Direction.DESCENDING)
             }.limit(state.config.pageSize.toLong())
 
+            // Execute query
             val snapshot = if (loadKey != null) {
                 finalQuery.startAfter(loadKey).get().await()
             } else {
                 finalQuery.get().await()
             }
 
+            // Map documents to post objects
             val posts = snapshot.documents.map { document ->
                 val post = document.toObject(post::class.java)
                 if (post != null) {
@@ -69,12 +72,14 @@ class PostRemoteMediator(
                 }
             }
 
+            // Save results to the local database
             database.withTransaction {
                 if (loadType == LoadType.REFRESH) {
                     database.postDao().clearPosts()
                 }
                 database.postDao().insertAll(posts)
             }
+
             MediatorResult.Success(endOfPaginationReached = posts.isEmpty())
         } catch (e: Exception) {
             MediatorResult.Error(e)
@@ -99,7 +104,6 @@ class PostRemoteMediator(
         return calendar.timeInMillis
     }
 }
-
 
 enum class TimeRange {
     LAST_WEEK,
