@@ -10,13 +10,11 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.peer_pulse.data.room.post
 import com.example.peer_pulse.domain.model.Post
-import com.example.peer_pulse.domain.model.Preferences
 import com.example.peer_pulse.domain.repository.PostsRepository
 import com.example.peer_pulse.utilities.ResponseState
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -85,6 +83,7 @@ class PostViewModel @Inject constructor(
         viewModelScope.launch {
             val userDocument = userId?.let { firestore.collection("users").document(it).get().await() }
             val preferences1 = userDocument?.get("preferences") as? List<String> ?: emptyList()
+
             postsRepository.getPosts(preferences1)
                 .cachedIn(viewModelScope)
                 .collectLatest { pagingData ->
@@ -138,22 +137,21 @@ class PostViewModel @Inject constructor(
         }
     }
     fun savePost(
-        title : String,
-        description : String,
-        images : List<Uri?>,
-        preferences : String,
-        preferencesId : String
-    ){
-        val image : List<String> =  images.map { it.toString() }
+        title: String,
+        description: String,
+        imageUris: List<Uri?>,  // Accepts a List<Uri> directly
+        preferences: String,
+        preferencesId: String
+    ) {
         viewModelScope.launch {
             postsRepository.savePost(
-                title,
-                description,
-                image,
-                preferences,
-                preferencesId,
-                userId!!
-            ).collect{ state ->
+                title = title,
+                description = description,
+                imageUris = imageUris,  // Passes List<Uri> directly
+                preferences = preferences,
+                preferencesId = preferencesId,
+                userId = userId!!
+            ).collect { state ->
                 _savePostState.value = state
             }
         }

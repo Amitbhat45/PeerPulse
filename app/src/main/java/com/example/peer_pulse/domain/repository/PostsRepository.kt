@@ -13,13 +13,14 @@ interface PostsRepository {
     suspend fun getReply(postId: String,replyId : String) : Flow<ResponseState<String>>
 
     suspend fun savePost(
-        title : String,
-        description : String,
-        images : List<String>,
-        preferences : String,
-        preferencesId : String,
-        userId : String
-    ):Flow<ResponseState<Boolean>>
+        title: String,
+        description: String,
+        imageUris: List<Uri?>,
+        preferences: String,
+        preferencesId: String,
+        userId: String
+    ): Flow<ResponseState<Boolean>>
+
     suspend fun deletePost(postId:String):Flow<ResponseState<String>>
     suspend fun getPosts(preferences: List<String>): Flow<PagingData<post>>
     suspend fun getMostLikedPostsLastWeek(preferences: List<String>): Flow<PagingData<post>>

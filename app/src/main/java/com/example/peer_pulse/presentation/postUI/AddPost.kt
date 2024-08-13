@@ -106,7 +106,9 @@ fun AddPost(
     val activity = context as ComponentActivity
 
 
-    val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.PickMultipleVisualMedia()) { uris ->
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickMultipleVisualMedia()
+    ) { uris ->
         images = uris
         uris.forEach { uri ->
             try {
@@ -114,11 +116,18 @@ fun AddPost(
                     uri,
                     Intent.FLAG_GRANT_READ_URI_PERMISSION
                 )
-            } catch (e: SecurityException) {
+
+                // Convert URI to InputStream and upload to Firebase Storage
+                val stream = context.contentResolver.openInputStream(uri)
+                val fileName = "${System.currentTimeMillis()}.jpg"
+
+            } catch (e: Exception) {
                 e.printStackTrace()
+
             }
         }
     }
+
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun checkPermissions() {
@@ -394,7 +403,7 @@ fun AddPost(
                         Spacer(modifier = Modifier.height(8.dp))
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Image(
-                                painter = painterResource(id = R.drawable.google_image), // Replace with your community icon
+                                painter = painterResource(id = R.drawable.google_image),
                                 contentDescription = null,
                                 modifier = Modifier
                                     .size(40.dp)
@@ -450,7 +459,7 @@ fun PostTitleBar(
                        preferencesId = preferencesText,
                        title = titleText,
                        description = descriptionText,
-                       images = images
+                       imageUris = images
                    )
                 },
                 colors = ButtonDefaults.buttonColors(
