@@ -149,7 +149,7 @@ class PostViewModel @Inject constructor(
     fun savePost(
         title: String,
         description: String,
-        imageUris: List<Uri?>,  // Accepts a List<Uri> directly
+        imageUris: List<Uri?>,
         preferences: String,
         preferencesId: String
     ) {
@@ -157,7 +157,7 @@ class PostViewModel @Inject constructor(
             postsRepository.savePost(
                 title = title,
                 description = description,
-                imageUris = imageUris,  // Passes List<Uri> directly
+                imageUris = imageUris,
                 preferences = preferences,
                 preferencesId = preferencesId,
                 userId = userId!!

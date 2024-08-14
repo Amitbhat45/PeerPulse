@@ -84,7 +84,7 @@ fun PostUI(
         }
     }
 
-    Card(onClick = { navController.navigate(Screens.PostViewScreen.postDetails(post)) {
+    Card(onClick = { navController.navigate(Screens.PostViewScreen.createRoute(post)) {
         launchSingleTop = true
     } },
         modifier = Modifier

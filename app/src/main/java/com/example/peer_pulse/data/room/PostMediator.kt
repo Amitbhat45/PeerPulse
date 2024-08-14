@@ -10,7 +10,7 @@ import kotlinx.coroutines.tasks.await
 import java.util.Calendar
 
 
-@OptIn(ExperimentalPagingApi::class)
+/*@OptIn(ExperimentalPagingApi::class)
 class PostRemoteMediator(
     private val firestore: FirebaseFirestore,
     private val database: PostsDatabase,
@@ -119,8 +119,74 @@ enum class TimeRange {
     LAST_WEEK,
     LAST_MONTH,
     LAST_YEAR
+}*/
+
+@OptIn(ExperimentalPagingApi::class)
+class PostRemoteMediator(
+    private val firestore: FirebaseFirestore,
+    private val database: PostsDatabase,
+    private val userPreferences: List<String>,
+    //private val timeRange: TimeRange? = null,
+    //private val sortByLikes: Boolean = false
+) : RemoteMediator<Int, post>() {
+
+    override suspend fun load(
+        loadType: LoadType,
+        state: PagingState<Int, post>
+    ): MediatorResult {
+        return try {
+            val loadKey = when (loadType) {
+                LoadType.REFRESH -> null
+                LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
+                LoadType.APPEND -> state.lastItemOrNull()?.id
+            }
+
+            val query = firestore.collection("posts")
+                .whereIn("preferences", userPreferences)
+                //.whereEqualTo("collegeCode","")
+                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .limit(state.config.pageSize.toLong())
+
+            val snapshot = if (loadKey != null) {
+                query.startAfter(loadKey).get().await()
+            } else {
+                query.get().await()
+            }
+
+            val posts = snapshot.documents.map { document ->
+                val post = document.toObject(post::class.java)
+                if (post != null) {
+                    val timestamp = document.get("timestamp")
+                    val timestampLong = when (timestamp) {
+                        is Timestamp -> timestamp.toDate().time
+                        is Long -> timestamp
+                        else -> throw IllegalStateException("Unexpected timestamp type: ${timestamp?.javaClass?.name}")
+                    }
+                    post.copy(timestamp = timestampLong)
+                } else {
+                    throw IllegalStateException("Failed to parse post from Firestore")
+                }
+            }
+
+            //Log.d("PostRemoteMediator", "Number of posts retrieved: ${posts.size}")
+
+            database.withTransaction {
+                if (loadType == LoadType.REFRESH) {
+                    database.postDao().clearPosts()
+                }
+                database.postDao().insertAll(posts)
+            }
+            MediatorResult.Success(endOfPaginationReached = posts.isEmpty())
+        } catch (e: Exception) {
+            MediatorResult.Error(e)
+        }
+    }
 }
 
-
+/*enum class TimeRange {
+    LAST_WEEK,
+    LAST_MONTH,
+    LAST_YEAR
+}*/
 
 

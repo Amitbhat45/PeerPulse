@@ -2,7 +2,10 @@ package com.example.peer_pulse.utilities
 
 import com.example.peer_pulse.data.room.post
 import com.example.peer_pulse.domain.model.Post
+import com.google.gson.Gson
 import okhttp3.Route
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 sealed class Screens(val route: String){
     data object SplashScreen1: Screens("SplashScreen1")
@@ -27,10 +30,13 @@ sealed class Screens(val route: String){
             return "collegePages/$pageId"
         }
     }
-    data object PostViewScreen : Screens("post/{title}/{description}/{likes}/{timestamp}/{preferences}") {
-        fun postDetails(post: post): String {
-            return "post/${post.title}/${post.description}/${post.likes}/${post.timestamp}/${post.preferences}"
+    object PostViewScreen : Screens("post_detail/{postJson}") {
+        fun createRoute(post: post): String {
+            val postJson = Gson().toJson(post)
+            val encodedPostJson = URLEncoder.encode(postJson, StandardCharsets.UTF_8.toString())
+            return "post_detail/$encodedPostJson"
         }
     }
+
     data object CommunityScreen : Screens("CommunityScreen")
 }

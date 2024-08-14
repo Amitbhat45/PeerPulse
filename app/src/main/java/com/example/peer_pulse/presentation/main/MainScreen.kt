@@ -35,6 +35,8 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.ArrowDropDown
 import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -62,8 +64,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
@@ -79,8 +85,10 @@ import com.example.peer_pulse.presentation.AuthViewModel
 import com.example.peer_pulse.presentation.postUI.PostViewModel
 import com.example.peer_pulse.R
 import com.example.peer_pulse.data.room.post
+import com.example.peer_pulse.domain.model.preferences
 
 import com.example.peer_pulse.presentation.postUI.PostUI
+import com.example.peer_pulse.presentation.preferences.PreferencesViewModel
 import com.example.peer_pulse.utilities.Screens
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
@@ -95,6 +103,7 @@ fun MainScreen(
     navController: NavController,
     postViewModel: PostViewModel,
 
+
 ){
     val userFeedState = postViewModel.userFeedState
     val lazyPagingItems = userFeedState.collectAsLazyPagingItems()
@@ -106,7 +115,7 @@ fun MainScreen(
     val pagerState = rememberPagerState(pageCount = { hometabs.size})
     val selectedTabIndex = remember { derivedStateOf { pagerState.currentPage } }
     Scaffold(
-        topBar = { TopAppBarWithSearch()},
+        topBar = { TopAppBarWithSearch(navController)},
         bottomBar = {
             BottomNavigation(
                 selectedButton = BottomNavigationScreens.Main,
@@ -202,7 +211,6 @@ fun MainScreen(
                                             "Past Year" -> postViewModel.fetchMostLikedLastYear()
                                         }
                                     }
-
                                     val lazyPagingItems2 = mostLikedPosts.collectAsLazyPagingItems()
                                     Column(
                                         modifier = Modifier
@@ -221,7 +229,7 @@ fun MainScreen(
                                 }
 
                             }
-                            // Add more cases for other tabs if needed
+
                         }
 
                     }
@@ -233,7 +241,7 @@ fun MainScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopAppBarWithSearch() {
+fun TopAppBarWithSearch(navController: NavController) {
     var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
 
     Row(
@@ -244,16 +252,18 @@ fun TopAppBarWithSearch() {
     ) {
         Image(
             painter = painterResource(id = R.drawable.applogoblue),
-            contentDescription = "App Logo", // Ensure contentDescription is descriptive
+            contentDescription = "App Logo",
             Modifier
                 .size(38.dp)
                 .clip(CircleShape)
         )
         Spacer(modifier = Modifier.width(12.dp))
-        CustomTextField(
+        CustomTextFieldWithSuggestions(
             value = searchQuery,
-            onValueChange = { searchQuery = it },
-            placeholder = "Search for Topic"
+        onValueChange = { searchQuery = it },
+        placeholder = "Search for Topic",
+        preferences = preferences,
+            navController = navController
         )
     }
 }
@@ -355,49 +365,99 @@ fun BottomSheetContent(onOptionSelected: (String) -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CustomTextField(
+fun CustomTextFieldWithSuggestions(
     value: TextFieldValue,
     onValueChange: (TextFieldValue) -> Unit,
     placeholder: String,
+    preferences: List<String>,
     modifier: Modifier = Modifier,
     textColor: Color = Color.White,
     placeholderColor: Color = Color.Gray,
     backgroundColor: Color = Color(0xff262626),
-    shape: Shape = RoundedCornerShape(20.dp)
+    shape: Shape = RoundedCornerShape(20.dp),
+    navController: NavController
 ) {
+    var filteredPreferences by remember { mutableStateOf(listOf<String>()) }
+    var isDropdownExpanded by remember { mutableStateOf(false) }
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusRequester = remember { FocusRequester() }
+
+
+
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(40.dp)
             .padding(horizontal = 15.dp)
-            .background(color = backgroundColor, shape = shape)
-            .padding(horizontal = 10.dp, vertical = 8.dp)
     ) {
-        if (value.text.isEmpty()) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = "Search icon",
-                    tint = placeholderColor,
-                    modifier = Modifier.size(18.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = placeholder,
-                    color = placeholderColor,
-                    fontSize = 14.sp,
+        Column {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(40.dp)
+                    .background(color = backgroundColor, shape = shape)
+                    .padding(horizontal = 10.dp, vertical = 8.dp)
+            ) {
+                if (value.text.isEmpty()) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "Search icon",
+                            tint = placeholderColor,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = placeholder,
+                            color = placeholderColor,
+                            fontSize = 14.sp,
+                        )
+                    }
+                }
+                BasicTextField(
+                    value = value,
+                    onValueChange = {
+                        onValueChange(it)
+                        filteredPreferences = preferences
+                            .filter { pref ->
+                                pref.contains(it.text, ignoreCase = true)
+                            }
+                            .sorted()
+                        isDropdownExpanded = filteredPreferences.isNotEmpty()
+                        focusRequester.requestFocus() // Ensure the TextField keeps focus
+                        keyboardController?.show()
+
+                    },
+                    singleLine = true,
+                    textStyle = TextStyle(
+                        color = textColor,
+                        fontSize = 14.sp
+                    ),
+                    modifier = Modifier.fillMaxWidth().focusRequester(focusRequester)
                 )
             }
+
+            DropdownMenu(
+                expanded = isDropdownExpanded,
+                onDismissRequest = { isDropdownExpanded = false },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                filteredPreferences.forEach { suggestion ->
+                    DropdownMenuItem(
+                        onClick = {
+                            onValueChange(TextFieldValue(suggestion))
+                            isDropdownExpanded = false
+                            keyboardController?.hide()
+                            navController.navigate(Screens.PagesScreen.createRoute(suggestion))
+                        },
+                        text = {
+                            Text(text = suggestion, fontSize = 14.sp)
+                        }
+                    )
+                }
+            }
         }
-        BasicTextField(
-            value = value,
-            onValueChange = onValueChange,
-            singleLine = true,
-            textStyle = TextStyle(
-                color = textColor,
-                fontSize = 14.sp
-            ),
-            modifier = Modifier.fillMaxWidth()
-        )
     }
 }
+
+
+

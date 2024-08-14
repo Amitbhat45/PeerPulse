@@ -9,4 +9,7 @@ interface PagesRepository {
     suspend fun getPostByPreference(preferenceId: String): Flow<ResponseState<List<String>>>
 
     suspend fun getPostbyTopic(preferences: List<String>): Flow<PagingData<post>>
+    suspend fun getMostLikedPostsLastWeek(preferences: List<String>): Flow<PagingData<post>>
+    suspend fun getMostLikedPostsLastMonth(preferences: List<String>): Flow<PagingData<post>>
+    suspend fun  getMostLikedPostsLastYear(preferences: List<String>): Flow<PagingData<post>>
 }

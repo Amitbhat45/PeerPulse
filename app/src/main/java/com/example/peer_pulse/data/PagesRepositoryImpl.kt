@@ -5,7 +5,9 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.example.peer_pulse.data.room.PostRemoteMediator
+import com.example.peer_pulse.data.room.PostRemoteMediator2
 import com.example.peer_pulse.data.room.PostsDatabase
+import com.example.peer_pulse.data.room.TimeRange
 import com.example.peer_pulse.data.room.post
 import com.example.peer_pulse.domain.repository.PagesRepository
 import com.example.peer_pulse.utilities.ResponseState
@@ -45,6 +47,36 @@ class PagesRepositoryImpl @Inject constructor(
         return Pager(
             config = PagingConfig(pageSize = 20, enablePlaceholders = false),
             remoteMediator = PostRemoteMediator(firestore, database, preferences),
+            pagingSourceFactory = { database.postDao().getPosts(preferences) }
+        ).flow
+    }
+    @OptIn(ExperimentalPagingApi::class)
+    override suspend fun getMostLikedPostsLastWeek(preferences: List<String>): Flow<PagingData<post>> {
+        return Pager(
+            config = PagingConfig(pageSize = 20, enablePlaceholders = false),
+            remoteMediator = PostRemoteMediator2(
+                firestore = firestore,
+                database = database,
+                userPreferences = preferences,
+                timeRange = TimeRange.LAST_WEEK,
+            ),
+            pagingSourceFactory = { database.postDao().getPosts(preferences) }
+        ).flow
+    }
+    @OptIn(ExperimentalPagingApi::class)
+    override suspend fun getMostLikedPostsLastMonth(preferences: List<String>): Flow<PagingData<post>> {
+        return Pager(
+            config = PagingConfig(pageSize = 20, enablePlaceholders = false),
+            remoteMediator = PostRemoteMediator2(firestore, database, preferences, TimeRange.LAST_MONTH),
+            pagingSourceFactory = { database.postDao().getPosts(preferences) }
+        ).flow
+    }
+
+    @OptIn(ExperimentalPagingApi::class)
+    override suspend fun getMostLikedPostsLastYear(preferences: List<String>): Flow<PagingData<post>> {
+        return Pager(
+            config = PagingConfig(pageSize = 20, enablePlaceholders = false),
+            remoteMediator = PostRemoteMediator2(firestore, database, preferences, TimeRange.LAST_YEAR),
             pagingSourceFactory = { database.postDao().getPosts(preferences) }
         ).flow
     }

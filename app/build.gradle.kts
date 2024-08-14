@@ -124,4 +124,8 @@ dependencies {
     annotationProcessor (libs.compiler)
     implementation (libs.compose)
 
+    //horizontal pager
+    //implementation (libs.accompanist.pager)
+
+
 }

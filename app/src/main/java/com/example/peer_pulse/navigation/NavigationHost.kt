@@ -21,6 +21,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.peer_pulse.data.login.GoogleAuthUiClient
+import com.example.peer_pulse.data.room.post
 import com.example.peer_pulse.presentation.AuthViewModel
 import com.example.peer_pulse.presentation.LandingScreen
 import com.example.peer_pulse.presentation.college_page.CollegePage
@@ -42,9 +43,12 @@ import com.example.peer_pulse.presentation.signup.SignUpEmailScreen
 import com.example.peer_pulse.presentation.signup.SignUpPasswordScreen
 import com.example.peer_pulse.presentation.splashScreens.SplashScreen1
 import com.example.peer_pulse.utilities.Screens
+import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -216,28 +220,15 @@ fun NavigationHost(
         }
         composable(
             route = Screens.PostViewScreen.route,
-            arguments = listOf(
-                navArgument("title") { type = NavType.StringType },
-                navArgument("description") { type = NavType.StringType },
-                navArgument("likes") { type = NavType.IntType },
-                navArgument("timestamp") { type = NavType.LongType },
-                navArgument("preferences") { type = NavType.StringType },
-            )
+            arguments = listOf(navArgument("postJson") { type = NavType.StringType })
         ) { backStackEntry ->
-            val title = backStackEntry.arguments?.getString("title") ?: ""
-            val description = backStackEntry.arguments?.getString("description") ?: ""
-            val likes = backStackEntry.arguments?.getInt("likes") ?: 0
-            val timestamp = backStackEntry.arguments?.getLong("timestamp") ?: 0L
-            val preferences = backStackEntry.arguments?.getString("preferences") ?: ""
+            // Retrieve the JSON string, decode it, and deserialize it into a Post object
+            val encodedPostJson = backStackEntry.arguments?.getString("postJson") ?: ""
+            val postJson = URLDecoder.decode(encodedPostJson, StandardCharsets.UTF_8.toString())
+            val post = Gson().fromJson(postJson, post::class.java)
 
-            postInsideView(
-                title = title,
-                description = description,
-                likes = likes,
-                timestamp = timestamp,
-                preferences = preferences,
-                navController = navHostController
-            )
+            // Pass the deserialized Post object to your screen
+            postInsideView(post = post, navController = navHostController)
         }
         composable(Screens.CommunityScreen.route){
             communityScreen(navController = navHostController)

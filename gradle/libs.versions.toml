@@ -2,6 +2,7 @@
 accompanistCoil = "0.14.0"
 accompanistGlide = "0.23.0"
 accompanistInsets = "0.31.3-beta"
+accompanistPager = "0.24.13-alpha"
 agp = "8.4.1"
 coilCompose = "2.6.0"
 compiler = "4.12.0"
@@ -50,6 +51,7 @@ firebaseStorageKtx = "21.0.0"
 accompanist-coil = { module = "com.google.accompanist:accompanist-coil", version.ref = "accompanistCoil" }
 accompanist-glide = { module = "com.google.accompanist:accompanist-glide", version.ref = "accompanistGlide" }
 accompanist-insets = { module = "com.google.accompanist:accompanist-insets", version.ref = "accompanistInsets" }
+accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPager" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hiltNavigationCompose" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
