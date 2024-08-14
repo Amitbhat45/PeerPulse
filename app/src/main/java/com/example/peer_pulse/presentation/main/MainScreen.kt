@@ -1,6 +1,7 @@
 package com.example.peer_pulse.presentation.main
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -50,6 +51,7 @@ import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -67,6 +69,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.paging.LoadState
 import androidx.paging.PagingData
@@ -93,6 +96,10 @@ fun MainScreen(
 ){
     val userFeedState = postViewModel.userFeedState
     val lazyPagingItems = userFeedState.collectAsLazyPagingItems()
+
+    val LastWeek=postViewModel.mostLikedLastWeek
+    val lazyPagingItems10=LastWeek.collectAsLazyPagingItems()
+
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(pageCount = { hometabs.size})
     val selectedTabIndex = remember { derivedStateOf { pagerState.currentPage } }
@@ -177,7 +184,40 @@ fun MainScreen(
                                 }
                             }
                             "POPULAR" -> {
-                               Filter()
+                                val selectedFilter = remember { mutableStateOf("Past Week") }
+                                val mostLikedPosts = when (selectedFilter.value) {
+                                    "Past Week" -> postViewModel.mostLikedLastWeek
+                                    "Past Month" -> postViewModel.mostLikedLastMonth
+                                    "Past Year" -> postViewModel.mostLikedLastYear
+                                    else -> postViewModel.mostLikedLastWeek
+                                }
+                                Column (Modifier.fillMaxSize()){
+                                    Filter(selectedFilter.value) { filter ->
+                                        selectedFilter.value = filter
+                                        when (filter) {
+                                            "Past Week" -> postViewModel.fetchMostLikedLastWeek()
+                                            "Past Month" -> postViewModel.fetchMostLikedLastMonth()
+                                            "Past Year" -> postViewModel.fetchMostLikedLastYear()
+                                        }
+                                    }
+
+                                    val lazyPagingItems2 = mostLikedPosts.collectAsLazyPagingItems()
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .verticalScroll(rememberScrollState())
+                                    ) {
+                                        for (post1 in lazyPagingItems2.itemSnapshotList.items) {
+                                            post1?.let {
+                                                PostUI(post = it, navController)
+                                                HorizontalDivider(
+                                                    Modifier.fillMaxWidth()
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+
                             }
                             // Add more cases for other tabs if needed
                         }
@@ -185,9 +225,9 @@ fun MainScreen(
                     }
 
 
-        }
-    }
-}}}
+                }
+            }
+        }}}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -235,11 +275,10 @@ val hometabs= listOf(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Filter() {
+fun Filter(selectedFilter: String, onFilterSelected: (String) -> Unit) {
     val scope = rememberCoroutineScope()
     val bottomSheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
-    var selectedFilter by remember { mutableStateOf("Past Week") }
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -256,7 +295,6 @@ fun Filter() {
             color = Color.Gray,
             modifier = Modifier
                 .padding(start = 15.dp)
-
         )
         Spacer(modifier = Modifier.width(2.dp))
         Icon(
@@ -270,12 +308,10 @@ fun Filter() {
             onDismissRequest = { scope.launch { showBottomSheet = false } },
             sheetState = bottomSheetState
         ) {
-            BottomSheetContent(
-                onOptionSelected = { filter ->
-                    selectedFilter = filter
-                    scope.launch { showBottomSheet = false }
-                }
-            )
+            BottomSheetContent(onOptionSelected = { filter ->
+                onFilterSelected(filter)
+                scope.launch { showBottomSheet = false }
+            })
         }
     }
 }
@@ -291,7 +327,9 @@ fun BottomSheetContent(onOptionSelected: (String) -> Unit) {
             text = "Past Week",
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable(onClick = { onOptionSelected("Past Week") })
+                .clickable(onClick = {
+                    onOptionSelected("Past Week")
+                })
                 .padding(8.dp)
         )
         Text(

@@ -98,8 +98,9 @@ class PostViewModel @Inject constructor(
 
     fun fetchMostLikedLastWeek() {
         viewModelScope.launch {
-            val preferences = _userPreferences.value
-            postsRepository.getMostLikedPostsLastWeek(preferences)
+            val userDocument = userId?.let { firestore.collection("users").document(it).get().await() }
+            val preferences1 = userDocument?.get("preferences") as? List<String> ?: emptyList()
+            postsRepository.getMostLikedPostsLastWeek(preferences1)
                 .cachedIn(viewModelScope)
                 .collectLatest { pagingData ->
                     _mostLikedLastWeek.value = pagingData
@@ -109,8 +110,9 @@ class PostViewModel @Inject constructor(
 
     fun fetchMostLikedLastMonth() {
         viewModelScope.launch {
-            val preferences = _userPreferences.value
-            postsRepository.getMostLikedPostsLastMonth(preferences)
+            val userDocument = userId?.let { firestore.collection("users").document(it).get().await() }
+            val preferences1 = userDocument?.get("preferences") as? List<String> ?: emptyList()
+            postsRepository.getMostLikedPostsLastMonth(preferences1)
                 .cachedIn(viewModelScope)
                 .collectLatest { pagingData ->
                     _mostLikedLastMonth.value = pagingData
@@ -120,8 +122,9 @@ class PostViewModel @Inject constructor(
 
     fun fetchMostLikedLastYear() {
         viewModelScope.launch {
-            val preferences = _userPreferences.value
-            postsRepository.getMostLikedPostsLastYear(preferences)
+            val userDocument = userId?.let { firestore.collection("users").document(it).get().await() }
+            val preferences1 = userDocument?.get("preferences") as? List<String> ?: emptyList()
+            postsRepository.getMostLikedPostsLastYear(preferences1)
                 .cachedIn(viewModelScope)
                 .collectLatest { pagingData ->
                     _mostLikedLastYear.value = pagingData

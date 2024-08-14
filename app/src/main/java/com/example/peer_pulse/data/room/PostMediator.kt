@@ -34,29 +34,30 @@ class PostRemoteMediator(
             val baseQuery = firestore.collection("posts")
                 .whereArrayContainsAny("preferences", userPreferences) // using whereArrayContainsAny for arrays
 
-            // Time filter based on the provided time range
+
             val timeFilteredQuery = when (timeRange) {
                 TimeRange.LAST_WEEK -> baseQuery.whereGreaterThan("timestamp", getLastWeekTimestamp())
                 TimeRange.LAST_MONTH -> baseQuery.whereGreaterThan("timestamp", getLastMonthTimestamp())
                 TimeRange.LAST_YEAR -> baseQuery.whereGreaterThan("timestamp", getLastYearTimestamp())
                 null -> baseQuery
             }
+          Log.d("Postmed","timestamp is ${getLastWeekTimestamp()}")
+          Log.d("Postmed","timestamp is ${getLastMonthTimestamp()}")
 
-            // Sort and limit the query
             val finalQuery = if (sortByLikes) {
                 timeFilteredQuery.orderBy("likes", Query.Direction.DESCENDING)
             } else {
                 timeFilteredQuery.orderBy("timestamp", Query.Direction.DESCENDING)
             }.limit(state.config.pageSize.toLong())
 
-            // Execute query
+
             val snapshot = if (loadKey != null) {
                 finalQuery.startAfter(loadKey).get().await()
             } else {
                 finalQuery.get().await()
             }
 
-            // Map documents to post objects
+
             val posts = snapshot.documents.map { document ->
                 val post = document.toObject(post::class.java)
                 if (post != null) {
@@ -72,7 +73,7 @@ class PostRemoteMediator(
                 }
             }
 
-            // Save results to the local database
+
             database.withTransaction {
                 if (loadType == LoadType.REFRESH) {
                     database.postDao().clearPosts()
@@ -88,11 +89,20 @@ class PostRemoteMediator(
 
     private fun getLastWeekTimestamp(): Long {
         val calendar = Calendar.getInstance()
+        calendar.set(
+            Calendar.DAY_OF_WEEK,
+            calendar.firstDayOfWeek
+        )
         calendar.add(Calendar.WEEK_OF_YEAR, -1)
+        calendar.set(Calendar.HOUR_OF_DAY, 0)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
         return calendar.timeInMillis
     }
 
-    private fun getLastMonthTimestamp(): Long {
+
+        private fun getLastMonthTimestamp(): Long {
         val calendar = Calendar.getInstance()
         calendar.add(Calendar.MONTH, -1)
         return calendar.timeInMillis
