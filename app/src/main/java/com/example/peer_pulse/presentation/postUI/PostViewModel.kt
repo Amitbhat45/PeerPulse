@@ -9,8 +9,10 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.peer_pulse.data.room.post
+import com.example.peer_pulse.domain.model.Message
 import com.example.peer_pulse.domain.model.Post
 import com.example.peer_pulse.domain.model.Preferences
+import com.example.peer_pulse.domain.model.Reply
 import com.example.peer_pulse.domain.repository.PostsRepository
 import com.example.peer_pulse.utilities.ResponseState
 import com.google.firebase.auth.FirebaseAuth
@@ -50,6 +52,13 @@ class PostViewModel @Inject constructor(
 
     private val _userFeedState = MutableStateFlow<PagingData<post>>(PagingData.empty())
     val userFeedState: StateFlow<PagingData<post>> get() = _userFeedState
+
+    private val _replyIdsByPost = mutableStateOf<ResponseState<List<Reply>>>(ResponseState.Success(emptyList()))
+    val replyIdsByPost: State<ResponseState<List<Reply>>> = _replyIdsByPost
+
+
+    private val _sendReplyState = mutableStateOf<ResponseState<Boolean?>>(ResponseState.Success(null))
+    val sendReplyState: State<ResponseState<Boolean?>> = _sendReplyState
 
     init {
         fetchPosts()
@@ -115,6 +124,34 @@ class PostViewModel @Inject constructor(
         viewModelScope.launch {
             postsRepository.deletePost(postId).collect { state ->
                 _deletePostState.value = state
+            }
+        }
+    }
+
+
+    fun getRepliesId(postId: String){
+        viewModelScope.launch {
+            postsRepository.getRepliesId(postId).collect { state ->
+                _replyIdsByPost.value = state
+            }
+        }
+    }
+
+    fun saveReply(
+        postId: String,
+        reply: String,
+        college: String,
+        collegeLogo: Int
+    ){
+        viewModelScope.launch {
+            postsRepository.saveReply(
+                postId,
+                reply,
+                userId!!,
+                college,
+                collegeLogo
+            ).collect { state ->
+                _sendReplyState.value = state
             }
         }
     }

@@ -20,7 +20,7 @@ class ProfileViewModel @Inject constructor(
     init {
         auth.addAuthStateListener {
             userId = it.currentUser?.uid
-            getUsername(userId!!)
+            getUsername(userId?:"")
         }
     }
 
