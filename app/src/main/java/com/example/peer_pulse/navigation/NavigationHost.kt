@@ -221,9 +221,7 @@ fun NavigationHost(
                 navArgument("description") { type = NavType.StringType },
                 navArgument("likes") { type = NavType.IntType },
                 navArgument("timestamp") { type = NavType.LongType },
-                navArgument("preferences") { type = NavType.StringType } ,
-                //navArgument("imageUrl") { type = NavType.StringType }
-
+                navArgument("preferences") { type = NavType.StringType },
             )
         ) { backStackEntry ->
             val title = backStackEntry.arguments?.getString("title") ?: ""
@@ -231,8 +229,6 @@ fun NavigationHost(
             val likes = backStackEntry.arguments?.getInt("likes") ?: 0
             val timestamp = backStackEntry.arguments?.getLong("timestamp") ?: 0L
             val preferences = backStackEntry.arguments?.getString("preferences") ?: ""
-            //val imageUrlString = backStackEntry.arguments?.getString("imageUrl") ?: ""
-            //val imageUrl = imageUrlString.split(",").filter { it.isNotEmpty() }
 
             postInsideView(
                 title = title,
@@ -240,8 +236,7 @@ fun NavigationHost(
                 likes = likes,
                 timestamp = timestamp,
                 preferences = preferences,
-                navHostController,
-                //imageUrl = imageUrl
+                navController = navHostController
             )
         }
         composable(Screens.CommunityScreen.route){

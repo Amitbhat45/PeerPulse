@@ -17,7 +17,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -61,6 +64,10 @@ class PostViewModel @Inject constructor(
 
     private val _mostLikedLastYear = MutableStateFlow<PagingData<post>>(PagingData.empty())
     val mostLikedLastYear: StateFlow<PagingData<post>> get() = _mostLikedLastYear
+
+
+    private val _likePostState = MutableStateFlow<ResponseState<Boolean>>(ResponseState.Success(false))
+    val likePostState: StateFlow<ResponseState<Boolean>> = _likePostState.asStateFlow()
 
     init {
         fetchPosts()
@@ -165,6 +172,17 @@ class PostViewModel @Inject constructor(
             postsRepository.deletePost(postId).collect { state ->
                 _deletePostState.value = state
             }
+        }
+    }
+
+
+    fun likePost(postId: String, userId: String) {
+        viewModelScope.launch {
+            postsRepository.likePost(postId, userId)
+                .onEach { responseState ->
+                    _likePostState.value = responseState
+                }
+                .launchIn(this)
         }
     }
 

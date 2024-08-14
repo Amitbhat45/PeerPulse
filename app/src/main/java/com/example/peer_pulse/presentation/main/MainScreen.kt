@@ -79,6 +79,7 @@ import com.example.peer_pulse.presentation.AuthViewModel
 import com.example.peer_pulse.presentation.postUI.PostViewModel
 import com.example.peer_pulse.R
 import com.example.peer_pulse.data.room.post
+
 import com.example.peer_pulse.presentation.postUI.PostUI
 import com.example.peer_pulse.utilities.Screens
 import kotlinx.coroutines.flow.Flow
@@ -92,7 +93,8 @@ import kotlinx.coroutines.launch
 fun MainScreen(
     authViewModel: AuthViewModel,
     navController: NavController,
-    postViewModel: PostViewModel
+    postViewModel: PostViewModel,
+
 ){
     val userFeedState = postViewModel.userFeedState
     val lazyPagingItems = userFeedState.collectAsLazyPagingItems()
@@ -175,7 +177,7 @@ fun MainScreen(
                                 ) {
                                     for (post in lazyPagingItems.itemSnapshotList.items) {
                                         post?.let {
-                                            PostUI(post = it, navController)
+                                            PostUI(post = it, navController,postViewModel)
                                             HorizontalDivider(
                                                 Modifier.fillMaxWidth()
                                             )
@@ -209,7 +211,7 @@ fun MainScreen(
                                     ) {
                                         for (post1 in lazyPagingItems2.itemSnapshotList.items) {
                                             post1?.let {
-                                                PostUI(post = it, navController)
+                                                PostUI(post = it, navController,postViewModel)
                                                 HorizontalDivider(
                                                     Modifier.fillMaxWidth()
                                                 )

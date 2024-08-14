@@ -59,7 +59,6 @@ fun postInsideView(
     timestamp: Long,
     preferences: String,
     navController: NavController,
-    //imageUrl: List<String>?
 ){
     var Reply by remember {
         mutableStateOf("")

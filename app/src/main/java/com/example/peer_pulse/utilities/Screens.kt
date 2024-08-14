@@ -28,7 +28,7 @@ sealed class Screens(val route: String){
         }
     }
     data object PostViewScreen : Screens("post/{title}/{description}/{likes}/{timestamp}/{preferences}") {
-        fun postdetails(post: post): String {
+        fun postDetails(post: post): String {
             return "post/${post.title}/${post.description}/${post.likes}/${post.timestamp}/${post.preferences}"
         }
     }
