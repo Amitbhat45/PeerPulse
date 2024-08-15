@@ -104,7 +104,7 @@ fun MainScreen(
     postViewModel: PostViewModel,
 
 
-){
+    ){
     val userFeedState = postViewModel.userFeedState
     val lazyPagingItems = userFeedState.collectAsLazyPagingItems()
 
@@ -260,9 +260,9 @@ fun TopAppBarWithSearch(navController: NavController) {
         Spacer(modifier = Modifier.width(12.dp))
         CustomTextFieldWithSuggestions(
             value = searchQuery,
-        onValueChange = { searchQuery = it },
-        placeholder = "Search for Topic",
-        preferences = preferences,
+            onValueChange = { searchQuery = it },
+            placeholder = "Search for Topic",
+            preferences = preferences,
             navController = navController
         )
     }

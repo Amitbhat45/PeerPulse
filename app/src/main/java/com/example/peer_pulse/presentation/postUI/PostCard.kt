@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.peer_pulse.data.room.post
 import com.example.peer_pulse.utilities.ResponseState
@@ -19,7 +20,8 @@ import com.example.peer_pulse.utilities.ResponseState
 @Composable
 fun PostCard(
     id : String,
-    postViewModel: PostViewModel
+    postViewModel: PostViewModel,
+    navController: NavController
 ) {
     postViewModel.getPost(id)
     when (val response = postViewModel.postState.value) {
@@ -64,7 +66,8 @@ fun PostCard(
                             preferences = postDetails.preferences,
                             preferencesId = postDetails.preferenceId
                        ) ,
-                       navController = rememberNavController()
+                       navController = navController,
+                          postViewModel = postViewModel
                    )
                 }
             }

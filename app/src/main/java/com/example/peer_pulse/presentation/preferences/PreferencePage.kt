@@ -74,8 +74,6 @@ import com.example.peer_pulse.utilities.ResponseState
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
-
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun PreferencePage(
     preferenceId : String,
@@ -100,7 +98,6 @@ fun PreferencePage(
             PageHeader(
                 navController = navController,
                 preferenceId = preferenceId,
-                navController = navController
             )
 
             Column(modifier = Modifier

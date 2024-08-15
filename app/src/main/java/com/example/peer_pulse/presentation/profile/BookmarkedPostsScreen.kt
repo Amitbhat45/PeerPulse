@@ -78,7 +78,8 @@ fun BookmarkedPostsScreen(
                                 profileViewModel.postIds[it]?.let { it1 ->
                                     PostCard(
                                         id = it1,
-                                        postViewModel = postViewModel
+                                        postViewModel = postViewModel,
+                                        navController = navController
                                     )
                                 }
                             }

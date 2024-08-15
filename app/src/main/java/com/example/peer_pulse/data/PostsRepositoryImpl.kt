@@ -28,24 +28,24 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class PostsRepositoryImpl @Inject constructor(
-    private val firestore : FirebaseFirestore,
+    private val firestore: FirebaseFirestore,
     private val database: PostsDatabase
 ) : PostsRepository {
 
-    override suspend fun getPost(postId: String): Flow<ResponseState<Post>>  = callbackFlow{
+    override suspend fun getPost(postId: String): Flow<ResponseState<Post>> = callbackFlow {
         ResponseState.Loading
-        val snapshot = firestore.collection("posts").document(postId).addSnapshotListener { snapshot, error ->
-            val response = if(snapshot != null){
-                val post = snapshot.toObject(Post::class.java)
-                ResponseState.Success(post!!)
-            }
-            else{
-                ResponseState.Error(error?.message ?: "An unexpected error occurred")
-            }
-            trySend(response).isSuccess
+        val snapshot =
+            firestore.collection("posts").document(postId).addSnapshotListener { snapshot, error ->
+                val response = if (snapshot != null) {
+                    val post = snapshot.toObject(Post::class.java)
+                    ResponseState.Success(post!!)
+                } else {
+                    ResponseState.Error(error?.message ?: "An unexpected error occurred")
+                }
+                trySend(response).isSuccess
 
-        }
-        awaitClose{
+            }
+        awaitClose {
             snapshot.remove()
         }
 
@@ -61,6 +61,7 @@ class PostsRepositoryImpl @Inject constructor(
             pagingSourceFactory = { database.postDao().getPosts(preferences) }
         ).flow
     }
+
     @OptIn(ExperimentalPagingApi::class)
     override suspend fun getMostLikedPostsLastWeek(preferences: List<String>): Flow<PagingData<post>> {
         return Pager(
@@ -79,28 +80,30 @@ class PostsRepositoryImpl @Inject constructor(
     override suspend fun getMostLikedPostsLastMonth(preferences: List<String>): Flow<PagingData<post>> {
         return Pager(
             config = PagingConfig(pageSize = 20, enablePlaceholders = false),
-            remoteMediator = PostRemoteMediator2(firestore, database, preferences, TimeRange.LAST_MONTH),
+            remoteMediator = PostRemoteMediator2(
+                firestore,
+                database,
+                preferences,
+                TimeRange.LAST_MONTH
+            ),
             pagingSourceFactory = { database.postDao().getPosts(preferences) }
         ).flow
     }
 
-   @OptIn(ExperimentalPagingApi::class)
-   override suspend fun getMostLikedPostsLastYear(preferences: List<String>): Flow<PagingData<post>> {
+    @OptIn(ExperimentalPagingApi::class)
+    override suspend fun getMostLikedPostsLastYear(preferences: List<String>): Flow<PagingData<post>> {
         return Pager(
             config = PagingConfig(pageSize = 20, enablePlaceholders = false),
-            remoteMediator = PostRemoteMediator2(firestore, database, preferences, TimeRange.LAST_YEAR),
+            remoteMediator = PostRemoteMediator2(
+                firestore,
+                database,
+                preferences,
+                TimeRange.LAST_YEAR
+            ),
             pagingSourceFactory = { database.postDao().getPosts(preferences) }
         ).flow
     }
 
-    override suspend fun getRepliesId(postId: String): Flow<ResponseState<List<String>>> = callbackFlow<ResponseState<List<String>>> {
-        ResponseState.Loading
-        val snapshot = firestore.collection("posts").document(postId).collection("replies").get().await()
-        val replyIds = snapshot.documents.map { it.id }
-        ResponseState.Success(replyIds)
-        }.catch {
-        emit(ResponseState.Error(it.message ?: "An unexpected error occurred"))
-    }
     override suspend fun saveReply(
         postId: String,
         reply: String,
@@ -120,46 +123,50 @@ class PostsRepositoryImpl @Inject constructor(
             collegeLogo = collegeLogo,
             likes = 0
         )
-        firestore.collection("posts").document(postId).collection("replies").document(id).set(replyDetails).await()
+        firestore.collection("posts").document(postId).collection("replies").document(id)
+            .set(replyDetails).await()
         emit(ResponseState.Success(true))
     }.catch {
         emit(ResponseState.Error(it.message ?: "An unexpected error occurred"))
     }
 
-    override suspend fun getRepliesId(postId: String): Flow<ResponseState<List<Reply>>> = callbackFlow<ResponseState<List<Reply>>> {
-        ResponseState.Loading
-        val snapshotListener = firestore.collection("posts").document(postId).collection("replies").addSnapshotListener { snapshot, error ->
-            val response = if(snapshot != null){
-                val replies = snapshot.documents.map { it.toObject(Reply::class.java)!! }
-                ResponseState.Success(replies)
+    override suspend fun getRepliesId(postId: String): Flow<ResponseState<List<Reply>>> =
+        callbackFlow<ResponseState<List<Reply>>> {
+            ResponseState.Loading
+            val snapshotListener =
+                firestore.collection("posts").document(postId).collection("replies")
+                    .addSnapshotListener { snapshot, error ->
+                        val response = if (snapshot != null) {
+                            val replies =
+                                snapshot.documents.map { it.toObject(Reply::class.java)!! }
+                            ResponseState.Success(replies)
+                        } else {
+                            ResponseState.Error(error?.message ?: "An unexpected error occurred")
+                        }
+                        trySend(response).isSuccess
+                    }
+            awaitClose {
+                snapshotListener.remove()
             }
-            else{
-                ResponseState.Error(error?.message ?: "An unexpected error occurred")
-            }
-            trySend(response).isSuccess
+        }.catch {
+            emit(ResponseState.Error(it.message ?: "An unexpected error occurred"))
         }
-        awaitClose {
-            snapshotListener.remove()
-        }
-    }.catch {
-        emit(ResponseState.Error(it.message ?: "An unexpected error occurred"))
-    }
 
-  /*  suspend fun uploadImage(uri: Uri, context: Context): String? {
-        val inputStream = context.contentResolver.openInputStream(uri)
-        val fileName = "${System.currentTimeMillis()}.jpg"  // Ensure unique file name
-        val storageRef = FirebaseStorage.getInstance().reference.child("images/$fileName")
+    /*  suspend fun uploadImage(uri: Uri, context: Context): String? {
+          val inputStream = context.contentResolver.openInputStream(uri)
+          val fileName = "${System.currentTimeMillis()}.jpg"  // Ensure unique file name
+          val storageRef = FirebaseStorage.getInstance().reference.child("images/$fileName")
 
 
-        return try {
-            val uploadTask = storageRef.putStream(inputStream!!)
-            val downloadUri = uploadTask.await().storage.downloadUrl.await()
-            downloadUri.toString()  // Return the URL of the uploaded image
-        } catch (e: Exception) {
-            Log.e("UploadImage", "Error uploading image", e)
-            null
-        }
-    }*/
+          return try {
+              val uploadTask = storageRef.putStream(inputStream!!)
+              val downloadUri = uploadTask.await().storage.downloadUrl.await()
+              downloadUri.toString()  // Return the URL of the uploaded image
+          } catch (e: Exception) {
+              Log.e("UploadImage", "Error uploading image", e)
+              null
+          }
+      }*/
 
     override suspend fun savePost(
         title: String,
@@ -171,15 +178,15 @@ class PostsRepositoryImpl @Inject constructor(
         collegeCode: String,
     ): Flow<ResponseState<Boolean>> = flow {
         emit(ResponseState.Loading)
-      
-            val imageUrls = mutableListOf<String>()
-            for (uri in imageUris) {
-                val fileName = "${System.currentTimeMillis()}.jpg"
-                val storageRef = FirebaseStorage.getInstance().reference.child("images/$fileName")
-                val uploadTask = uri?.let { storageRef.putFile(it) }
-                val downloadUrl = uploadTask?.await()?.storage?.downloadUrl?.await().toString()
-                imageUrls.add(downloadUrl)
-            }
+
+        val imageUrls = mutableListOf<String>()
+        for (uri in imageUris) {
+            val fileName = "${System.currentTimeMillis()}.jpg"
+            val storageRef = FirebaseStorage.getInstance().reference.child("images/$fileName")
+            val uploadTask = uri?.let { storageRef.putFile(it) }
+            val downloadUrl = uploadTask?.await()?.storage?.downloadUrl?.await().toString()
+            imageUrls.add(downloadUrl)
+        }
         val postCollection = firestore.collection("posts")
         val id = postCollection.document().id
         val postDetails = Post(
@@ -193,15 +200,14 @@ class PostsRepositoryImpl @Inject constructor(
             timestamp = System.currentTimeMillis(),
             collegeCode = collegeCode,
         )
-            postCollection.document(id).set(postDetails).await()
+        postCollection.document(id).set(postDetails).await()
 
-            emit(ResponseState.Success(true))
-      
-        
-    }. catch (e: Exception) {
-            emit(ResponseState.Error(e.message ?: "An unexpected error occurred"))
-      }
+        emit(ResponseState.Success(true))
 
+
+    }.catch {
+        emit(ResponseState.Error(it.message ?: "An unexpected error occurred"))
+    }
 
 
     override suspend fun deletePost(postId: String): Flow<ResponseState<String>> = flow {
@@ -215,31 +221,31 @@ class PostsRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun likePost(postId: String, userId: String): Flow<ResponseState<Boolean>> = flow {
-        emit(ResponseState.Loading)
-        try {
-            val postRef = firestore.collection("posts").document(postId)
-            val userLikeRef = postRef.collection("likes").document(userId)
+    override suspend fun likePost(postId: String, userId: String): Flow<ResponseState<Boolean>> =
+        flow {
+            emit(ResponseState.Loading)
+            try {
+                val postRef = firestore.collection("posts").document(postId)
+                val userLikeRef = postRef.collection("likes").document(userId)
 
-            firestore.runTransaction { transaction ->
-                val snapshot = transaction.get(userLikeRef)
+                firestore.runTransaction { transaction ->
+                    val snapshot = transaction.get(userLikeRef)
 
-                if (!snapshot.exists()) {
-                    // User hasn't liked the post yet, so proceed with liking
-                    transaction.set(userLikeRef, hashMapOf("liked" to true))
-                    transaction.update(postRef, "likes", FieldValue.increment(1))
-                } else {
-                    // User has already liked the post
-                    throw Exception("User has already liked this post.")
-                }
-            }.await()
+                    if (!snapshot.exists()) {
+                        // User hasn't liked the post yet, so proceed with liking
+                        transaction.set(userLikeRef, hashMapOf("liked" to true))
+                        transaction.update(postRef, "likes", FieldValue.increment(1))
+                    } else {
+                        // User has already liked the post
+                        throw Exception("User has already liked this post.")
+                    }
+                }.await()
 
-            emit(ResponseState.Success(true))
-        } catch (e: Exception) {
-            emit(ResponseState.Error(e.message ?: "An error occurred while liking the post"))
+                emit(ResponseState.Success(true))
+            } catch (e: Exception) {
+                emit(ResponseState.Error(e.message ?: "An error occurred while liking the post"))
+            }
         }
-    }
-
 
 
 }

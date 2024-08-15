@@ -143,10 +143,6 @@ fun AddPost(
     var collegeChosen by remember {
         mutableStateOf("")
     }
-    val launcher =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.PickMultipleVisualMedia()) {uris->
-            images = uris
-        }
     var selectedForCollege by remember {
         mutableStateOf(false)
     }
@@ -511,11 +507,8 @@ fun PostTitleBar(
                        preferencesId = preferencesText,
                        title = titleText,
                        description = descriptionText,
-
-
                        images = images,
                        collegeName = collegeName
-                     
                    )
 
                 },
