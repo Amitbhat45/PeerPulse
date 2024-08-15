@@ -31,8 +31,8 @@ import com.example.peer_pulse.presentation.community.CommunityScreen
 import com.example.peer_pulse.presentation.main.MainScreen
 import com.example.peer_pulse.presentation.login.LoginScreen
 import com.example.peer_pulse.presentation.postUI.AddPost
+import com.example.peer_pulse.presentation.postUI.PostInsideView
 import com.example.peer_pulse.presentation.postUI.PostViewModel
-import com.example.peer_pulse.presentation.postUI.postInsideView
 import com.example.peer_pulse.presentation.preferences.PreferencePage
 import com.example.peer_pulse.presentation.preferences.Preferences1
 import com.example.peer_pulse.presentation.preferences.PreferencesViewModel
@@ -241,15 +241,16 @@ fun NavigationHost(
             //val imageUrlString = backStackEntry.arguments?.getString("imageUrl") ?: ""
             //val imageUrl = imageUrlString.split(",").filter { it.isNotEmpty() }
 
-            postInsideView(
-                title = title,
-                description = description,
-                likes = likes,
-                timestamp = timestamp,
-                preferences = preferences,
-                navHostController,
-                //imageUrl = imageUrl
-            )
+//            PostInsideView(
+//                title = title,
+//                description = description,
+//                likes = likes,
+//                timestamp = timestamp,
+//                preferences = preferences,
+//                navHostController,
+//                //imageUrl = imageUrl,
+//                postViewModel = postViewModel
+//            )
         }
 //        composable(Screens.CommunityScreen.route){
 //            CommunityScreen(navController = navHostController)

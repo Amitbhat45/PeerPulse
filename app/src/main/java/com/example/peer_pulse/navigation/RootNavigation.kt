@@ -32,8 +32,8 @@ import com.example.peer_pulse.presentation.community.CommunityViewModel
 import com.example.peer_pulse.presentation.login.LoginScreen
 import com.example.peer_pulse.presentation.main.MainScreen
 import com.example.peer_pulse.presentation.postUI.AddPost
+import com.example.peer_pulse.presentation.postUI.PostInsideView
 import com.example.peer_pulse.presentation.postUI.PostViewModel
-import com.example.peer_pulse.presentation.postUI.postInsideView
 import com.example.peer_pulse.presentation.preferences.PreferencePage
 import com.example.peer_pulse.presentation.preferences.Preferences1
 import com.example.peer_pulse.presentation.preferences.PreferencesViewModel
@@ -218,6 +218,7 @@ fun RootNavigation(
                     navArgument("likes") { type = NavType.IntType },
                     navArgument("timestamp") { type = NavType.LongType },
                     navArgument("preferences") { type = NavType.StringType } ,
+                    navArgument("id") { type = NavType.StringType }
                     //navArgument("imageUrl") { type = NavType.StringType }
 
                 )
@@ -227,10 +228,12 @@ fun RootNavigation(
                 val likes = backStackEntry.arguments?.getInt("likes") ?: 0
                 val timestamp = backStackEntry.arguments?.getLong("timestamp") ?: 0L
                 val preferences = backStackEntry.arguments?.getString("preferences") ?: ""
+                val postId = backStackEntry.arguments?.getString("id") ?: ""
                 //val imageUrlString = backStackEntry.arguments?.getString("imageUrl") ?: ""
                 //val imageUrl = imageUrlString.split(",").filter { it.isNotEmpty() }
 
-                postInsideView(
+                PostInsideView(
+                    postId = postId,
                     title = title,
                     description = description,
                     likes = likes,
@@ -238,6 +241,9 @@ fun RootNavigation(
                     preferences = preferences,
                     navHostController,
                     //imageUrl = imageUrl
+                    postViewModel = postViewModel,
+                    collegeName = colleges.find { it.name == authViewModel.college }?.shortName ?: "",
+                    collegeLogo = colleges.find { it.name == authViewModel.college }?.logo ?: R.drawable.about_vector
                 )
             }
         }

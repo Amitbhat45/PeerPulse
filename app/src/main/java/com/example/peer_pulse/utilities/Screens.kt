@@ -27,9 +27,9 @@ sealed class Screens(val route: String){
             return "collegePages/$pageId"
         }
     }
-    data object PostViewScreen : Screens("post/{title}/{description}/{likes}/{timestamp}/{preferences}") {
+    data object PostViewScreen : Screens("post/{title}/{description}/{likes}/{timestamp}/{preferences}/{id}") {
         fun postdetails(post: post): String {
-            return "post/${post.title}/${post.description}/${post.likes}/${post.timestamp}/${post.preferences}"
+            return "post/${post.title}/${post.description}/${post.likes}/${post.timestamp}/${post.preferences}/${post.id}"
         }
     }
     data object CommunityScreen : Screens("CommunityScreen")
