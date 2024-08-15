@@ -175,38 +175,44 @@ class PostsRepositoryImpl @Inject constructor(
         preferences: String,
         preferencesId: String,
         userId: String,
-        collegeCode: String,
+        collegeCode: String
     ): Flow<ResponseState<Boolean>> = flow {
+
         emit(ResponseState.Loading)
+        try {
+            val imageUrls = mutableListOf<String>()
 
-        val imageUrls = mutableListOf<String>()
-        for (uri in imageUris) {
-            val fileName = "${System.currentTimeMillis()}.jpg"
-            val storageRef = FirebaseStorage.getInstance().reference.child("images/$fileName")
-            val uploadTask = uri?.let { storageRef.putFile(it) }
-            val downloadUrl = uploadTask?.await()?.storage?.downloadUrl?.await().toString()
-            imageUrls.add(downloadUrl)
+            for (uri in imageUris) {
+                val fileName = "${System.currentTimeMillis()}.jpg"
+                val storageRef = FirebaseStorage.getInstance().reference.child("images/$fileName")
+                val uploadTask = uri?.let { storageRef.putFile(it) }
+                val downloadUrl = uploadTask?.await()?.storage?.downloadUrl?.await().toString()
+                imageUrls.add(downloadUrl)
+            }
+
+            val postCollection = firestore.collection("posts")
+            val id = postCollection.document().id
+
+
+            val postDetails = hashMapOf(
+                "id" to id,
+                "userId" to userId,
+                "title" to title,
+                "description" to description,
+                "images" to imageUrls,
+                "timestamp" to System.currentTimeMillis(),
+                "likes" to 0,
+                "preferences" to preferences,
+                "preferencesId" to preferencesId,
+                "collegeCode" to collegeCode
+            )
+
+            postCollection.document(id).set(postDetails).await()
+
+            emit(ResponseState.Success(true))
+        } catch (e: Exception) {
+            emit(ResponseState.Error(e.message ?: "An unexpected error occurred"))
         }
-        val postCollection = firestore.collection("posts")
-        val id = postCollection.document().id
-        val postDetails = Post(
-            id = id,
-            title = title,
-            description = description,
-            imageUrl = imageUrls,
-            preferences = preferences,
-            preferenceId = preferencesId,
-            userId = userId,
-            timestamp = System.currentTimeMillis(),
-            collegeCode = collegeCode,
-        )
-        postCollection.document(id).set(postDetails).await()
-
-        emit(ResponseState.Success(true))
-
-
-    }.catch {
-        emit(ResponseState.Error(it.message ?: "An unexpected error occurred"))
     }
 
 
@@ -249,4 +255,3 @@ class PostsRepositoryImpl @Inject constructor(
 
 
 }
-

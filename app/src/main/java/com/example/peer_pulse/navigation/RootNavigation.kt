@@ -205,7 +205,7 @@ fun RootNavigation(
                     preferencesViewModel = preferencesViewModel,
                     postViewModel = postViewModel,
                     navController = navHostController,
-                    )
+                )
             }
             composable(route = Screens.MainScreen.route){
                 MainScreen(
@@ -288,8 +288,8 @@ fun RootNavigation(
             ){backstackEntry->
                 val communityName = backstackEntry.arguments?.getString("communityName") ?: ""
                 CommunityMessageScreen(
-                  navController = navHostController,
-                   communityViewModel = communityViewModel,
+                    navController = navHostController,
+                    communityViewModel = communityViewModel,
                     communityName = communityName,
                     collegeCode = colleges.find { it.name == authViewModel.college }?.code ?: "",
                     permissionGranted = permissionGranted,

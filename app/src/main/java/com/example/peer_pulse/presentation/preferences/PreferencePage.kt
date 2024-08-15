@@ -81,7 +81,7 @@ fun PreferencePage(
     postViewModel: PostViewModel,
     navController: NavController,
 
-) {
+    ) {
     val userFeedState = preferencesViewModel.TopicpageFeed
     val lazyPagingItems = userFeedState.collectAsLazyPagingItems()
     LaunchedEffect(preferenceId) {
@@ -139,7 +139,7 @@ fun PreferencePage(
 @Composable
 fun PageHeader(
 
-   navController: NavController,
+    navController: NavController,
     preferenceId : String,
 ){
     val logo = trialPreferences.find { it.id == preferenceId}?.logo ?: R.drawable.following_vector
@@ -162,7 +162,7 @@ fun PageHeader(
             IconButton(
                 onClick = {
 
-                  navController.navigateUp()
+                    navController.navigateUp()
                 }
             ) {
                 Icon(imageVector = Icons.Filled.ArrowBackIosNew, contentDescription =null )
@@ -182,7 +182,7 @@ fun PageHeader(
             )
         }
     }
-   
+
 }
 
 @Composable
@@ -309,8 +309,8 @@ fun BottomSheetContent2(onOptionSelected: (String) -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun PreferencePagePreview() {
-   // PageHeader(preferenceId = "College Events")
-   // followbuttonrow(preferenceId ="College Events" )
+    // PageHeader(preferenceId = "College Events")
+    // followbuttonrow(preferenceId ="College Events" )
 }
 
 

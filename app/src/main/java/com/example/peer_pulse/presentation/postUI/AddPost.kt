@@ -261,10 +261,10 @@ fun AddPost(
                     onValueChange = { titleText = it },
                     placeholder = {
                         Text(
-                        "Title",
-                        color = Color.Gray,
+                            "Title",
+                            color = Color.Gray,
                             style = MaterialTheme.typography.headlineMedium
-                    ) },
+                        ) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 4.dp),
@@ -272,7 +272,7 @@ fun AddPost(
                         unfocusedContainerColor = Color.Transparent,
                         focusedContainerColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
-                       focusedIndicatorColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
                         cursorColor = Color.White,
                         unfocusedTextColor = Color.White,
                         focusedTextColor = Color.White
@@ -293,8 +293,8 @@ fun AddPost(
                     colors = TextFieldDefaults.colors(
                         unfocusedContainerColor = Color.Transparent,
                         focusedContainerColor = Color.Transparent,
-                       unfocusedIndicatorColor = Color.Transparent,
-                      focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
                         cursorColor = Color.White,
                         unfocusedTextColor = Color.White,
                         focusedTextColor = Color.White
@@ -330,7 +330,7 @@ fun AddPost(
                 thickness = 1.dp
             )
             Row (
-            //    modifier = Modifier.weight(0.5f)
+                //    modifier = Modifier.weight(0.5f)
             ){
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -502,8 +502,9 @@ fun PostTitleBar(
         actions = {
             Button(
                 onClick = {
-                   postViewModel.savePost(
+                    postViewModel.savePost(
                         preferences = preferencesText,
+
                        preferencesId = preferencesText,
                        title = titleText,
                        description = descriptionText,
@@ -513,7 +514,7 @@ fun PostTitleBar(
 
                 },
                 colors = ButtonDefaults.buttonColors(
-                   containerColor = Color.Transparent,
+                    containerColor = Color.Transparent,
                     contentColor = if(showButton) Color.White else Color.Gray
                 ),
                 enabled = showButton
@@ -547,13 +548,13 @@ fun PostTitleBar(
                 }
             }
         },
-       colors = TopAppBarColors(
-           containerColor = Color.Black,
-           navigationIconContentColor = Color.White,
-           actionIconContentColor = Color.White,
-           titleContentColor = Color.White,
-           scrolledContainerColor = Color.Black
-       )
+        colors = TopAppBarColors(
+            containerColor = Color.Black,
+            navigationIconContentColor = Color.White,
+            actionIconContentColor = Color.White,
+            titleContentColor = Color.White,
+            scrolledContainerColor = Color.Black
+        )
     )
 }
 
@@ -617,7 +618,7 @@ fun BottomIcons() {
 //        label = "IME height"
 //    )
 
-    }
+}
 
 
 //@Preview

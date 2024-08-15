@@ -124,6 +124,7 @@ fun PostInsideView(
         ){
             Column(
                 Modifier
+
                    .weight(9f)
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
@@ -141,6 +142,7 @@ fun PostInsideView(
                             Modifier
                                 .size(35.dp)
                                 .clip(CircleShape)
+
                         )
                     } else {
                         Image(
@@ -265,6 +267,7 @@ fun PostInsideView(
                     postId = post.id,
                 )
             }
+
                 Column(
                     modifier = Modifier
                       //  .weight(1f)
@@ -329,7 +332,7 @@ fun fetchImagesByPostId(postId: String, onSuccess: (List<String>?) -> Unit, onFa
         .addOnSuccessListener { document ->
             if (document != null && document.exists()) {
                 val images = document.get("images") as? List<String>
-                onSuccess(images) 
+                onSuccess(images)
             } else {
                 onFailure(Exception("Post not found"))
             }
@@ -356,7 +359,7 @@ fun ImageSlider(images: List<String>?) {
         contentAlignment = Alignment.Center
     ) {
         HorizontalPager(
-           // count = imageList.size,
+            // count = imageList.size,
             state = pagerState,
             modifier = Modifier.fillMaxSize()
         ) { page ->

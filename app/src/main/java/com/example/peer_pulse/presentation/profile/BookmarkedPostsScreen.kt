@@ -1,5 +1,7 @@
 package com.example.peer_pulse.presentation.profile
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +20,7 @@ import com.example.peer_pulse.presentation.postUI.PostViewModel
 import com.example.peer_pulse.presentation.signup.AuthTopBar
 import com.example.peer_pulse.utilities.ResponseState
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BookmarkedPostsScreen(
     navController : NavController,
