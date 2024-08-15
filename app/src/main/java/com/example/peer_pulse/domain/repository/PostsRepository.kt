@@ -13,13 +13,13 @@ interface PostsRepository {
     suspend fun getRepliesId(postId : String) : Flow<ResponseState<List<Reply>>>
 
     suspend fun savePost(
-        title : String,
-        description : String,
-        images : List<String>,
-        preferences : String,
-        preferencesId : String,
-        userId : String,
-        collegeCode : String,
+        title: String,
+        description: String,
+        imageUris: List<Uri?>,
+        preferences: String,
+        preferencesId: String,
+        userId: String,
+        collegeCode: String,
     ):Flow<ResponseState<Boolean>>
     suspend fun deletePost(postId:String):Flow<ResponseState<String>>
     suspend fun getPosts(preferences: List<String>): Flow<PagingData<post>>
@@ -30,8 +30,6 @@ interface PostsRepository {
         college: String,
         collegeLogo: Int
     ): Flow<ResponseState<Boolean>>
-   suspend fun deletePost(postId:String):Flow<ResponseState<String>>
-    suspend fun getPosts(preferences: List<String>): Flow<PagingData<post>>
     suspend fun getMostLikedPostsLastWeek(preferences: List<String>): Flow<PagingData<post>>
     suspend fun getMostLikedPostsLastMonth(preferences: List<String>): Flow<PagingData<post>>
     suspend fun  getMostLikedPostsLastYear(preferences: List<String>): Flow<PagingData<post>>

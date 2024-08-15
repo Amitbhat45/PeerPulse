@@ -55,6 +55,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
@@ -83,7 +84,7 @@ import com.example.peer_pulse.utilities.rememberImeState
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalGlideComposeApi::class)
 @Composable
 
-fun postInsideView(
+fun PostInsideView(
     post: post,
     navController: NavController,
     postViewModel: PostViewModel,
@@ -108,7 +109,7 @@ fun postInsideView(
     Scaffold(
         topBar = {
             AuthTopBar(
-                title = "Peer-Pulse",
+                title = "Peer Pulse",
                 onBackClick = {
                     navController.navigateUp()
                 },
@@ -116,161 +117,164 @@ fun postInsideView(
             )
         }
     ) {
-//        val imeState = rememberImeState()
-       val scrollState = rememberScrollState()
-//
-//        LaunchedEffect(key1 = imeState.value) {
-//            if(imeState.value){
-//                scrollState.scrollTo(scrollState.maxValue)
-//            }
-//        }
-        Column(
-            Modifier
-                .weight(9f)
-                .verticalScroll(rememberScrollState())) {
-            Row (
+        Column (
+            modifier = Modifier
+                .padding(it)
+                .fillMaxSize()
+        ){
+            Column(
                 Modifier
-                    .fillMaxWidth()
-                    .padding(20.dp),
-                verticalAlignment = Alignment.CenterVertically,){
-                if (pref != null) {
-                    Image(
-                        painter = painterResource(id = pref.logo),
-                        contentDescription = "topicimage",
-                        Modifier
-                            .size(35.dp)
-                            .clip(CircleShape)
-                    )
-                }
-                else{
-                    Image(painter = painterResource(id = R.drawable.ic_launcher_background), contentDescription ="topicimage" ,
-                        Modifier
-                            .size(35.dp)
-                            .clip(CircleShape))
-                }
-                Spacer(modifier = Modifier.width(5.dp))
-                Column(Modifier.fillMaxWidth()) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = "${post.preferences}" ,fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.clickable { navController.navigate(Screens.PagesScreen.createRoute(post.preferences)){
-                                launchSingleTop = true
-                            } }
-                        )
-                        Spacer(modifier = Modifier.width(5.dp))
-                        Text(text = getTimeAgo(post.timestamp),fontSize = 10.sp, color= Color.Gray)
-
-                    }
-                }
-            }
-            Spacer(modifier = Modifier.height(5.dp))
-            Column(Modifier.padding(start=20.dp,end=20.dp)) {
-                Text(
-                    text = post.title,
-                    fontSize = 25.sp,
-                    fontWeight = FontWeight.Bold,
-
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = post.description,
-                    fontSize = 16.sp,
-
-                )
-            }
-
-            Log.d("ammmmmmit","${post.images[0]}")
-            Spacer(modifier = Modifier.height(5.dp))
-          /*  GlideImage(model = images?.get(0), contentDescription ="" ,
-                modifier = Modifier
-                    .height(400.dp)
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(0.dp)))*/
-            ImageSlider(images = images)
-            Spacer(modifier = Modifier.height(5.dp))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
+                    .weight(9f)
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
             ) {
                 Row(
-                    verticalAlignment = Alignment.CenterVertically
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(
-                        text =  "Likes",
-                        fontSize = 12.sp,
-                        color = Color.Gray
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Image(
-                        painter = painterResource(id = R.drawable.likes_vector),
-                        contentDescription = "likes",
-                        Modifier
-                            .size(20.dp)
-                            .clickable { },
-                        colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(Color.Gray)
-                    )
+                    if (pref != null) {
+                        Image(
+                            painter = painterResource(id = pref.logo),
+                            contentDescription = "topicimage",
+                            Modifier
+                                .size(35.dp)
+                                .clip(CircleShape)
+                        )
+                    } else {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_launcher_background),
+                            contentDescription = "topicimage",
+                            Modifier
+                                .size(35.dp)
+                                .clip(CircleShape)
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(5.dp))
+                    Column(Modifier.fillMaxWidth()) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(text = "${post.preferences}", fontSize = 15.sp,
+                                fontWeight = Bold,
+                                modifier = Modifier.clickable {
+                                    navController.navigate(Screens.PagesScreen.createRoute(post.preferences)) {
+                                        launchSingleTop = true
+                                    }
+                                }
+                            )
+                            Spacer(modifier = Modifier.width(5.dp))
+                            Text(
+                                text = getTimeAgo(post.timestamp),
+                                fontSize = 10.sp,
+                                color = Color.Gray
+                            )
+
+                        }
+                    }
                 }
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                Spacer(modifier = Modifier.height(5.dp))
+                Column(Modifier.padding(start = 20.dp, end = 20.dp)) {
                     Text(
-                        text = "Replies",
-                        fontSize = 12.sp,
-                        color = Color.Gray
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Image(
-                        painter = painterResource(id = R.drawable.comment_vector),
-                        contentDescription = "replies",
-                        Modifier.size(13.dp),
-                        colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(Color.Gray)
-                    )
+                        text = post.title,
+                        fontSize = 25.sp,
+                        fontWeight = Bold,
+
+                        )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = post.description,
+                        fontSize = 16.sp,
+
+                        )
                 }
 
+                Log.d("ammmmmmit", "${post.images[0]}")
+                Spacer(modifier = Modifier.height(5.dp))
+                /*  GlideImage(model = images?.get(0), contentDescription ="" ,
+                      modifier = Modifier
+                          .height(400.dp)
+                          .fillMaxWidth()
+                          .clip(RoundedCornerShape(0.dp)))*/
+                ImageSlider(images = images)
+                Spacer(modifier = Modifier.height(10.dp))
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically
+                        .padding(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Absolute.SpaceAround
                 ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = "Likes",
+                            fontSize = 12.sp,
+                            color = Color.Gray
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Image(
+                            painter = painterResource(id = R.drawable.likes_vector),
+                            contentDescription = "likes",
+                            Modifier
+                                .size(20.dp)
+                                .clickable { },
+                            colorFilter = ColorFilter.tint(Color.Gray)
+                        )
+                    }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = "Replies",
+                            fontSize = 12.sp,
+                            color = Color.Gray
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Image(
+                            painter = painterResource(id = R.drawable.comment_vector),
+                            contentDescription = "replies",
+                            Modifier.size(13.dp),
+                            colorFilter = ColorFilter.tint(Color.Gray)
+                        )
+                    }
 
-                    Text(
-                        text = "Bookmark",
-                        fontSize = 12.sp,
-                        color = Color.Gray
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Image(
-                        painter = painterResource(id = R.drawable.bookmarks_vector),
-                        contentDescription = "bookmark",
-                        Modifier
-                            .size(20.dp)
-                            .clickable { },
-                        colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(Color.Gray)
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Bookmark",
+                            fontSize = 12.sp,
+                            color = Color.Gray
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Image(
+                            painter = painterResource(id = R.drawable.bookmarks_vector),
+                            contentDescription = "bookmark",
+                            Modifier
+                                .size(20.dp)
+                                .clickable { },
+                            colorFilter = ColorFilter.tint(Color.Gray)
+                        )
+                    }
+
                 }
                 Spacer(modifier = Modifier.height(30.dp))
                 ReplyComponent(
                     postViewModel = postViewModel,
-                    postId = postId,
+                    postId = post.id,
                 )
             }
-
             Column(
                 modifier = Modifier
-                    //.weight(1f)
+                    //  .weight(1f)
                     .imePadding()
                     .padding(10.dp)
                     .align(Alignment.CenterHorizontally),
-                verticalArrangement = Arrangement.Bottom
             ) {
                 OutlinedTextField(
-                    value = reply,
-                    onValueChange = { reply = it },
+                    value = Reply,
+                    onValueChange = { Reply = it },
                     placeholder = {
                         Text(
                             "Add a Reply",
@@ -283,14 +287,14 @@ fun postInsideView(
                         IconButton(
                             onClick = {
                                 postViewModel.saveReply(
-                                    postId,
-                                    reply,
+                                    post.id,
+                                    Reply,
                                     collegeName,
                                     collegeLogo
                                 )
-                                reply = ""
+                                Reply = ""
                             },
-                            enabled = reply.isNotEmpty()
+                            enabled = Reply.isNotEmpty()
                         ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.Send,
@@ -325,7 +329,7 @@ fun fetchImagesByPostId(postId: String, onSuccess: (List<String>?) -> Unit, onFa
         .addOnSuccessListener { document ->
             if (document != null && document.exists()) {
                 val images = document.get("images") as? List<String>
-                onSuccess(images) 
+                onSuccess(images)
             } else {
                 onFailure(Exception("Post not found"))
             }
@@ -352,7 +356,7 @@ fun ImageSlider(images: List<String>?) {
         contentAlignment = Alignment.Center
     ) {
         HorizontalPager(
-           // count = imageList.size,
+            // count = imageList.size,
             state = pagerState,
             modifier = Modifier.fillMaxSize()
         ) { page ->
