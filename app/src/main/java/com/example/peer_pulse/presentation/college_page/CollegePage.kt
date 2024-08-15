@@ -50,7 +50,7 @@ import com.example.peer_pulse.R
 import com.example.peer_pulse.domain.model.College
 import com.example.peer_pulse.domain.model.colleges
 import com.example.peer_pulse.presentation.preferences.PageHeader
-import com.example.peer_pulse.presentation.preferences.PostLazyColumn
+//import com.example.peer_pulse.presentation.preferences.PostLazyColumn
 
 @Composable
 fun CollegePage(

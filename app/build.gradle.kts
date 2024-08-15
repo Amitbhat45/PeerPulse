@@ -65,6 +65,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.lifecycle.runtime.compose.android)
     implementation(libs.androidx.databinding.adapters)
+    implementation(libs.firebase.storage.ktx)
     implementation(libs.firebase.messaging)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -76,6 +77,7 @@ dependencies {
     implementation (libs.androidx.navigation.compose)
     implementation( libs.androidx.lifecycle.viewmodel.compose)
     implementation (libs.androidx.hilt.navigation.compose)
+    implementation (libs.material3)
     implementation(libs.androidx.material.icons.extended)
 
     //firebase with google
@@ -123,5 +125,9 @@ dependencies {
     implementation (libs.glide)
     annotationProcessor (libs.compiler)
     implementation (libs.compose)
+
+    //horizontal pager
+    //implementation (libs.accompanist.pager)
+
 
 }

@@ -119,6 +119,7 @@ class AuthViewModel @Inject constructor(
 
     fun emailValidator(email : String) : Boolean{
         val emailRegex = Regex("^\\d[a-zA-Z]{2}\\d{2}[a-zA-Z]{2}\\d{3}\\.[a-z]{2}@[a-z]+\\.edu\\.in$")
+        //val emailRegex = Regex("^[a-zA-Z0-9._%+-]+@gmail\\.com$")
         return emailRegex.matches(email)
     }
     fun passwordVerify(first : String, second : String) : Boolean{

@@ -1,6 +1,7 @@
 package com.example.peer_pulse.presentation.postUI
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
@@ -112,6 +113,33 @@ fun AddPost(
     }
     val context = LocalContext.current
     val activity = context as ComponentActivity
+
+
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickMultipleVisualMedia()
+    ) { uris ->
+        images = uris
+        uris.forEach { uri ->
+            try {
+                context.contentResolver.takePersistableUriPermission(
+                    uri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+
+                // Convert URI to InputStream and upload to Firebase Storage
+                val stream = context.contentResolver.openInputStream(uri)
+                val fileName = "${System.currentTimeMillis()}.jpg"
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+
+            }
+        }
+    }
+
+
+
     var collegeChosen by remember {
         mutableStateOf("")
     }
@@ -125,6 +153,7 @@ fun AddPost(
     var forHeader by remember {
         mutableStateOf("Choose")
     }
+
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun checkPermissions() {
         when {
@@ -400,6 +429,7 @@ fun AddPost(
                             modifier = Modifier.padding(8.dp)
                         )
                         Spacer(modifier = Modifier.height(8.dp))
+
                         Card(
                             onClick = {
                                 collegeChosen = collegeName
@@ -481,8 +511,11 @@ fun PostTitleBar(
                        preferencesId = preferencesText,
                        title = titleText,
                        description = descriptionText,
+
+
                        images = images,
                        collegeName = collegeName
+                     
                    )
 
                 },
