@@ -71,6 +71,7 @@ class PostViewModel @Inject constructor(
 
     init {
         fetchPosts()
+        fetchMostLikedLastWeek()
     }
     private fun fetchUserPreferences() {
         viewModelScope.launch {
