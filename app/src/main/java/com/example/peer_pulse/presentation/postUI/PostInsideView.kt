@@ -124,7 +124,8 @@ fun PostInsideView(
         ){
             Column(
                 Modifier
-                    .weight(9f)
+
+                   .weight(9f)
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
             ) {
@@ -141,6 +142,7 @@ fun PostInsideView(
                             Modifier
                                 .size(35.dp)
                                 .clip(CircleShape)
+
                         )
                     } else {
                         Image(
@@ -265,61 +267,62 @@ fun PostInsideView(
                     postId = post.id,
                 )
             }
-            Column(
-                modifier = Modifier
-                    //  .weight(1f)
-                    .imePadding()
-                    .padding(10.dp)
-                    .align(Alignment.CenterHorizontally),
-            ) {
-                OutlinedTextField(
-                    value = Reply,
-                    onValueChange = { Reply = it },
-                    placeholder = {
-                        Text(
-                            "Add a Reply",
-                            fontSize = 14.sp,
-                            color = Color.Gray,
-                        )
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    trailingIcon = {
-                        IconButton(
-                            onClick = {
-                                postViewModel.saveReply(
-                                    post.id,
-                                    Reply,
-                                    collegeName,
-                                    collegeLogo
-                                )
-                                Reply = ""
-                            },
-                            enabled = Reply.isNotEmpty()
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.Send,
-                                contentDescription = null,
-                                tint = Color.White
+
+                Column(
+                    modifier = Modifier
+                      //  .weight(1f)
+                        .imePadding()
+                        .padding(10.dp)
+                        .align(Alignment.CenterHorizontally),
+                ) {
+                    OutlinedTextField(
+                        value = Reply,
+                        onValueChange = { Reply = it },
+                        placeholder = {
+                            Text(
+                                "Add a Reply",
+                                fontSize = 14.sp,
+                                color = Color.Gray,
                             )
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        trailingIcon = {
+                            IconButton(
+                                onClick = {
+                                    postViewModel.saveReply(
+                                        post.id,
+                                        Reply,
+                                        collegeName,
+                                        collegeLogo
+                                    )
+                                    Reply = ""
+                                },
+                                enabled = Reply.isNotEmpty()
+                            ) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.Send,
+                                    contentDescription = null,
+                                    tint = Color.White
+                                )
+                            }
                         }
-                    }
-                    /*modifier = Modifier
-                        .fillMaxWidth()
-                        .height(40.dp) // Standard height for text fields
-                        .padding(horizontal = 16.dp), // Padding for proper alignment
-                    colors = TextFieldDefaults.textFieldColors(
-                        //backgroundColor = Color.White, // Set a solid background color if needed
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        //textColor = Color.Black // Ensure text color contrasts with the background
-                    ),
-                    singleLine = true,
-                    shape = RoundedCornerShape(20.dp)*/
-                )
+                        /*modifier = Modifier
+                            .fillMaxWidth()
+                            .height(40.dp) // Standard height for text fields
+                            .padding(horizontal = 16.dp), // Padding for proper alignment
+                        colors = TextFieldDefaults.textFieldColors(
+                            //backgroundColor = Color.White, // Set a solid background color if needed
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            //textColor = Color.Black // Ensure text color contrasts with the background
+                        ),
+                        singleLine = true,
+                        shape = RoundedCornerShape(20.dp)*/
+                    )
+                }
             }
         }
     }
-}
 
 fun fetchImagesByPostId(postId: String, onSuccess: (List<String>?) -> Unit, onFailure: (Exception) -> Unit) {
     val db = FirebaseFirestore.getInstance()

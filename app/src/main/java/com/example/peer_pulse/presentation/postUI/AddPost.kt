@@ -504,12 +504,13 @@ fun PostTitleBar(
                 onClick = {
                     postViewModel.savePost(
                         preferences = preferencesText,
-                        preferencesId = preferencesText,
-                        title = titleText,
-                        description = descriptionText,
-                        images = images,
-                        collegeName = collegeName
-                    )
+
+                       preferencesId = preferencesText,
+                       title = titleText,
+                       description = descriptionText,
+                       images = images,
+                       collegeName = collegeName
+                   )
 
                 },
                 colors = ButtonDefaults.buttonColors(
