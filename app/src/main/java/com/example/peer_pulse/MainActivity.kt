@@ -19,7 +19,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.peer_pulse.data.login.GoogleAuthUiClient
 import com.example.peer_pulse.navigation.NavigationHost
+import com.example.peer_pulse.navigation.RootNavigation
 import com.example.peer_pulse.presentation.AuthViewModel
+import com.example.peer_pulse.presentation.community.CommunityViewModel
 import com.example.peer_pulse.presentation.postUI.PostViewModel
 import com.example.peer_pulse.presentation.preferences.PreferencesViewModel
 import com.example.peer_pulse.presentation.profile.ProfileViewModel
@@ -55,15 +57,27 @@ class MainActivity : ComponentActivity(), PermissionCallback{
                     val profileViewModel : ProfileViewModel = hiltViewModel()
                     val postViewModel : PostViewModel = hiltViewModel()
                     val preferencesViewModel : PreferencesViewModel = hiltViewModel()
-                    NavigationHost(
-                        navHostController = navController,
-                        authViewModel = authViewModel,
+                    val communityViewModel : CommunityViewModel = hiltViewModel()
+//                    NavigationHost(
+//                        navHostController = navController,
+//                        authViewModel = authViewModel,
+//                        googleAuthUiClient = googleAuthUiClient,
+//                        applicationContext,
+//                        profileViewModel = profileViewModel,
+//                        postViewModel = postViewModel,
+//                        preferencesViewModel = preferencesViewModel,
+//                        permissionGranted = permissionGranted
+//                    )
+                    RootNavigation(
+                        navHostController = navController ,
+                        authViewModel =  authViewModel,
                         googleAuthUiClient = googleAuthUiClient,
-                        applicationContext,
+                        applicationContext = applicationContext,
                         profileViewModel = profileViewModel,
                         postViewModel = postViewModel,
                         preferencesViewModel = preferencesViewModel,
-                        permissionGranted = permissionGranted
+                        permissionGranted = permissionGranted,
+                        communityViewModel = communityViewModel
                     )
                 }
             }

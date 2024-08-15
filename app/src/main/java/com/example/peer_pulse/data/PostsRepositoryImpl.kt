@@ -1,5 +1,6 @@
 package com.example.peer_pulse.data
 
+
 import android.net.Uri
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
@@ -11,6 +12,7 @@ import com.example.peer_pulse.data.room.PostsDatabase
 import com.example.peer_pulse.data.room.TimeRange
 import com.example.peer_pulse.data.room.post
 import com.example.peer_pulse.domain.model.Post
+import com.example.peer_pulse.domain.model.Reply
 import com.example.peer_pulse.domain.repository.PostsRepository
 import com.example.peer_pulse.utilities.ResponseState
 import com.google.firebase.firestore.FieldValue
@@ -59,7 +61,6 @@ class PostsRepositoryImpl @Inject constructor(
             pagingSourceFactory = { database.postDao().getPosts(preferences) }
         ).flow
     }
-
     @OptIn(ExperimentalPagingApi::class)
     override suspend fun getMostLikedPostsLastWeek(preferences: List<String>): Flow<PagingData<post>> {
         return Pager(
@@ -97,15 +98,49 @@ class PostsRepositoryImpl @Inject constructor(
         val snapshot = firestore.collection("posts").document(postId).collection("replies").get().await()
         val replyIds = snapshot.documents.map { it.id }
         ResponseState.Success(replyIds)
+        }.catch {
+        emit(ResponseState.Error(it.message ?: "An unexpected error occurred"))
+    }
+    override suspend fun saveReply(
+        postId: String,
+        reply: String,
+        userId: String,
+        college: String,
+        collegeLogo: Int
+    ): Flow<ResponseState<Boolean>> = flow {
+        emit(ResponseState.Loading)
+        val id = firestore.collection("posts").document(postId).collection("replies").document().id
+        val replyDetails = Reply(
+            id = id,
+            content = reply,
+            userId = userId,
+            postId = postId,
+            timeStamp = System.currentTimeMillis(),
+            college = college,
+            collegeLogo = collegeLogo,
+            likes = 0
+        )
+        firestore.collection("posts").document(postId).collection("replies").document(id).set(replyDetails).await()
+        emit(ResponseState.Success(true))
     }.catch {
         emit(ResponseState.Error(it.message ?: "An unexpected error occurred"))
     }
 
-    override suspend fun getReply(postId: String, replyId: String): Flow<ResponseState<String>> = callbackFlow<ResponseState<String>> {
+    override suspend fun getRepliesId(postId: String): Flow<ResponseState<List<Reply>>> = callbackFlow<ResponseState<List<Reply>>> {
         ResponseState.Loading
-        val snapshot = firestore.collection("posts").document(postId).collection("replies").document(replyId).get().await()
-        val reply = snapshot.toObject(String::class.java)
-        ResponseState.Success(reply!!)
+        val snapshotListener = firestore.collection("posts").document(postId).collection("replies").addSnapshotListener { snapshot, error ->
+            val response = if(snapshot != null){
+                val replies = snapshot.documents.map { it.toObject(Reply::class.java)!! }
+                ResponseState.Success(replies)
+            }
+            else{
+                ResponseState.Error(error?.message ?: "An unexpected error occurred")
+            }
+            trySend(response).isSuccess
+        }
+        awaitClose {
+            snapshotListener.remove()
+        }
     }.catch {
         emit(ResponseState.Error(it.message ?: "An unexpected error occurred"))
     }
@@ -132,10 +167,11 @@ class PostsRepositoryImpl @Inject constructor(
         imageUris: List<Uri?>,
         preferences: String,
         preferencesId: String,
-        userId: String
+        userId: String,
+        collegeCode: String,
     ): Flow<ResponseState<Boolean>> = flow {
         emit(ResponseState.Loading)
-        try {
+      
             val imageUrls = mutableListOf<String>()
             for (uri in imageUris) {
                 val fileName = "${System.currentTimeMillis()}.jpg"
@@ -144,28 +180,27 @@ class PostsRepositoryImpl @Inject constructor(
                 val downloadUrl = uploadTask?.await()?.storage?.downloadUrl?.await().toString()
                 imageUrls.add(downloadUrl)
             }
-
-            val postCollection = firestore.collection("posts")
-            val id = postCollection.document().id
-            val postDetails = hashMapOf(
-                "id" to id,
-                "userId" to userId,
-                "title" to title,
-                "description" to description,
-                "images" to imageUrls, // Use the image URLs
-                "timestamp" to System.currentTimeMillis(),
-                "likes" to 0,
-                "preferences" to preferences,
-                "preferencesId" to preferencesId
-            )
-
+        val postCollection = firestore.collection("posts")
+        val id = postCollection.document().id
+        val postDetails = Post(
+            id = id,
+            title = title,
+            description = description,
+            imageUrl = imageUrls,
+            preferences = preferences,
+            preferenceId = preferencesId,
+            userId = userId,
+            timestamp = System.currentTimeMillis(),
+            collegeCode = collegeCode,
+        )
             postCollection.document(id).set(postDetails).await()
 
             emit(ResponseState.Success(true))
-        } catch (e: Exception) {
+      
+        
+    }. catch (e: Exception) {
             emit(ResponseState.Error(e.message ?: "An unexpected error occurred"))
-        }
-    }
+      }
 
 
 

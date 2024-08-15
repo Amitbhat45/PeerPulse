@@ -75,6 +75,7 @@ import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun PreferencePage(
     preferenceId : String,
@@ -97,7 +98,7 @@ fun PreferencePage(
                 .padding(it)
         ) {
             PageHeader(
-                //navController = navController,
+                navController = navController,
                 preferenceId = preferenceId,
                 navController = navController
             )
@@ -140,7 +141,8 @@ fun PreferencePage(
 
 @Composable
 fun PageHeader(
-    navController: NavController,
+
+   navController: NavController,
     preferenceId : String,
 ){
     val logo = trialPreferences.find { it.id == preferenceId}?.logo ?: R.drawable.following_vector
@@ -162,7 +164,8 @@ fun PageHeader(
         ){
             IconButton(
                 onClick = {
-                    navController.navigateUp()
+
+                  navController.navigateUp()
                 }
             ) {
                 Icon(imageVector = Icons.Filled.ArrowBackIosNew, contentDescription =null )
@@ -220,6 +223,7 @@ fun followbuttonrow(preferenceId : String,){
 
 
 @OptIn(ExperimentalMaterial3Api::class)
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Filter2(selectedFilter: String, onFilterSelected: (String) -> Unit) {
     val scope = rememberCoroutineScope()
@@ -304,10 +308,12 @@ fun BottomSheetContent2(onOptionSelected: (String) -> Unit) {
     }
 }
 
+
 @Preview(showBackground = true)
 @Composable
 fun PreferencePagePreview() {
    // PageHeader(preferenceId = "College Events")
    // followbuttonrow(preferenceId ="College Events" )
 }
+
 

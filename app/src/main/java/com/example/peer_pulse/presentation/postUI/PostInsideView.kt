@@ -15,18 +15,27 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+
+import androidx.compose.foundation.lazy.LazyColumn
+
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
+
+import androidx.compose.material.icons.automirrored.filled.Send
+
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -60,17 +69,26 @@ import com.example.peer_pulse.R
 import com.example.peer_pulse.data.room.post
 import com.example.peer_pulse.domain.model.Post
 import com.example.peer_pulse.domain.model.getPreferenceById
+import com.example.peer_pulse.presentation.replies.ReplyComponent
 import com.example.peer_pulse.presentation.signup.AuthTopBar
 import com.example.peer_pulse.utilities.Screens
+
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
+
+import com.example.peer_pulse.utilities.rememberImeState
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalGlideComposeApi::class)
 @Composable
+
 fun postInsideView(
     post: post,
     navController: NavController,
+    postViewModel: PostViewModel,
+    collegeLogo : Int,
+    collegeName : String
 ){
     val post_id=post.id
 
@@ -98,7 +116,14 @@ fun postInsideView(
             )
         }
     ) {
-        Column(modifier = Modifier.padding(it)) {
+//        val imeState = rememberImeState()
+       val scrollState = rememberScrollState()
+//
+//        LaunchedEffect(key1 = imeState.value) {
+//            if(imeState.value){
+//                scrollState.scrollTo(scrollState.maxValue)
+//            }
+//        }
         Column(
             Modifier
                 .weight(9f)
@@ -134,12 +159,8 @@ fun postInsideView(
                         )
                         Spacer(modifier = Modifier.width(5.dp))
                         Text(text = getTimeAgo(post.timestamp),fontSize = 10.sp, color= Color.Gray)
+
                     }
-                    Spacer(modifier = Modifier.height(0.dp))
-                    Text(text = "Clgname",
-                        fontSize = 10.sp,
-                        color= Color.Gray
-                    )
                 }
             }
             Spacer(modifier = Modifier.height(5.dp))
@@ -208,9 +229,15 @@ fun postInsideView(
                         colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(Color.Gray)
                     )
                 }
+
                 Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+
                     Text(
                         text = "Bookmark",
                         fontSize = 12.sp,
@@ -226,34 +253,52 @@ fun postInsideView(
                         colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(Color.Gray)
                     )
                 }
+                Spacer(modifier = Modifier.height(30.dp))
+                ReplyComponent(
+                    postViewModel = postViewModel,
+                    postId = postId,
+                )
             }
-            Spacer(modifier = Modifier.height(30.dp))
-            Column(Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(text = "No Replies Yet",
-                    fontSize = 20.sp,
-                    fontWeight = Bold,
-                    )
-            }
-        }
 
             Column(
                 modifier = Modifier
-                    .weight(1f),
+                    //.weight(1f)
+                    .imePadding()
+                    .padding(10.dp)
+                    .align(Alignment.CenterHorizontally),
                 verticalArrangement = Arrangement.Bottom
-            ){
+            ) {
                 OutlinedTextField(
-                    value = Reply,
-                    onValueChange = { Reply = it },
+                    value = reply,
+                    onValueChange = { reply = it },
                     placeholder = {
                         Text(
                             "Add a Reply",
                             fontSize = 14.sp,
-                            color = Color.Gray ,
+                            color = Color.Gray,
                         )
                     },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    trailingIcon = {
+                        IconButton(
+                            onClick = {
+                                postViewModel.saveReply(
+                                    postId,
+                                    reply,
+                                    collegeName,
+                                    collegeLogo
+                                )
+                                reply = ""
+                            },
+                            enabled = reply.isNotEmpty()
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.Send,
+                                contentDescription = null,
+                                tint = Color.White
+                            )
+                        }
+                    }
                     /*modifier = Modifier
                         .fillMaxWidth()
                         .height(40.dp) // Standard height for text fields

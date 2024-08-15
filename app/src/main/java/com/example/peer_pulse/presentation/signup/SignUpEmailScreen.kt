@@ -7,14 +7,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.ArrowBackIos
@@ -31,7 +35,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,6 +56,7 @@ import androidx.compose.ui.window.PopupProperties
 import androidx.navigation.NavController
 import com.example.peer_pulse.presentation.AuthViewModel
 import com.example.peer_pulse.utilities.Screens
+import com.example.peer_pulse.utilities.rememberImeState
 
 
 @Composable
@@ -64,6 +71,7 @@ fun SignUpEmailScreen(
     var expanded by remember {
         mutableStateOf(false)
     }
+
     Scaffold(
         topBar = {
             AuthTopBar(
@@ -75,8 +83,19 @@ fun SignUpEmailScreen(
             )
         }
     ) {
+        val imeState = rememberImeState()
+        val scrollState = rememberScrollState()
+        LaunchedEffect(key1 = imeState.value) {
+            if(imeState.value){
+                scrollState.scrollTo(scrollState.maxValue)
+            }
+        }
         Column (
-            modifier = Modifier.padding(it)
+            modifier = Modifier
+                .padding(it)
+                .padding(4.dp)
+                .fillMaxSize()
+                .verticalScroll(scrollState)
         ){
             Column(
                 modifier = Modifier
@@ -147,6 +166,7 @@ fun SignUpEmailScreen(
                             text = "Enter your college email"
                         )
                     },
+                    singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     isError = valid == false,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
@@ -159,8 +179,9 @@ fun SignUpEmailScreen(
             }
             Column(
                 modifier = Modifier
+                    .weight(3.5f)
                     .padding(16.dp)
-                    .weight(3.5f),
+                    .imePadding(),
                 verticalArrangement = Arrangement.Bottom
             ) {
                 Text(

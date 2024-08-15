@@ -20,12 +20,13 @@ class AuthRepositoryImpl @Inject constructor(
     private val firestore: FirebaseFirestore
 ) : AuthRepository {
     private var operationSuccessful = false
+    var errorMessage = ""
     override fun isUserAuthenticated(): Boolean {
         return auth.currentUser != null
     }
 
 
-    override suspend fun signUp(email: String, password: String): Flow<ResponseState<Boolean>> = flow {
+    override suspend fun signUp(email: String, password: String,userName : String): Flow<ResponseState<Boolean>> = flow {
         emit(ResponseState.Loading)
         val authResult = auth.createUserWithEmailAndPassword(email, password).await()
         val user = authResult.user
@@ -38,7 +39,9 @@ class AuthRepositoryImpl @Inject constructor(
                 val userId = user.uid
                 val userMap = hashMapOf(
                     "userId" to userId,
-                    "email" to email
+                    "email" to email,
+                    "bookmarks" to listOf<String>(),
+                    "username" to userName
                 )
                 firestore.collection("users").document(userId).set(userMap).await()
                 emit(ResponseState.Success(true))
@@ -63,6 +66,19 @@ class AuthRepositoryImpl @Inject constructor(
         emit(ResponseState.Loading)
         auth.signOut()
         emit(ResponseState.Success(true))
+    }.catch {
+        emit(ResponseState.Error(it.message ?: "An unexpected error occurred"))
+    }
+
+    override suspend fun verifyUsername(userName: String): Flow<ResponseState<Boolean>> = flow{
+        emit(ResponseState.Loading)
+        operationSuccessful = false
+        val query = firestore.collection("users").whereEqualTo("username", userName).get().await()
+        if (query.isEmpty) {
+            emit(ResponseState.Success(true))
+        } else {
+            emit(ResponseState.Success(false))
+        }
     }.catch {
         emit(ResponseState.Error(it.message ?: "An unexpected error occurred"))
     }

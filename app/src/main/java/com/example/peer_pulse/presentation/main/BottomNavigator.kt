@@ -1,5 +1,7 @@
 package com.example.peer_pulse.presentation.main
 
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,19 +18,22 @@ import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.peer_pulse.utilities.Screens
 
 enum class BottomNavigationScreens( val route : String,val icon :ImageVector ) {
-    Main(Screens.MainScreen.route,Icons.Outlined.Home),
-    Community(Screens.CommunityScreen.route, Icons.Outlined.Business),
-    Profile(Screens.ProfileScreen.route, Icons.Outlined.AccountCircle),
+    Main(Screens.MainGraph.route,Icons.Outlined.Home),
+    Community(Screens.CommunityGraph.route, Icons.Outlined.Business),
+    Profile(Screens.ProfileGraph.route, Icons.Outlined.AccountCircle),
 }
 
 @Composable
@@ -36,6 +41,22 @@ fun BottomNavigation(
     selectedButton : BottomNavigationScreens,
     navController: NavController
 ) {
+//    val currentBackStackEntry by navController.currentBackStackEntryAsState()
+//    val currentDestination = currentBackStackEntry?.destination?.route
+//    val context = LocalContext.current
+//
+//    BackHandler {
+//        if (currentDestination == Screens.MainGraph.route) {
+//            (context as? ComponentActivity)?.finish()
+//        } else {
+//            navController.navigate(Screens.MainGraph.route) {
+//                popUpTo(Screens.MainGraph.route) {
+//                    inclusive = true
+//                }
+//                launchSingleTop = true
+//            }
+//        }
+//    }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -49,7 +70,16 @@ fun BottomNavigation(
                     contentDescription = item.name,
                     modifier = Modifier
                         .clickable {
-                            navController.navigate(item.route)
+                            if (item.route == Screens.MainGraph.route) {
+                                navController.navigate(Screens.MainGraph.route) {
+                                    popUpTo(Screens.MainGraph.route) {
+                                        inclusive = false
+                                        saveState = false
+                                    }
+                                    launchSingleTop = true
+                                }
+                            } else
+                                navController.navigate(item.route)
                         }
                         .padding(8.dp)
                         .padding(top = 8.dp)

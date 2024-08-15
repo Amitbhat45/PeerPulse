@@ -42,6 +42,7 @@ class AuthViewModel @Inject constructor(
     var userId = auth.currentUser?.uid
     var email : String = ""
     var password : String = ""
+    var userName : String = ""
     var college : String = ""
 
     private val _signUp = mutableStateOf<ResponseState<Boolean?>>(ResponseState.Success(null))
@@ -59,13 +60,16 @@ class AuthViewModel @Inject constructor(
     private val _signOut = mutableStateOf<ResponseState<Boolean?>>(ResponseState.Success(null))
     val signOut : State<ResponseState<Boolean?>> = _signOut
 
+    private val _verifyUsername = mutableStateOf<ResponseState<Boolean?>>(ResponseState.Success(null))
+    val verifyUsername : State<ResponseState<Boolean?>> = _verifyUsername
+
 
     val isUserAuthenticated get() = authRepository.isUserAuthenticated()
 
 
     fun signUp(){
         viewModelScope.launch {
-            authRepository.signUp(email, password).collect {
+            authRepository.signUp(email, password,userName).collect {
                 _signUp.value = it
             }
         }
@@ -128,7 +132,7 @@ class AuthViewModel @Inject constructor(
         return passwordPattern.matcher(password).matches()
     }
 
-    
+
 
     fun whichCollege(email: String) : String{
         if (email.length < 3) return ""
@@ -158,6 +162,14 @@ class AuthViewModel @Inject constructor(
         }
         else{
             _registerCollege.value = ResponseState.Success(false)
+        }
+    }
+
+    fun verifyUsername(userName: String){
+        viewModelScope.launch {
+            authRepository.verifyUsername(userName).collect {
+                _verifyUsername.value = it
+            }
         }
     }
 

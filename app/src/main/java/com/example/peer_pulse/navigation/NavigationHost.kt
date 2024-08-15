@@ -15,22 +15,25 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.navigation.NavGraph
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.peer_pulse.R
 import com.example.peer_pulse.data.login.GoogleAuthUiClient
 import com.example.peer_pulse.data.room.post
+import com.example.peer_pulse.domain.model.colleges
 import com.example.peer_pulse.presentation.AuthViewModel
 import com.example.peer_pulse.presentation.LandingScreen
 import com.example.peer_pulse.presentation.college_page.CollegePage
-import com.example.peer_pulse.presentation.community.communityScreen
+import com.example.peer_pulse.presentation.community.CommunityScreen
 import com.example.peer_pulse.presentation.main.MainScreen
 import com.example.peer_pulse.presentation.login.LoginScreen
 import com.example.peer_pulse.presentation.postUI.AddPost
+import com.example.peer_pulse.presentation.postUI.PostInsideView
 import com.example.peer_pulse.presentation.postUI.PostViewModel
-import com.example.peer_pulse.presentation.postUI.postInsideView
 import com.example.peer_pulse.presentation.preferences.PreferencePage
 import com.example.peer_pulse.presentation.preferences.Preferences1
 import com.example.peer_pulse.presentation.preferences.PreferencesViewModel
@@ -186,10 +189,14 @@ fun NavigationHost(
             )
         }
         composable(Screens.AddPostScreen.route){
+            val collegeLogo = colleges.find { it.name == authViewModel.college }?.logo ?: R.drawable.google_image
+            val collegeName = colleges.find { it.name == authViewModel.college }?.name ?: ""
             AddPost(
                 navController = navHostController,
                 postViewModel = postViewModel,
-                permissionGranted = permissionGranted
+                permissionGranted = permissionGranted,
+                collegeLogo = collegeLogo,
+                collegeName = collegeName
             )
         }
         composable(
@@ -227,12 +234,21 @@ fun NavigationHost(
             val postJson = URLDecoder.decode(encodedPostJson, StandardCharsets.UTF_8.toString())
             val post = Gson().fromJson(postJson, post::class.java)
 
-            // Pass the deserialized Post object to your screen
-            postInsideView(post = post, navController = navHostController)
+
+//            PostInsideView(
+//                title = title,
+//                description = description,
+//                likes = likes,
+//                timestamp = timestamp,
+//                preferences = preferences,
+//                navHostController,
+//                //imageUrl = imageUrl,
+//                postViewModel = postViewModel
+//            )
         }
-        composable(Screens.CommunityScreen.route){
-            communityScreen(navController = navHostController)
-        }
+//        composable(Screens.CommunityScreen.route){
+//            CommunityScreen(navController = navHostController)
+//        }
     }
 }
 

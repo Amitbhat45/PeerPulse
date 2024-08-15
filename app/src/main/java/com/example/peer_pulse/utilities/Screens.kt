@@ -30,13 +30,28 @@ sealed class Screens(val route: String){
             return "collegePages/$pageId"
         }
     }
+
     object PostViewScreen : Screens("post_detail/{postJson}") {
         fun createRoute(post: post): String {
             val postJson = Gson().toJson(post)
             val encodedPostJson = URLEncoder.encode(postJson, StandardCharsets.UTF_8.toString())
             return "post_detail/$encodedPostJson"
+
         }
     }
 
     data object CommunityScreen : Screens("CommunityScreen")
+    data object CommunityTopicScreen : Screens("CommunityTopicScreen/{communityName}"){
+        fun createRoute(communityName: String): String {
+            return "CommunityTopicScreen/$communityName"
+        }
+    }
+
+    // Graph Routes
+    data object AuthGraph: Screens("AuthGraph")
+    data object MainGraph: Screens("MainGraph")
+    data object ProfileGraph: Screens("ProfileGraph")
+    data object PostGraph: Screens("PostGraph")
+    data object PreferencesGraph: Screens("PreferencesGraph")
+    data object CommunityGraph: Screens("CommunityGraph")
 }

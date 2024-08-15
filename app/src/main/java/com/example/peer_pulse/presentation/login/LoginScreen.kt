@@ -12,8 +12,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -21,6 +23,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,6 +45,7 @@ import com.example.peer_pulse.presentation.signup.AuthTopBar
 import com.example.peer_pulse.utilities.ResponseState
 import com.example.peer_pulse.utilities.Screens
 import com.example.peer_pulse.utilities.ToastMessage
+import com.example.peer_pulse.utilities.rememberImeState
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 
@@ -66,17 +70,30 @@ fun LoginScreen(state: SignInState,
             AuthTopBar(
                 title = "Log In",
                 onBackClick = {
-                    navController.popBackStack()
+                    navController.navigateUp()
                 },
                 backClick = true
             )
         }
     ) {
-        Column(modifier = Modifier.padding(it)) {
+        val imeState = rememberImeState()
+        val scrollState = rememberScrollState()
+        LaunchedEffect(key1 = imeState.value) {
+            if(imeState.value){
+                scrollState.scrollTo(scrollState.maxValue)
+            }
+        }
+        Column(
+            modifier = Modifier.padding(it)
+                .padding(4.dp)
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+        ) {
             Column(
                 modifier = Modifier
                     .padding(16.dp)
                     .weight(7.5f)
+                    .verticalScroll(scrollState)
             ) {
                 Text(
                     text = "Welcome back to PeerPulse",
@@ -84,7 +101,7 @@ fun LoginScreen(state: SignInState,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(4.dp)
                 )
-                Spacer(modifier = Modifier.height(50.dp))
+                Spacer(modifier = Modifier.height(30.dp))
                 OutlinedTextField(
                     value = email.value,
                     onValueChange = { changedEmail ->
@@ -100,7 +117,7 @@ fun LoginScreen(state: SignInState,
                             text = "Enter your email"
                         )
                     },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
                 )
                 /*Text(
@@ -197,8 +214,10 @@ fun LoginScreen(state: SignInState,
                             is ResponseState.Success ->{
                                 if(response.data == true)
                                 {
-                                    navController.navigate(Screens.MainScreen.route){
-                                        launchSingleTop = true
+                                    navController.navigate(Screens.MainGraph.route){
+                                        popUpTo(Screens.AuthGraph.route){
+                                            inclusive = true
+                                        }
                                     }
                                 }
                                 else if(response.data == false)

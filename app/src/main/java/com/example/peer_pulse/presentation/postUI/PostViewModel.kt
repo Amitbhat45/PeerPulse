@@ -9,7 +9,10 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.peer_pulse.data.room.post
+import com.example.peer_pulse.domain.model.Message
 import com.example.peer_pulse.domain.model.Post
+import com.example.peer_pulse.domain.model.Preferences
+import com.example.peer_pulse.domain.model.Reply
 import com.example.peer_pulse.domain.repository.PostsRepository
 import com.example.peer_pulse.utilities.ResponseState
 import com.google.firebase.auth.FirebaseAuth
@@ -68,6 +71,14 @@ class PostViewModel @Inject constructor(
 
     private val _likePostState = MutableStateFlow<ResponseState<Boolean>>(ResponseState.Success(false))
     val likePostState: StateFlow<ResponseState<Boolean>> = _likePostState.asStateFlow()
+    
+    private val _replyIdsByPost = mutableStateOf<ResponseState<List<Reply>>>(ResponseState.Success(emptyList()))
+    val replyIdsByPost: State<ResponseState<List<Reply>>> = _replyIdsByPost
+
+
+    private val _sendReplyState = mutableStateOf<ResponseState<Boolean?>>(ResponseState.Success(null))
+    val sendReplyState: State<ResponseState<Boolean?>> = _sendReplyState
+  
 
     init {
         fetchPosts()
@@ -148,21 +159,24 @@ class PostViewModel @Inject constructor(
         }
     }
     fun savePost(
-        title: String,
-        description: String,
-        imageUris: List<Uri?>,
-        preferences: String,
-        preferencesId: String
-    ) {
+
+        title : String,
+        description : String,
+        images : List<Uri?>,
+        preferences : String,
+        preferencesId : String,
+        collegeName : String
+    ){
         viewModelScope.launch {
             postsRepository.savePost(
-                title = title,
-                description = description,
-                imageUris = imageUris,
-                preferences = preferences,
-                preferencesId = preferencesId,
-                userId = userId!!
-            ).collect { state ->
+                title,
+                description,
+                images,
+                preferences,
+                preferencesId,
+                userId!!,
+                collegeName
+            ).collect{ state ->
                 _savePostState.value = state
             }
         }
@@ -177,6 +191,7 @@ class PostViewModel @Inject constructor(
     }
 
 
+
     fun likePost(postId: String, userId: String) {
         viewModelScope.launch {
             postsRepository.likePost(postId, userId)
@@ -188,5 +203,37 @@ class PostViewModel @Inject constructor(
     }
 
 
+
+    fun getRepliesId(postId: String){
+        viewModelScope.launch {
+            postsRepository.getRepliesId(postId).collect { state ->
+                _replyIdsByPost.value = state
+            }
+        }
+    }
+
+    fun saveReply(
+        postId: String,
+        reply: String,
+        college: String,
+        collegeLogo: Int
+    ){
+        viewModelScope.launch {
+            postsRepository.saveReply(
+                postId,
+                reply,
+                userId!!,
+                college,
+                collegeLogo
+            ).collect { state ->
+                _sendReplyState.value = state
+            }
+        }
+    }
+
+    fun resetState(){
+        _savePostState.value = ResponseState.Success(null)
+        _deletePostState.value = ResponseState.Success("")
+    }
 
 }

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -13,6 +14,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
@@ -39,6 +41,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -79,6 +82,10 @@ import com.example.peer_pulse.utilities.rememberImeState
 import com.example.peer_pulse.MainActivity.Companion.REQUEST_READ_EXTERNAL_STORAGE
 import com.example.peer_pulse.MainActivity.Companion.REQUEST_READ_MEDIA_IMAGES
 import com.example.peer_pulse.MainActivity.Companion.REQUEST_READ_MEDIA_VISUAL_USER_SELECTED
+import com.example.peer_pulse.domain.model.trialPreferences
+import com.example.peer_pulse.utilities.ResponseState
+import com.example.peer_pulse.utilities.Screens
+import com.example.peer_pulse.utilities.ToastMessage
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -86,7 +93,9 @@ import com.example.peer_pulse.MainActivity.Companion.REQUEST_READ_MEDIA_VISUAL_U
 fun AddPost(
     navController: NavController,
     postViewModel: PostViewModel,
-    permissionGranted: MutableState<Boolean>
+    permissionGranted: MutableState<Boolean>,
+    collegeLogo : Int,
+    collegeName : String
 ) {
     var titleText by remember { mutableStateOf("") }
     var descriptionText by remember { mutableStateOf("") }
@@ -104,6 +113,7 @@ fun AddPost(
     }
     val context = LocalContext.current
     val activity = context as ComponentActivity
+
 
 
     val launcher = rememberLauncherForActivityResult(
@@ -128,6 +138,21 @@ fun AddPost(
         }
     }
 
+
+
+    var collegeChosen by remember {
+        mutableStateOf("")
+    }
+    val launcher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.PickMultipleVisualMedia()) {uris->
+            images = uris
+        }
+    var selectedForCollege by remember {
+        mutableStateOf(false)
+    }
+    var forHeader by remember {
+        mutableStateOf("Choose")
+    }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun checkPermissions() {
@@ -172,7 +197,8 @@ fun AddPost(
                 titleText = titleText,
                 descriptionText = descriptionText,
                 images = images,
-                preferencesText = preferencesText
+                preferencesText = preferencesText,
+                collegeName = collegeChosen
             )
         }
     ) {
@@ -200,7 +226,7 @@ fun AddPost(
 //                    .weight(0.5f)
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.google_image),
+                    painter = painterResource(id = collegeLogo ),
                     contentDescription = null,
                     modifier = Modifier
                         .size(40.dp)
@@ -216,7 +242,7 @@ fun AddPost(
                     )
                 ) {
                     Text(
-                        "Everyone",
+                        forHeader,
                         color = Color.White,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
@@ -320,7 +346,6 @@ fun AddPost(
                     IconButton(
                         onClick = {
                             checkPermissions()
-
                         }
                     ) {
                         Icon(
@@ -390,29 +415,55 @@ fun AddPost(
                         PagesButton(
                             onClick = {
                                 preferencesText = it
+                                showDialog = false
+                                selectedForCollege = false
+                                forHeader = it
                             }
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         HorizontalDivider(color = Color.LightGray)
-                        Text(text = "My communities",
+                        Text(text = "My college",
                             color = Color.Gray,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(8.dp)
                         )
                         Spacer(modifier = Modifier.height(8.dp))
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Image(
-                                painter = painterResource(id = R.drawable.google_image),
-                                contentDescription = null,
+
+                        Card(
+                            onClick = {
+                                collegeChosen = collegeName
+                                selectedForCollege = true
+                                preferencesText = ""
+                                showDialog = false
+                                forHeader = "College"
+                                Log.d("College", collegeChosen)
+                            },
+                            colors = CardDefaults.cardColors(
+                                containerColor = if(!selectedForCollege)Color.Transparent  else Color.Blue,
+                                contentColor = Color.White
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier
-                                    .size(40.dp)
-                                    .clip(CircleShape)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Column {
-                                Text("The Daliban", color = Color.White, fontSize = 16.sp)
-                                Text("19.1K Members", color = Color.Gray, fontSize = 14.sp)
+                                    .fillMaxWidth()
+                                    .padding(8.dp)
+                            ) {
+                                Image(
+                                    painter = painterResource(id = collegeLogo),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                        .clip(CircleShape)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Column {
+                                    Text(text = collegeName, color = Color.White, fontSize = 14.sp)
+                                }
                             }
                         }
                     }
@@ -431,9 +482,10 @@ fun PostTitleBar(
     titleText : String,
     descriptionText : String,
     images : List<Uri?>,
-    preferencesText : String
+    preferencesText : String,
+    collegeName: String,
 ) {
-    val showButton = titleText.isNotEmpty() && descriptionText.isNotEmpty() && preferencesText.isNotEmpty()
+    val showButton = titleText.isNotEmpty() && descriptionText.isNotEmpty() && (preferencesText.isNotEmpty() || collegeName.isNotEmpty() )
     TopAppBar(
         title = {
 
@@ -459,19 +511,47 @@ fun PostTitleBar(
                        preferencesId = preferencesText,
                        title = titleText,
                        description = descriptionText,
-                       imageUris = images
+
+
+                       images = images,
+                       collegeName = collegeName
+                     
                    )
+
                 },
                 colors = ButtonDefaults.buttonColors(
-                   containerColor = Color.Transparent
+                   containerColor = Color.Transparent,
+                    contentColor = if(showButton) Color.White else Color.Gray
                 ),
                 enabled = showButton
             ) {
-                Text(
-                    "Post",
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold
-                )
+                when(val response = postViewModel.savePostState.value){
+                    is ResponseState.Error -> {
+                        Text(
+                            "Post",
+                            fontWeight = FontWeight.Bold
+                        )
+                        ToastMessage(message = response.message)
+                    }
+                    ResponseState.Loading -> {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                    is ResponseState.Success -> {
+                        if(response.data != null){
+                            navController.navigate(Screens.MainScreen.route)
+                            postViewModel.resetState()
+                        }
+                        else
+                        {
+                            Text(
+                                "Post",
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
             }
         },
        colors = TopAppBarColors(
@@ -494,12 +574,12 @@ fun PagesButton(
             .fillMaxWidth()
     ) {
         var selectedPreference by remember { mutableStateOf<String?>(null) }
-        preferences.forEach {
-            val selected = it == selectedPreference
+        trialPreferences.forEach {
+            val selected = it.id == selectedPreference
             Card(
                 onClick = {
-                    selectedPreference = if (selected) null else it
-                    onClick(it)
+                    selectedPreference = if (selected) null else it.id
+                    onClick(it.id)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -516,7 +596,7 @@ fun PagesButton(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.google_image),
+                        painter = painterResource(id = it.logo),
                         contentDescription = null,
                         modifier = Modifier
                             .size(40.dp)
@@ -524,7 +604,7 @@ fun PagesButton(
                             .padding(4.dp)
                     )
                     Text(
-                        text = it,
+                        text = it.id,
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp,
                         modifier = Modifier.padding(4.dp)
