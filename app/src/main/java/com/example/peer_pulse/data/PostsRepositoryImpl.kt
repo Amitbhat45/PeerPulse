@@ -175,7 +175,7 @@ class PostsRepositoryImpl @Inject constructor(
         preferences: String,
         preferencesId: String,
         userId: String,
-        collegeCode: String  // Added collegeCode parameter
+        collegeCode: String
     ): Flow<ResponseState<Boolean>> = flow {
 
         emit(ResponseState.Loading)
@@ -194,7 +194,7 @@ class PostsRepositoryImpl @Inject constructor(
             val postCollection = firestore.collection("posts")
             val id = postCollection.document().id
 
-            // Updated postDetails map to include collegeCode
+
             val postDetails = hashMapOf(
                 "id" to id,
                 "userId" to userId,
@@ -205,7 +205,7 @@ class PostsRepositoryImpl @Inject constructor(
                 "likes" to 0,
                 "preferences" to preferences,
                 "preferencesId" to preferencesId,
-                "collegeCode" to collegeCode  // Added collegeCode to the map
+                "collegeCode" to collegeCode
             )
 
             postCollection.document(id).set(postDetails).await()
