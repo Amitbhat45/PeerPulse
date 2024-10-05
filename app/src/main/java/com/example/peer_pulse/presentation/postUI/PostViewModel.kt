@@ -56,8 +56,8 @@ class PostViewModel @Inject constructor(
 
     var userId = auth.currentUser?.uid
 
-    private val _userFeedState = MutableStateFlow<ResponseState<PagingData<Post>>>(ResponseState.Loading)
-    val userFeedState: StateFlow<ResponseState<PagingData<Post>>> get() = _userFeedState
+    private val _userFeedState = MutableStateFlow<PagingData<post>>(PagingData.empty())
+    val userFeedState: StateFlow<PagingData<post>> get() = _userFeedState
 
     private val _mostLikedLastWeek = MutableStateFlow<PagingData<post>>(PagingData.empty())
     val mostLikedLastWeek: StateFlow<PagingData<post>> get() = _mostLikedLastWeek
@@ -105,13 +105,11 @@ class PostViewModel @Inject constructor(
 
             postsRepository.getPosts(preferences1)
                 .cachedIn(viewModelScope)
-                .collectLatest { responseState ->
-                    _userFeedState.value = responseState // Update the state based on the collected response
+                .collectLatest { pagingData ->
+                    _userFeedState.value = pagingData
                 }
         }
     }
-
-
 
     fun refreshFeed() {
         fetchPosts()
