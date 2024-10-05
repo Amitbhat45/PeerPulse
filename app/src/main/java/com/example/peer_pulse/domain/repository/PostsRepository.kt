@@ -22,7 +22,7 @@ interface PostsRepository {
         collegeCode: String,
     ):Flow<ResponseState<Boolean>>
     suspend fun deletePost(postId:String):Flow<ResponseState<String>>
-    suspend fun getPosts(preferences: List<String>): Flow<PagingData<post>>
+    suspend fun getPosts(preferences: List<String>): Flow<ResponseState<PagingData<post>>>
     suspend fun saveReply(
         postId: String,
         reply: String,

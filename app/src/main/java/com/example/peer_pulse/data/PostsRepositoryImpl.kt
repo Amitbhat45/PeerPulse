@@ -26,6 +26,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -57,13 +59,28 @@ class PostsRepositoryImpl @Inject constructor(
     }
 
     @OptIn(ExperimentalPagingApi::class)
-    override suspend fun getPosts(preferences: List<String>): Flow<PagingData<post>> {
-        return Pager(
-            config = PagingConfig(pageSize = 20, enablePlaceholders = false),
-            remoteMediator = PostRemoteMediator(firestore, database, preferences),
-            pagingSourceFactory = { database.postDao().getPosts(preferences) }
-        ).flow
+    override suspend fun getPosts(preferences: List<String>): Flow<ResponseState<PagingData<post>>> {
+        return flow {
+            emit(ResponseState.Loading)
+
+            try {
+                val pagerFlow = Pager(
+                    config = PagingConfig(pageSize = 20, enablePlaceholders = false),
+                    remoteMediator = PostRemoteMediator(firestore, database, preferences),
+                    pagingSourceFactory = { database.postDao().getPosts(preferences) }
+                ).flow
+
+                pagerFlow.collect { pagingData ->
+                    emit(ResponseState.Success(pagingData))
+                }
+
+            } catch (e: Exception) {
+                emit(ResponseState.Error(e.message ?: "An unexpected error occurred"))
+            }
+        }
     }
+
+
 
     @OptIn(ExperimentalPagingApi::class)
     override suspend fun getMostLikedPostsLastWeek(preferences: List<String>): Flow<PagingData<post>> {
