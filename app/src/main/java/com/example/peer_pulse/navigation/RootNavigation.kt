@@ -277,7 +277,8 @@ fun RootNavigation(
                     communityViewModel = communityViewModel,
                     collegeLogo = collegeLogo,
                     collegeName = collegeName,
-                    collegeCode = collegeCode
+                    collegeCode = collegeCode,
+                    postViewModel = postViewModel
                 )
             }
             composable(

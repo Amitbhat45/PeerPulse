@@ -1,5 +1,6 @@
 package com.example.peer_pulse.presentation.community
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -14,6 +15,7 @@ import com.example.peer_pulse.domain.repository.CommunityRepository
 import com.example.peer_pulse.utilities.ResponseState
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -63,12 +65,15 @@ class CommunityViewModel @Inject constructor(
     var communityList: List<Community> = emptyList()
 
     init {
-        fetchPosts()
+        viewModelScope.launch {
+            delay(500)
+            fetchPosts()
+        }
     }
 
     private fun fetchPosts() {
         viewModelScope.launch {
-            communityRepository.getPosts(emptyList(),college)
+            communityRepository.getPosts(listOf(""),college)
                 .cachedIn(viewModelScope)
                 .collectLatest { pagingData ->
                     _clgPosts.value = pagingData
@@ -142,16 +147,12 @@ class CommunityViewModel @Inject constructor(
     fun resetSendState() {
         _sendMessage.value = ResponseState.Success(false)
     }
-    private fun whichCollege(email: String) : String{
-        if (email.length < 3) return ""
-        val collegeCode1 = email.substring(0,3)
-        val collegeCode2 = collegeCode1.uppercase()
-        var answer = "Not Found"
-        colleges.forEach {
-            if(it.code == collegeCode2){
-                answer = it.name
-            }
-        }
-        return answer
+    private fun whichCollege(email: String): String {
+        if (email.length < 3) return "Not Found"
+        val collegeCode = email.substring(0, 3).uppercase()
+        Log.d("emailcode","$collegeCode")
+        val college = colleges.find { it.code == collegeCode }
+        Log.d("clg","${college?.name}")
+        return college?.name ?: "Not Found"
     }
 }

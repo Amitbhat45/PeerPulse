@@ -46,6 +46,7 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.example.peer_pulse.R
 import com.example.peer_pulse.data.room.post
 import com.example.peer_pulse.domain.model.Post
+import com.example.peer_pulse.domain.model.colleges
 import com.example.peer_pulse.domain.model.getPreferenceById
 import com.example.peer_pulse.utilities.ResponseState
 import com.example.peer_pulse.utilities.Screens
@@ -115,20 +116,35 @@ fun PostUI(
                         )
                     }
                     else{
-                        Image(painter = painterResource(id = R.drawable.ic_launcher_background), contentDescription ="topicimage" ,
-                            Modifier
-                                .size(35.dp)
-                                .clip(CircleShape))
+                        post.collegeCode?.let { getCollegelogo(it) }
+                            ?.let { painterResource(it) }?.let {
+                                Image(painter = it, contentDescription ="topicimage" ,
+                                    Modifier
+                                        .size(35.dp)
+                                        .clip(CircleShape))
+                            }
                     }
                     Spacer(modifier = Modifier.width(5.dp))
                     Column(Modifier.fillMaxWidth()) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(text = "${post.preferences}" ,fontSize = 14.sp,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.clickable { navController.navigate(Screens.PagesScreen.createRoute(post.preferences)){
-                                    launchSingleTop = true
-                                } }
+                            if(post.preferences==""){
+                                Text(text = "${post.collegeCode?.let { findCollegeshortnameBYname(it) }}" ,fontSize = 14.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    /*modifier = Modifier.clickable { navController.navigate(Screens.PagesScreen.createRoute(post.preferences)){
+                                        launchSingleTop = true
+                                    } }*/
                                 )
+                            }
+                            else{
+                                Text(text = "${post.preferences}" ,fontSize = 14.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.clickable { navController.navigate(Screens.PagesScreen.createRoute(post.preferences)){
+                                        launchSingleTop = true
+                                    } }
+                                )
+                            }
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(text = getTimeAgo(post.timestamp),fontSize = 10.sp, color=Color.Gray)
                         }
@@ -278,6 +294,17 @@ fun PostUI(
 
     }}
 
+
+fun findCollegeshortnameBYname(collegeCode: String): String {
+    val college = colleges.find { it.name == collegeCode }
+    return college?.shortName ?: "College Not Found"
+}
+
+fun getCollegelogo(collegeCode: String):Int{
+    val college = colleges.find { it.name == collegeCode }
+    return college?.logo?:0
+
+}
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun getTimeAgo(timestamp: Long): String {

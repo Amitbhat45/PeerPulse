@@ -121,7 +121,7 @@ class CommunityRepositoryImpl @Inject constructor(
         return Pager(
             config = PagingConfig(pageSize = 20, enablePlaceholders = false),
             remoteMediator = PostRemoteMediator(firestore, database, preferences,clgcode),
-            pagingSourceFactory = { database.postDao().getPosts(preferences) }
+            pagingSourceFactory = { database.postDao().getPostforCommunity(clgcode) }
         ).flow
     }
 

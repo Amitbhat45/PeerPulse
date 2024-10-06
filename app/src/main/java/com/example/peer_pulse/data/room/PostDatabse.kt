@@ -9,7 +9,7 @@ import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [post::class], version = 2)
+@Database(entities = [post::class], version = 3)
 @TypeConverters(com.example.peer_pulse.data.room.Converters::class)
 abstract class PostsDatabase : RoomDatabase() {
     abstract fun postDao(): PostDao
@@ -24,7 +24,7 @@ abstract class PostsDatabase : RoomDatabase() {
                     context.applicationContext,
                     PostsDatabase::class.java,
                     "posts_database"
-                ).addMigrations(MIGRATION_1_2).build()
+                ).addMigrations(MIGRATION_1_2,MIGRATION_2_3).build()
                 INSTANCE = instance
                 instance
             }
@@ -53,6 +53,12 @@ abstract class PostsDatabase : RoomDatabase() {
                     FROM posts_temp
                 """)
                 database.execSQL("DROP TABLE posts_temp")
+            }
+        }
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // Add the new column
+                database.execSQL("ALTER TABLE posts ADD COLUMN collegeCode TEXT")
             }
         }
     }

@@ -37,7 +37,7 @@ val colleges = listOf(
     College(
         "DR. AMBEDKAR INSTITUTE OF TECHNOLOGY",
         "1DA",
-        shortName = "Dr. AIT",
+        shortName = "Dr.AIT",
         logo = R.drawable.drait_logo,
         background = R.drawable.drait_background,
         description = "Dr. Ambedkar Institute of Technology (Dr. AIT) was founded by M.H. Jayaprakash Narayan in 1980. Named after Dr. B.R. Ambedkar, the institute is affiliated to Visvesvaraya Technological University (VTU), Belagavi and is recognized and accredited by AICTE and NBA respectively. The institution is accredited by NAAC with ‘A+’ Grade. The Institution has achieved 163 Rank in National Institutional Ranking Framework (NIRF). "),

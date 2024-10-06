@@ -1,5 +1,8 @@
 package com.example.peer_pulse.presentation.community
 
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +17,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
@@ -43,22 +48,31 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.peer_pulse.presentation.main.BottomNavigation
 import com.example.peer_pulse.presentation.main.BottomNavigationScreens
+import com.example.peer_pulse.presentation.postUI.PostUI
+import com.example.peer_pulse.presentation.postUI.PostViewModel
 import com.example.peer_pulse.utilities.ResponseState
 import com.example.peer_pulse.utilities.Screens
 import kotlinx.coroutines.launch
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CommunityScreen(
     navController: NavController,
     collegeName: String,
     collegeCode: String,
     collegeLogo: Int,
-    communityViewModel: CommunityViewModel
+    communityViewModel: CommunityViewModel,
+    postViewModel: PostViewModel,
 ) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
+
+    val clgposts = communityViewModel.clgPosts
+    val lazyPagingItems = clgposts.collectAsLazyPagingItems()
+
     ModalNavigationDrawer(
         drawerContent = {
             Box(
@@ -108,58 +122,28 @@ fun CommunityScreen(
                     .fillMaxSize()
                     .padding(it)
             ) {
-                communityViewModel.getGeneralPostsByCollege(collegeName)
-                when (val response = communityViewModel.generalPosts.value) {
-                    is ResponseState.Error -> {
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(text = response.message)
-                        }
-                    }
-
-                    ResponseState.Loading -> {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator(modifier = Modifier.size(48.dp))
-                        }
-                    }
-
-                    is ResponseState.Success -> {
-                        if (response.data.isEmpty()) {
-                            Box(
+                Column(
                                 modifier = Modifier
-                                    .padding(8.dp)
-                                    .fillMaxSize(),
-                                contentAlignment = Alignment.Center
+                                    .fillMaxSize()
+                                    .verticalScroll(rememberScrollState())
                             ) {
-                                Text(
-                                    text = "Start posting!!",
-                                    modifier = Modifier.padding(8.dp),
-                                    fontSize = 32.sp
-                                )
-
-                            }
-                        } else {
-                            LazyColumn(
-                                modifier = Modifier
-                                    .padding(8.dp),
-                            ) {
-                                items(response.data.size) { index ->
-                                   Text(text = response.data[index])
+                                for (post in lazyPagingItems.itemSnapshotList.items) {
+                                    post?.let {
+                                        Log.d("Posts", "Post: $it")
+                                       PostUI(post = it, navController,postViewModel)
+                                        HorizontalDivider(
+                                            Modifier.fillMaxWidth()
+                                        )
+                                    }
                                 }
                             }
                         }
                     }
-                }
+
             }
         }
-    }
-}
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
