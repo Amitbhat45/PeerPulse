@@ -115,7 +115,7 @@ fun PostUI(
                         )
                     }
                     else{
-                        Image(painter = painterResource(id = R.drawable.ic_launcher_background), contentDescription ="topicimage" ,
+                        Image(painter = painterResource(id = R.drawable.drait_logo), contentDescription ="topicimage" ,
                             Modifier
                                 .size(35.dp)
                                 .clip(CircleShape))

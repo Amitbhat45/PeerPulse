@@ -13,5 +13,6 @@ data class post(
     val timestamp: Long = 0L,
     val likes: Int = 0,
     val preferences: String = "",
-    val preferencesId: String = ""
+    val preferencesId: String = "",
+    //val clgcode:String=""
 )

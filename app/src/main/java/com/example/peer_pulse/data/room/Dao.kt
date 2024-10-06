@@ -25,8 +25,6 @@ interface PostDao {
     @Query("SELECT * FROM posts WHERE preferences IN (:userPreferences) AND timestamp>:lastyear ORDER BY timestamp DESC ")
     fun getPostbyLastyear(userPreferences: List<String>, lastyear: Long):PagingSource<Int,post>
 
-
-
     @Query("DELETE FROM posts")
     suspend fun clearPosts()
 }
