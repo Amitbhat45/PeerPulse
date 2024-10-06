@@ -101,9 +101,10 @@ object AppModule {
     @Provides
     @Singleton
     fun provideCommunityRepository(
-        firestore: FirebaseFirestore
+        firestore: FirebaseFirestore,
+        databse:PostsDatabase
     ) : CommunityRepository {
-        return CommunityRepositoryImpl(firestore)
+        return CommunityRepositoryImpl(firestore,databse)
     }
 
 

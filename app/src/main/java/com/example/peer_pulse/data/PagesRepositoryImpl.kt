@@ -24,18 +24,18 @@ class PagesRepositoryImpl @Inject constructor(
     private val database: PostsDatabase
 ): PagesRepository {
     override suspend fun getPostByPreference(preferenceId: String): Flow<ResponseState<List<String>>> = callbackFlow {
-       ResponseState.Loading
+        ResponseState.Loading
         val snapshot = firestore.collection("posts").whereEqualTo("preferencesId", preferenceId)
             .addSnapshotListener { snapshot, error ->
-            val response = if(snapshot != null){
-                val postIds = snapshot.documents.map { it.id }
-                ResponseState.Success(postIds)
-            }
-            else{
-                ResponseState.Error(error?.message ?: "An unexpected error occurred")
-            }
+                val response = if(snapshot != null){
+                    val postIds = snapshot.documents.map { it.id }
+                    ResponseState.Success(postIds)
+                }
+                else{
+                    ResponseState.Error(error?.message ?: "An unexpected error occurred")
+                }
                 trySend(response).isSuccess
-        }
+            }
         awaitClose {
             snapshot.remove()
         }
@@ -47,7 +47,7 @@ class PagesRepositoryImpl @Inject constructor(
     override suspend fun getPostbyTopic(preferences: List<String>): Flow<PagingData<post>> {
         return Pager(
             config = PagingConfig(pageSize = 20, enablePlaceholders = false),
-            remoteMediator = PostRemoteMediator(firestore, database, preferences),
+            remoteMediator = PostRemoteMediator(firestore, database, preferences,""),
             pagingSourceFactory = { database.postDao().getPosts(preferences) }
         ).flow
     }

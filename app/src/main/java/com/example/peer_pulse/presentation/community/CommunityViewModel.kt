@@ -4,6 +4,9 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import com.example.peer_pulse.data.room.post
 import com.example.peer_pulse.domain.model.Community
 import com.example.peer_pulse.domain.model.Message
 import com.example.peer_pulse.domain.model.colleges
@@ -11,7 +14,11 @@ import com.example.peer_pulse.domain.repository.CommunityRepository
 import com.example.peer_pulse.utilities.ResponseState
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 
@@ -34,6 +41,9 @@ class CommunityViewModel @Inject constructor(
     var email = ""
     var college = ""
 
+    private val _clgPosts = MutableStateFlow<PagingData<post>>(PagingData.empty())
+    val clgPosts: StateFlow<PagingData<post>> get() = _clgPosts
+
     private val _allCommunityList = mutableStateOf<ResponseState<List<Community>>>(ResponseState.Success(emptyList()))
     val allCommunityList: State<ResponseState<List<Community>>> = _allCommunityList
 
@@ -52,6 +62,19 @@ class CommunityViewModel @Inject constructor(
 
     var communityList: List<Community> = emptyList()
 
+    init {
+        fetchPosts()
+    }
+
+    private fun fetchPosts() {
+        viewModelScope.launch {
+            communityRepository.getPosts(emptyList(),college)
+                .cachedIn(viewModelScope)
+                .collectLatest { pagingData ->
+                    _clgPosts.value = pagingData
+                }
+        }
+    }
 
     fun getAllCommunities(collegeCode: String) {
         viewModelScope.launch {
