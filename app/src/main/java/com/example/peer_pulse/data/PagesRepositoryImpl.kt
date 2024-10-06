@@ -47,7 +47,7 @@ class PagesRepositoryImpl @Inject constructor(
     override suspend fun getPostbyTopic(preferences: List<String>): Flow<PagingData<post>> {
         return Pager(
             config = PagingConfig(pageSize = 20, enablePlaceholders = false),
-            remoteMediator = PostRemoteMediator(firestore, database, preferences,""),
+            remoteMediator = PostRemoteMediator(firestore, database, preferences),
             pagingSourceFactory = { database.postDao().getPosts(preferences) }
         ).flow
     }

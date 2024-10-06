@@ -9,7 +9,7 @@ import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [post::class], version = 3)
+@Database(entities = [post::class], version = 2)
 @TypeConverters(com.example.peer_pulse.data.room.Converters::class)
 abstract class PostsDatabase : RoomDatabase() {
     abstract fun postDao(): PostDao
@@ -24,7 +24,7 @@ abstract class PostsDatabase : RoomDatabase() {
                     context.applicationContext,
                     PostsDatabase::class.java,
                     "posts_database"
-                ).addMigrations(MIGRATION_1_2,MIGRATION_2_3).build()
+                ).addMigrations(MIGRATION_1_2).build()
                 INSTANCE = instance
                 instance
             }
@@ -55,42 +55,5 @@ abstract class PostsDatabase : RoomDatabase() {
                 database.execSQL("DROP TABLE posts_temp")
             }
         }
-        val MIGRATION_2_3 = object : Migration(2, 3) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                // Step 1: Add the new column
-                database.execSQL("ALTER TABLE posts ADD COLUMN collegeCode TEXT DEFAULT ''")
-
-                // Step 2: Copy data from clgcode to collegeCode
-                database.execSQL("UPDATE posts SET collegeCode = clgcode")
-
-                // Step 3: Optionally, if you want to drop the old column,
-                // you'll have to recreate the table without the old column.
-                database.execSQL("ALTER TABLE posts RENAME TO posts_temp")
-
-                database.execSQL("""
-            CREATE TABLE posts (
-                id TEXT NOT NULL PRIMARY KEY,
-                userId TEXT NOT NULL,
-                title TEXT NOT NULL,
-                description TEXT NOT NULL,
-                imageUrl TEXT NOT NULL,
-                timestamp INTEGER NOT NULL,
-                likes INTEGER NOT NULL,
-                preferences TEXT NOT NULL,
-                preferenceId TEXT NOT NULL,
-                collegeCode TEXT DEFAULT ''  -- Include the new column here
-            )
-        """)
-
-                database.execSQL("""
-            INSERT INTO posts (id, userId, title, description, imageUrl, timestamp, likes, preferences, preferenceId, collegeCode)
-            SELECT id, userId, title, description, imageUrl, timestamp, likes, preferences, preferenceId, collegeCode
-            FROM posts_temp
-        """)
-
-                database.execSQL("DROP TABLE posts_temp")
-            }
-        }
-
     }
 }
