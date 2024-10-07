@@ -71,14 +71,14 @@ class PostViewModel @Inject constructor(
 
     private val _likePostState = MutableStateFlow<ResponseState<Boolean>>(ResponseState.Success(false))
     val likePostState: StateFlow<ResponseState<Boolean>> = _likePostState.asStateFlow()
-    
+
     private val _replyIdsByPost = mutableStateOf<ResponseState<List<Reply>>>(ResponseState.Success(emptyList()))
     val replyIdsByPost: State<ResponseState<List<Reply>>> = _replyIdsByPost
 
 
     private val _sendReplyState = mutableStateOf<ResponseState<Boolean?>>(ResponseState.Success(null))
     val sendReplyState: State<ResponseState<Boolean?>> = _sendReplyState
-  
+
 
     init {
         fetchPosts()
@@ -106,6 +106,7 @@ class PostViewModel @Inject constructor(
             postsRepository.getPosts(preferences1)
                 .cachedIn(viewModelScope)
                 .collectLatest { pagingData ->
+                    Log.d("pref", pagingData.toString())
                     _userFeedState.value = pagingData
                 }
         }
