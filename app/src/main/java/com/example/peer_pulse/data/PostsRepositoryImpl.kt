@@ -15,6 +15,9 @@ import com.example.peer_pulse.domain.model.Post
 import com.example.peer_pulse.domain.model.Reply
 import com.example.peer_pulse.domain.repository.PostsRepository
 import com.example.peer_pulse.utilities.ResponseState
+import com.example.peer_pulse.utilities.TimeUtils.getLastMonthTimestamp
+import com.example.peer_pulse.utilities.TimeUtils.getLastWeekTimestamp
+import com.example.peer_pulse.utilities.TimeUtils.getLastYearTimestamp
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -57,13 +60,14 @@ class PostsRepositoryImpl @Inject constructor(
     override suspend fun getPosts(preferences: List<String>): Flow<PagingData<post>> {
         return Pager(
             config = PagingConfig(pageSize = 20, enablePlaceholders = false),
-            remoteMediator = PostRemoteMediator(firestore, database, preferences),
+            remoteMediator = PostRemoteMediator(firestore, database, preferences,""),
             pagingSourceFactory = { database.postDao().getPosts(preferences) }
         ).flow
     }
 
     @OptIn(ExperimentalPagingApi::class)
     override suspend fun getMostLikedPostsLastWeek(preferences: List<String>): Flow<PagingData<post>> {
+        val lastWeekTimestamp = getLastWeekTimestamp()
         return Pager(
             config = PagingConfig(pageSize = 20, enablePlaceholders = false),
             remoteMediator = PostRemoteMediator2(
@@ -72,12 +76,13 @@ class PostsRepositoryImpl @Inject constructor(
                 userPreferences = preferences,
                 timeRange = TimeRange.LAST_WEEK,
             ),
-            pagingSourceFactory = { database.postDao().getPosts(preferences) }
+            pagingSourceFactory = { database.postDao().getPostbyLastweek(preferences,lastWeekTimestamp) }
         ).flow
     }
 
     @OptIn(ExperimentalPagingApi::class)
     override suspend fun getMostLikedPostsLastMonth(preferences: List<String>): Flow<PagingData<post>> {
+        val lastmonthTimestamp= getLastMonthTimestamp()
         return Pager(
             config = PagingConfig(pageSize = 20, enablePlaceholders = false),
             remoteMediator = PostRemoteMediator2(
@@ -86,12 +91,13 @@ class PostsRepositoryImpl @Inject constructor(
                 preferences,
                 TimeRange.LAST_MONTH
             ),
-            pagingSourceFactory = { database.postDao().getPosts(preferences) }
+            pagingSourceFactory = { database.postDao().getPostbyLastmonth(preferences,lastmonthTimestamp) }
         ).flow
     }
 
     @OptIn(ExperimentalPagingApi::class)
     override suspend fun getMostLikedPostsLastYear(preferences: List<String>): Flow<PagingData<post>> {
+        val lastyearTimestamp= getLastYearTimestamp()
         return Pager(
             config = PagingConfig(pageSize = 20, enablePlaceholders = false),
             remoteMediator = PostRemoteMediator2(
@@ -100,7 +106,7 @@ class PostsRepositoryImpl @Inject constructor(
                 preferences,
                 TimeRange.LAST_YEAR
             ),
-            pagingSourceFactory = { database.postDao().getPosts(preferences) }
+            pagingSourceFactory = { database.postDao().getPostbyLastyear(preferences,lastyearTimestamp) }
         ).flow
     }
 

@@ -1,9 +1,13 @@
 package com.example.peer_pulse.presentation.community
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import com.example.peer_pulse.data.room.post
 import com.example.peer_pulse.domain.model.Community
 import com.example.peer_pulse.domain.model.Message
 import com.example.peer_pulse.domain.model.colleges
@@ -11,7 +15,12 @@ import com.example.peer_pulse.domain.repository.CommunityRepository
 import com.example.peer_pulse.utilities.ResponseState
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 
@@ -34,6 +43,9 @@ class CommunityViewModel @Inject constructor(
     var email = ""
     var college = ""
 
+    private val _clgPosts = MutableStateFlow<PagingData<post>>(PagingData.empty())
+    val clgPosts: StateFlow<PagingData<post>> get() = _clgPosts
+
     private val _allCommunityList = mutableStateOf<ResponseState<List<Community>>>(ResponseState.Success(emptyList()))
     val allCommunityList: State<ResponseState<List<Community>>> = _allCommunityList
 
@@ -52,6 +64,22 @@ class CommunityViewModel @Inject constructor(
 
     var communityList: List<Community> = emptyList()
 
+    init {
+        viewModelScope.launch {
+            delay(500)
+            fetchPosts()
+        }
+    }
+
+    private fun fetchPosts() {
+        viewModelScope.launch {
+            communityRepository.getPosts(listOf(""),college)
+                .cachedIn(viewModelScope)
+                .collectLatest { pagingData ->
+                    _clgPosts.value = pagingData
+                }
+        }
+    }
 
     fun getAllCommunities(collegeCode: String) {
         viewModelScope.launch {
@@ -119,16 +147,12 @@ class CommunityViewModel @Inject constructor(
     fun resetSendState() {
         _sendMessage.value = ResponseState.Success(false)
     }
-    private fun whichCollege(email: String) : String{
-        if (email.length < 3) return ""
-        val collegeCode1 = email.substring(0,3)
-        val collegeCode2 = collegeCode1.uppercase()
-        var answer = "Not Found"
-        colleges.forEach {
-            if(it.code == collegeCode2){
-                answer = it.name
-            }
-        }
-        return answer
+    private fun whichCollege(email: String): String {
+        if (email.length < 3) return "Not Found"
+        val collegeCode = email.substring(0, 3).uppercase()
+        Log.d("emailcode","$collegeCode")
+        val college = colleges.find { it.code == collegeCode }
+        Log.d("clg","${college?.name}")
+        return college?.name ?: "Not Found"
     }
 }

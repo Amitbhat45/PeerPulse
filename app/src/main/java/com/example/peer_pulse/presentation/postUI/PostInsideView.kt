@@ -145,25 +145,45 @@ fun PostInsideView(
 
                         )
                     } else {
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_launcher_background),
-                            contentDescription = "topicimage",
-                            Modifier
-                                .size(35.dp)
-                                .clip(CircleShape)
-                        )
+                        post.collegeCode?.let { it1 ->
+                            getCollegelogo(
+                                it1
+                            )
+                        }?.let { it2 -> painterResource(it2) }?.let { it3 ->
+                            Image(
+                                painter = it3,
+                                contentDescription = "topicimage",
+                                Modifier
+                                    .size(35.dp)
+                                    .clip(CircleShape)
+                            )
+                        }
                     }
                     Spacer(modifier = Modifier.width(5.dp))
                     Column(Modifier.fillMaxWidth()) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(text = "${post.preferences}", fontSize = 15.sp,
-                                fontWeight = Bold,
-                                modifier = Modifier.clickable {
-                                    navController.navigate(Screens.PagesScreen.createRoute(post.preferences)) {
-                                        launchSingleTop = true
+                            if(post.preferences==""){
+                                Text(text = "${post.collegeCode?.let { it1 ->
+                                    findCollegeshortnameBYname(it1)
+                                }}", fontSize = 15.sp,
+                                    fontWeight = Bold,
+                                    /*modifier = Modifier.clickable {
+                                        navController.navigate(Screens.PagesScreen.createRoute(post.preferences)) {
+                                            launchSingleTop = true
+                                        }
+                                    }*/
+                                )
+                            }
+                            else{
+                                Text(text = "${post.preferences}", fontSize = 15.sp,
+                                    fontWeight = Bold,
+                                    modifier = Modifier.clickable {
+                                        navController.navigate(Screens.PagesScreen.createRoute(post.preferences)) {
+                                            launchSingleTop = true
+                                        }
                                     }
-                                }
-                            )
+                                )
+                            }
                             Spacer(modifier = Modifier.width(5.dp))
                             Text(
                                 text = getTimeAgo(post.timestamp),

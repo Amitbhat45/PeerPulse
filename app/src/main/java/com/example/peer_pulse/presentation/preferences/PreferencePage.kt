@@ -122,8 +122,8 @@ fun PreferencePage(
                         "MostLiked LastYear" -> preferencesViewModel.fetchMostLikedLastYear(listOf(preferenceId))
                     }
                 }
-
-                for (post in lazyPagingItems.itemSnapshotList.items) {
+                val lazyPagingItems2 = mostLikedPosts.collectAsLazyPagingItems()
+                for (post in lazyPagingItems2.itemSnapshotList.items) {
                     post?.let {
                         PostUI(post = it,navController,postViewModel)
                         HorizontalDivider(

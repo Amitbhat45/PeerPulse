@@ -31,7 +31,7 @@ class PostRemoteMediator2(
             val query = firestore.collection("posts")
                 .whereArrayContainsAny("preferences", userPreferences)
 
-            // Apply the time range filter and sorting
+
             val timeFilteredQuery = when (timeRange) {
                 TimeRange.LAST_WEEK -> query
                     .whereGreaterThan("timestamp", getLastWeekTimestamp())

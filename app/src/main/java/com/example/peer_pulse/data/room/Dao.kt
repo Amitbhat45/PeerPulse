@@ -16,6 +16,18 @@ interface PostDao {
 
     /*@Query("SELECT * FROM posts WHERE topicName = :topicId ORDER BY timestamp DESC")
     fun getPostsByTopic(topicId: String): PagingSource<Int, post>*/
+    @Query("SELECT * FROM posts WHERE preferences IN (:userPreferences) AND timestamp>:lastweek ORDER BY timestamp DESC ")
+    fun getPostbyLastweek(userPreferences: List<String>, lastweek: Long):PagingSource<Int,post>
+
+    @Query("SELECT * FROM posts WHERE preferences IN (:userPreferences) AND timestamp>:lastmonth ORDER BY timestamp DESC ")
+    fun getPostbyLastmonth(userPreferences: List<String>, lastmonth: Long):PagingSource<Int,post>
+
+    @Query("SELECT * FROM posts WHERE preferences IN (:userPreferences) AND timestamp>:lastyear ORDER BY timestamp DESC ")
+    fun getPostbyLastyear(userPreferences: List<String>, lastyear: Long):PagingSource<Int,post>
+
+    @Query("SELECT * FROM posts WHERE collegeCode = :clgcode  AND preferences='' ORDER BY timestamp DESC")
+    fun getPostforCommunity(clgcode: String): PagingSource<Int, post>
+
 
     @Query("DELETE FROM posts")
     suspend fun clearPosts()
